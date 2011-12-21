@@ -74,8 +74,51 @@ Some loose notes
   mreduce (map f xs) == mreduce (map f xs1) `mappend` mreduce (map f xs2)
   where xs == xs1 ++ xs2
 
-  
+  What is the type of xs that decomposes?  It is splittable, and the parts are foldable
+
+-- pulled from internets
+class Foldable t where
+    fold :: Monoid m => t m -> m
+    foldMap :: Monoid m => (a -> m) -> t a -> m
+
+    foldr :: (a -> b -> b) -> b -> t a -> b
+    foldl :: (a -> b -> a) -> a -> t b -> a
+
+    foldr1 :: (a -> a -> a) -> t a -> a
+    foldl1 :: (a -> a -> a) -> t a -> a
+
+class Splittable F a
+    split :: F a -> Either a [F a]
+
+instance (Splittable F a) => Foldable F a where
+-- probably a very wrong def
+fold :: (Monoid a) => m a -> a
+fold t = go $ split t  where
+     go Left fs = fs
+     go Right [Split t] = foldl' mappend (map fold t)
+
+something like that
+
+So we want to fold an accumulator like
+acc :: Monoid a => a -> b -> a
+over a Splittable, which does NOT need to be over a monoid.
 
 TODO reread algorithm + strategy = parallelism paper
  
+Typeclasses for reference:
+Functor F a
+fmap :: (a -> b) -> F a -> F b
+(square diagram)
+
+Monad M a
+return :: a -> M a
+join :: M (M a) -> M a
+>>= :: M a -> (a -> b) -> M b 
+(How to write bind in terms of join, return, fmap?)
+
+Comonad W a 
+extract :: W a -> a
+duplicate :: W a -> W (W a)
+
+--
 
