@@ -3,56 +3,65 @@ package org.fuelsyourcyb.exathunk;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class NTree<A> implements EndoFunctor<A>,
-                                 Foldable<A>,
-				 EndoMonad<A, NTree<A>> {
-    private A value;
-    private Collection<NTree<A>> children;
+public class NTree<L, V> implements EndoFunctor<Either<L, V>>,
+				    Foldable<V>,
+				    EndoMonad<Either<L, V>, NTree<L, V>> {
+    private Either<L, V> labelOrValue;
+    private Collection<NTree<L, V>> children;
 
     public NTree() {
-	this.value = null;
+	this.labelOrValue = null;
 	this.children = null;
     }
 
-    public NTree(A value) {
-	this.value = value;
+    public NTree(V value) {
+	this.labelOrValue = Either.AsRight(value);
 	this.children = null;
     }
 
-    public  NTree(Collection<NTree<A>> children) {
-	this.value = null;
+    public  NTree(L label, Collection<NTree<L, V>> children) {
+	this.labelOrValue = Either.AsLeft(label);
 	this.children = children;
     }
 
-    public void bindInto(ParametricMutator<A, NTree<A>> f) {
-	f.mutate(value, this);
+    public void bindInto(ParametricMutator<Either<L, V>, NTree<L, V>> f) {
+	f.mutate(labelOrValue, this);
 	if (children != null) {
-	    for (NTree<A> child : children) {
-		child.bindInto(f);
-	    }
-	    children.remove(new NTree());
-	    if (children.isEmpty()) {
+	    if (labelOrValue.isLeft()) {
+		for (NTree<L, V> child : children) {
+		    child.bindInto(f);
+		}
+		children.remove(new NTree<L, V>());
+		if (children.isEmpty()) {
+		    children = null;
+		}
+	    } else {
 		children = null;
 	    }
 	}
     }
 
-    public void fmapInto(Func1<A, A> f) {
-	if (value != null) {
-	    value = f.runFunc(value);
-	} else if (children != null) {
-	    for (NTree<A> child : children) {
-		child.fmapInto(f);
+    public void fmapInto(Func1<Either<L, V>, Either<L, V>> f) {
+	if (labelOrValue != null) {
+	    labelOrValue = f.runFunc(labelOrValue);
+	}
+	if (children != null) {
+	    if (labelOrValue.isLeft()) {
+		for (NTree<L, V> child : children) {
+		    child.fmapInto(f);
+		}
+	    } else {
+		children = null;
 	    }
 	}
     }
     
     // foldl: (((1 + 2) + 3) + 4)
-    public <B> B foldl(Func2<B, A, B> f, B initial) {
-	if (value != null) {
-	    return f.runFunc(initial, value);
+    public <B> B foldl(Func2<B, V, B> f, B initial) {
+	if (labelOrValue != null && labelOrValue.isRight()) {
+	    return f.runFunc(initial, labelOrValue.right());
 	} else if (children != null) {
-	    for (NTree<A> child : children) {
+	    for (NTree<L, V> child : children) {
 		initial = child.foldl(f, initial);
 	    }
 	    return initial;
@@ -61,53 +70,61 @@ public class NTree<A> implements EndoFunctor<A>,
 	}
     }
 
-    public A getValue() {
-	return value;
+    public V getValue() {
+	return labelOrValue.right();
     }
 
-    public Collection<NTree<A>> getChildren() {
+    public L getLabel() {
+	return labelOrValue.left();
+    }
+
+    public Collection<NTree<L, V>> getChildren() {
 	return children;
     }
 
-    public void setValue(A value) {
-	this.value = value;
+    public void setValue(V value) {
+	this.labelOrValue = Either.AsRight(value);
 	this.children = null;
     }
 
-    public void setChildren(Collection<NTree<A>> children) {
-	this.value = null;
+    public void setInner(L label, Collection<NTree<L, V>> children) {
+	this.labelOrValue = Either.AsLeft(label);
 	this.children = children;
     }
 
     public void makeEmpty() {
-	this.value = null;
+	this.labelOrValue = null;
 	this.children = null;
     }
 
     public boolean isLeaf() {
-	return this.value != null;
+	return labelOrValue != null &&
+	    labelOrValue.isRight();
     }
 
     public boolean isInner() {
-	return this.children != null;
+	return children != null || !isLeaf();
     }
 
     public boolean isEmpty() {
-	return this.value == null &&
+	return this.labelOrValue == null &&
 	    this.children == null;
     }
 
-    public boolean equals(NTree<A> o) {
+    public boolean equals(NTree<L, V> o) {
 	if (o == null) return false;
-	if (value != null) {
-	    return value == o.value;
-	} else if (children != null) {
+	if (labelOrValue != null) {
+	    if (!labelOrValue.equals(o.labelOrValue)) {
+		return false;
+	    }
+	}
+	if (children != null) {
 	    if (o.children == null ||
 		children.size() != o.children.size()) {
 		return false;
 	    }
-	    Iterator<NTree<A>> it1 = children.iterator();
-	    Iterator<NTree<A>> it2 = o.children.iterator();
+	    Iterator<NTree<L, V>> it1 = children.iterator();
+	    Iterator<NTree<L, V>> it2 = o.children.iterator();
 	    while (it1.hasNext()) {
 		if (!it1.next().equals(it2.next())) {
 		    return false;
@@ -122,11 +139,16 @@ public class NTree<A> implements EndoFunctor<A>,
     public String toString() {
 	StringBuffer s = new StringBuffer();
 	s.append("{ ");
-	if (value != null) {
-	    s.append("value = "+value);
-	} else if (children != null) {
+	if (labelOrValue != null) {
+	    if (labelOrValue.isRight()) {
+		s.append("value = "+labelOrValue.right());
+	    } else {
+		s.append("label = "+labelOrValue.left()+" ");
+	    }
+	}
+	if (children != null) {
 	    s.append("children = [ ");
-	    for (NTree<A> child : children) {
+	    for (NTree<L, V> child : children) {
 		s.append(child.toString());
 		s.append(", ");
 	    }
