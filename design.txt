@@ -122,3 +122,11 @@ duplicate :: W a -> W (W a)
 
 --
 
+Thunk type:
+
+A thunk will have the form
+
+data Thunk arg res = Result res | Unevaluated FuncId arg 
+
+
+
