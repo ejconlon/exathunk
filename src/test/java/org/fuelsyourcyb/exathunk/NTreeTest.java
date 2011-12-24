@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.fuelsyourcyb.exathunk.NTree;
 import org.fuelsyourcyb.exathunk.Func1;
+import org.fuelsyourcyb.exathunk.Func2;
 
 import java.util.Collection;
 import java.util.List;
@@ -81,4 +82,18 @@ public class NTreeTest {
 	System.out.println(y.toString());
 	assert(x.equals(y));
     }
+
+    private class Summer implements Func2<Integer, Integer, Integer> {
+	public Integer runFunc(Integer x, Integer y) {
+	    return x + y;
+	}
+    }
+
+    @Test
+    public void testFoldl() {
+	NTree<Integer> x = makeTreeQuad(1, 2, 3, 4);
+	assert(10 == x.foldl(new Summer(), 0));
+	assert(13 == x.foldl(new Summer(), 3));
+    }
+
 }
