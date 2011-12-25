@@ -9,13 +9,12 @@ import org.fuelsyourcyb.exathunk.Func2;
 import org.fuelsyourcyb.exathunk.Unit;
 import org.fuelsyourcyb.exathunk.Either;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
 public class NTreeTest {
 
-    public <A> Collection<A> makePair(A x, A y) {
+    public <A> List<A> makePair(A x, A y) {
 	List<A> l = new ArrayList<A>();
 	l.add(x);
 	l.add(y);
@@ -54,7 +53,7 @@ public class NTreeTest {
 	}
     }
 
-    private class FuncLifter<A> implements Func1<Either<Unit, A>, Either<Unit, A>> {
+    /*private class FuncLifter<A> implements Func1<Either<Unit, A>, Either<Unit, A>> {
 	private final Func1<A, A> wrappedF;
 
 	public FuncLifter(Func1<A, A> wrappedF) {
@@ -68,7 +67,7 @@ public class NTreeTest {
 		return Either.AsRight(wrappedF.runFunc(x.right()));
 	    }
 	}
-    }
+	}*/
 
     private class Doubler implements Func1<Integer, Integer> {
 	public Integer runFunc(Integer x) {
@@ -81,7 +80,7 @@ public class NTreeTest {
 	NTree<Unit, Integer> x = makeTreePair(1, 2);
 	NTree<Unit, Integer> y = makeTreePair(2, 4);
 	assert(!x.equals(y));
-	x.fmapInto(new FuncLifter<Integer>(new Doubler()));
+	x.fmapInto(new Doubler());
 	System.out.println(x.toString());
 	System.out.println(y.toString());
 	assert(x.equals(y));
@@ -102,7 +101,7 @@ public class NTreeTest {
 	NTree<Unit, Integer> x = makeTreePair(2, 4);
 	NTree<Unit, Integer> y = new NTree<Unit, Integer>(Unit.getInstance(),
 							  makePair(makeTreePair(1, 1),
-								   makeTreeQuad(1, 1, 1, 1)));
+								   makeTreePair(2, 2)));
 	assert(!x.equals(y));
 	x.bindInto(new Halver());
 	System.out.println(x.toString());

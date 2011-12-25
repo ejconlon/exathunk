@@ -22,4 +22,14 @@ public class PresentThunk<StateType, ResultType> implements Thunk<StateType, Res
     public ResultType getResult() {
 	return result;
     }
+
+    public String toString() {
+	return "PresentThunk<"+result+">";
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean equals(Object o) {
+	if (o == null || !(o instanceof Thunk)) return false;
+	return ThunkUtils.statefulEquals(this, (Thunk)o);
+    }
 }

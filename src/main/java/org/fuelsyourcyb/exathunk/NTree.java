@@ -1,13 +1,14 @@
 package org.fuelsyourcyb.exathunk;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Iterator;
 
-public class NTree<L, V> implements EndoFunctor<Either<L, V>>,
+public class NTree<L, V> implements EndoFunctor<V>,
 				    Foldable<V>,
 				    EndoMonad<Either<L, V>, NTree<L, V>> {
+
     private Either<L, V> labelOrValue;
-    private Collection<NTree<L, V>> children;
+    private List<NTree<L, V>> children;
 
     public NTree() {
 	this.labelOrValue = null;
@@ -19,39 +20,28 @@ public class NTree<L, V> implements EndoFunctor<Either<L, V>>,
 	this.children = null;
     }
 
-    public  NTree(L label, Collection<NTree<L, V>> children) {
+    public NTree(L label, List<NTree<L, V>> children) {
 	this.labelOrValue = Either.AsLeft(label);
 	this.children = children;
     }
 
     public void bindInto(ParametricMutator<Either<L, V>, NTree<L, V>> f) {
-	f.mutate(labelOrValue, this);
 	if (children != null) {
-	    if (labelOrValue.isLeft()) {
-		for (NTree<L, V> child : children) {
-		    child.bindInto(f);
-		}
-		children.remove(new NTree<L, V>());
-		if (children.isEmpty()) {
-		    children = null;
-		}
-	    } else {
-		children = null;
+	    for (NTree<L, V> child : children) {
+		child.bindInto(f);
 	    }
+	    children.remove(new NTree<L, V>());
 	}
+	f.mutate(labelOrValue, this);
     }
 
-    public void fmapInto(Func1<Either<L, V>, Either<L, V>> f) {
-	if (labelOrValue != null) {
-	    labelOrValue = f.runFunc(labelOrValue);
+    public void fmapInto(Func1<V, V> f) {
+	if (labelOrValue != null && labelOrValue.isRight()) {
+	    labelOrValue = Either.AsRight(f.runFunc(labelOrValue.right()));
 	}
 	if (children != null) {
-	    if (labelOrValue.isLeft()) {
-		for (NTree<L, V> child : children) {
-		    child.fmapInto(f);
-		}
-	    } else {
-		children = null;
+	    for (NTree<L, V> child : children) {
+		child.fmapInto(f);
 	    }
 	}
     }
@@ -78,7 +68,7 @@ public class NTree<L, V> implements EndoFunctor<Either<L, V>>,
 	return labelOrValue.left();
     }
 
-    public Collection<NTree<L, V>> getChildren() {
+    public List<NTree<L, V>> getChildren() {
 	return children;
     }
 
@@ -87,7 +77,7 @@ public class NTree<L, V> implements EndoFunctor<Either<L, V>>,
 	this.children = null;
     }
 
-    public void setInner(L label, Collection<NTree<L, V>> children) {
+    public void setInner(L label, List<NTree<L, V>> children) {
 	this.labelOrValue = Either.AsLeft(label);
 	this.children = children;
     }
@@ -123,10 +113,8 @@ public class NTree<L, V> implements EndoFunctor<Either<L, V>>,
 		children.size() != o.children.size()) {
 		return false;
 	    }
-	    Iterator<NTree<L, V>> it1 = children.iterator();
-	    Iterator<NTree<L, V>> it2 = o.children.iterator();
-	    while (it1.hasNext()) {
-		if (!it1.next().equals(it2.next())) {
+	    for (int i = 0; i < children.size(); ++i) {
+		if (!children.get(i).equals(o.children.get(i))) {
 		    return false;
 		}
 	    }
