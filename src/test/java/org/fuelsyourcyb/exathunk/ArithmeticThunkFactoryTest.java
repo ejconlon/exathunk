@@ -3,6 +3,8 @@ package org.fuelsyourcyb.exathunk;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 public class ArithmeticThunkFactoryTest {
 
     public void parseHelper(String expression, Integer intResult) {
@@ -34,41 +36,43 @@ public class ArithmeticThunkFactoryTest {
 	parseHelper("+ - 1 2 * 3 / 16 4", 11);
     }
 
-    /*private class DelayingThunk<Result> implements Thunk<Integer, Result> {
+    private class DelayingThunk<Value> implements Thunk<Value> {
 	private final Integer numStepsNeeded;
 	private Integer numStepsTaken;
-	private final Result delayedResult;
+	private final Thunk<Value> thunk;
 
-	public DelayingThunk(Integer numStepsNeeded, Result delayedResult) {
+	public DelayingThunk(Integer numStepsNeeded, Thunk<Value> thunk) {
 	    this.numStepsNeeded = numStepsNeeded;
-	    this.delayedResult = delayedResult;
+	    this.thunk = thunk;
 	    this.numStepsTaken = 0;
 	}
 
 	public boolean isFinished() {
-	    return numStepsTaken >= numStepsNeeded;
+	    return numStepsTaken >= numStepsNeeded && thunk.isFinished();
 	}
 
 	public void step() {
-	    if (!isFinished()) {
+	    if (numStepsTaken < numStepsNeeded) {
 		++numStepsTaken;
+	    } else {
+		thunk.step();
 	    }
 	}
 
-	public Integer getState() {
-	    return numStepsTaken;
+	public State getState() {
+	    return thunk.getState();
 	}
 
-	public Result getResult() {
-	    if (isFinished()) {
-		return delayedResult;
+	public Value getResult() {
+	    if (numStepsTaken >= numStepsNeeded) {
+		return thunk.getResult();
 	    } else {
 		return null;
 	    }
 	}
 
 	public String toString() {
-	    return "DelayedThunk<"+numStepsTaken+"/"+numStepsNeeded+" "+delayedResult+">";
+	    return "DelayedThunk<"+numStepsTaken+"/"+numStepsNeeded+" "+thunk+">";
 	}
 
 	@SuppressWarnings("unchecked")
@@ -78,41 +82,42 @@ public class ArithmeticThunkFactoryTest {
 	}
     }
 
-    private class ZeroFactory implements TypeFactory<Integer> {
-	public Integer makeInstance() { return new Integer(0); }
-    }
-
-    private class DelayingArithmeticThunkFactory extends ArithmeticThunkFactory<Integer> {
+    private class DelayingArithmeticThunkFactory extends ArithmeticThunkFactory {
 	private final Integer numSteps;
 
-	public DelayingArithmeticThunkFactory(Integer numSteps) {
-	    super(new ZeroFactory());
+	public DelayingArithmeticThunkFactory(StateFactory<State> stateFactory, Integer numSteps) {
+	    super(stateFactory);
 	    this.numSteps = numSteps;
 	}
 
-	public NTree<String, Thunk<Integer, Integer>> makeIntegerThunk(Integer n) {
-	    return new NTree<String, Thunk<Integer, Integer>>(
-          	new DelayingThunk<Integer>(numSteps, n));
+	public Thunk<Integer> makeThunk(String funcId, List<Integer> params) {
+	    return new DelayingThunk<Integer>(numSteps, super.makeThunk(funcId, params));
 	}
     }
 
     @Test
     public void testDelaying() {
-	DelayingArithmeticThunkFactory factory = new DelayingArithmeticThunkFactory(3);
+	DelayingArithmeticThunkFactory factory = new DelayingArithmeticThunkFactory((StateFactory<State>)Unit.getInstance(), 3);
+	ArithmeticParser parser = new ArithmeticParser(factory);
+
 	String expression = "* 3 2";
-	NTree<String, Thunk<Integer, Integer>> result =
-	    new NTree<String, Thunk<Integer, Integer>>(new PresentThunk<Integer, Integer>(0, 6));
-	NTree<String, Thunk<Integer, Integer>> tree = factory.parse(expression);
-	System.out.println(tree.toString());
-	
-	for (int i = 0; i < 4; ++i) {
-	    assert(!tree.equals(result));
-	    tree.bindInto(factory.getEvaluator());
-	    System.out.println(tree.toString());
+	NTree<String, Thunk<Integer>> result =
+	    new NTree<String, Thunk<Integer>>(new PresentThunk<Integer>(Unit.getInstance(), 6));
+
+	NTree<String, Integer> parseTree = parser.parse(expression);
+	System.out.println(parseTree.toString());
+
+	NTree<String, Thunk<Integer>> thunkTree = ThunkUtils.makeThunkTree(parseTree, factory);
+	System.out.println(thunkTree.toString());
+
+	ThunkUtils.Evaluator<String, Integer> evaluator = new ThunkUtils.Evaluator<String, Integer>(factory);
+	for (int i = 0; i < 3; ++i) {
+	    assert(!thunkTree.equals(result));
+	    thunkTree.bindInto(evaluator);
+	    System.out.println(thunkTree.toString());
 	}
 
 	System.out.println(result.toString());
-	assert(tree.equals(result));
-	
-	}*/
+	assert(thunkTree.equals(result));
+    }
 }

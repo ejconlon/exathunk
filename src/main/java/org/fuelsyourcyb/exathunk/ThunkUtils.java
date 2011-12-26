@@ -83,7 +83,9 @@ public class ThunkUtils {
 			params.add(thunk.getResult());
 		    }
 		    mutee.setValue(factory.makeThunk(param.left(), params));
-		}
+		} 
+	    } else if (!mutee.getValue().isFinished()) {
+		mutee.getValue().step();
 	    }
 	}
     }
