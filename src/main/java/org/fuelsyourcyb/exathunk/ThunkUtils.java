@@ -2,17 +2,20 @@ package org.fuelsyourcyb.exathunk;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class ThunkUtils {
     // Do two thunks have the same result?
     public static <Value> boolean statelessEquals(
             Thunk<Value> a, Thunk<Value> b) {
-	if (a.isFinished()) {
-	    return b.isFinished() &&
-		a.getResult().equals(b.getResult());
-	} else {
-	    return !b.isFinished();
+	if (a.isDone() && b.isDone()) {
+	    try {
+		return a.get().equals(b.get());
+	    } catch (InterruptedException e) {
+	    } catch (ExecutionException e) {
+	    }
 	}
+	return false;
     }
     
     // Do two thunks have the same result AND the same
@@ -37,7 +40,7 @@ public class ThunkUtils {
 	if (thunkTree.isBranch()) {
 	    for (NTree<FuncId, Thunk<Value>> child : thunkTree.getChildren()) {
 		if (!child.isLeaf()) return false;
-		if (!child.getValue().isFinished()) return false;
+		if (!child.getValue().isDone()) return false;
 	    }
 	    return true;
 	}
@@ -46,7 +49,7 @@ public class ThunkUtils {
 
     public static <FuncId, Value> NTree<FuncId, Thunk<Value>> makeThunkTree(
             NTree<FuncId, Value> parseTree,
-	    ThunkFactory<FuncId, Value> thunkFactory) {
+	    ThunkFactory<FuncId, Value> thunkFactory) throws ThunkEvaluationException {
 	if (parseTree.isEmpty()) {
 	    throw new ThunkEvaluationException("Empty computation");
 	} else if (parseTree.isLeaf()) {
@@ -67,10 +70,13 @@ public class ThunkUtils {
 	}
     }
 
-    public static class Evaluator<FuncId, Value> implements ParametricMutator<Either<FuncId, Thunk<Value>>, NTree<FuncId, Thunk<Value>>> {
+    public static interface Evaluator<FuncId, Value> extends
+        ParametricMutator<Either<FuncId, Thunk<Value>>, NTree<FuncId, Thunk<Value>>> {}
+
+    public static class StepEvaluator<FuncId, Value> implements Evaluator<FuncId, Value> {
 	private final ThunkFactory<FuncId, Value> factory;
 
-	public Evaluator(ThunkFactory<FuncId, Value> factory) {
+	public StepEvaluator(ThunkFactory<FuncId, Value> factory) {
 	    this.factory = factory;
 	}
 
@@ -80,11 +86,18 @@ public class ThunkUtils {
 		    List<Value> params = new ArrayList<Value>(mutee.getChildren().size());
 		    for (NTree<FuncId, Thunk<Value>> child : mutee.getChildren()) {
 			Thunk<Value> thunk = child.getValue();
-			params.add(thunk.getResult());
+			try {
+			    params.add(thunk.get());
+			} catch (InterruptedException e) {
+			    return;  // TODO(ejconlon) return or throw an exception
+			} catch (ExecutionException e) {
+			    return;
+			}
+
 		    }
 		    mutee.setValue(factory.makeThunk(param.left(), params));
 		} 
-	    } else if (!mutee.getValue().isFinished()) {
+	    } else if (!mutee.getValue().isDone()) {
 		mutee.getValue().step();
 	    }
 	}

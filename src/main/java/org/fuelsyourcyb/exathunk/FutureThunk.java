@@ -3,19 +3,16 @@ package org.fuelsyourcyb.exathunk;
 import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CancellationException;
-import java.lang.InterruptedException;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 
 public class FutureThunk<Value> implements Thunk<Value> {
     private final State state;
-    private final Future<Value> futureResult;
+    private final Future<Value> future;
 
-    FutureThunk(State state, Future<Value> futureResult) {
+    FutureThunk(State state, Future<Value> future) {
 	this.state = state;
-	this.futureResult = futureResult;
-    }
-
-    public boolean isFinished() {
-	return futureResult.isDone();
+	this.future = future;
     }
 
     public void step() {}
@@ -23,23 +20,25 @@ public class FutureThunk<Value> implements Thunk<Value> {
     public State getState() {
 	return state;
     }
+
+    public boolean cancel(boolean mayInterruptIfRunning) {
+	return future.cancel(mayInterruptIfRunning);
+    }
     
-    public Value getResult() {
-	if (isFinished()) {
-	    try {
-		return futureResult.get();
-	    } catch (InterruptedException impossible) {
-		return null;
-	    } catch (ExecutionException possible) {
-		throw new ThunkEvaluationException("Error executing future",
-						   possible);
-	    } catch (CancellationException possible) {
-		throw new ThunkEvaluationException("Future cancelled",
-						   possible);
-	    }
-	} else {
-	    return null;
-	}
+    public boolean isCancelled() {
+	return future.isCancelled();
+    }
+
+    public boolean isDone() {
+	return future.isDone();
+    }
+
+    public Value get() throws InterruptedException, ExecutionException {
+	return future.get();
+    }
+
+    public Value get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+	return future.get(timeout, unit);
     }
 
 }

@@ -1,12 +1,10 @@
 package org.fuelsyourcyb.exathunk;
 
+import java.util.concurrent.Future;
+
 // A deferred computation.
 // Computation trees chould be implementation-agnostic.
-public interface Thunk<Value> {
-
-    // Has the computation finished (or failed)?
-    // Until then, getResult will return a null.
-    boolean isFinished();
+public interface Thunk<Value> extends Future<Value> {
 
     // An optional callback to perform any work needed
     // to advance the computation.
@@ -19,8 +17,4 @@ public interface Thunk<Value> {
     // execution of the computation, some exposure of
     // internal state is useful to propagate errors, etc.
     State getState();
-
-    // Result of the computation.  Non-null until completion
-    // (Possibly throws runtime ThunkEvaluationException.)
-    Value getResult();
 }

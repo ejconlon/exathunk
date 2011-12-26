@@ -16,7 +16,7 @@ public class ArithmeticParser {
     }
 
     public NTree<String, Integer> parse(Deque<String> src) {
-	NTree<String, Integer> tree = new NTree<String, Integer>();
+	NTree<String, Integer> tree = new NTree<>();
 	String op = src.removeFirst();
 	tree.setBranch(op, new ArrayList<NTree<String, Integer>>(2));
 	for (int i = 0; i < 2; ++i) {
@@ -36,7 +36,7 @@ public class ArithmeticParser {
     public NTree<String, Integer> parse(String expression) {
 	Scanner scanner = new Scanner(expression);
 	scanner.useDelimiter(Pattern.compile(" "));
-	Deque<String> tokens = new ArrayDeque<String>();
+	Deque<String> tokens = new ArrayDeque<>();
 	for (; scanner.hasNext(); ) {
 	    tokens.add(scanner.next());
 	}

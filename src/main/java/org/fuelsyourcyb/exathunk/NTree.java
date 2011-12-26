@@ -39,7 +39,7 @@ public class NTree<L, V> implements EndoFunctor<V>,
 	    }
 	    // clean up any empty nodes. this may technically break
 	    // some monad laws but I'm not going to worry about it.
-	    children.remove(new NTree<L, V>());
+	    children.remove(new NTree<>());
 	}
 	f.mutate(labelOrValue, this);
     }

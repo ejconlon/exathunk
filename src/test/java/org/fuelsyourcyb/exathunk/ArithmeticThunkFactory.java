@@ -26,7 +26,7 @@ public class ArithmeticThunkFactory implements ThunkFactory<String, Integer> {
 	Integer a = params.get(0);
 	Integer b = params.get(1);
 	Integer c = op.runFunc(a, b);
-	return new PresentThunk<Integer>(stateFactory.makeInitialState(), c);
+	return new PresentThunk<>(stateFactory.makeInitialState(), c);
     }
 
     public StateFactory<State> getStateFactory() {
@@ -55,7 +55,7 @@ public class ArithmeticThunkFactory implements ThunkFactory<String, Integer> {
     }
 
     private static Map<String, Func2<Integer, Integer, Integer>> makeOps() {
-	Map<String, Func2<Integer, Integer, Integer>> ops = new TreeMap<String, Func2<Integer, Integer, Integer>>();
+	Map<String, Func2<Integer, Integer, Integer>> ops = new TreeMap<>();
 	ops.put("+", new AddFunc2());
 	ops.put("-", new SubFunc2());
 	ops.put("*", new MulFunc2());

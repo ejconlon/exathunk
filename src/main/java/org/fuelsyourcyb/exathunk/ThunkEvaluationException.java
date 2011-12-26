@@ -1,11 +1,13 @@
 package org.fuelsyourcyb.exathunk;
 
-public class ThunkEvaluationException extends RuntimeException {
+import java.util.concurrent.ExecutionException;
+
+public class ThunkEvaluationException extends ExecutionException {
     public ThunkEvaluationException(String message) {
 	super(message);
     }
 
-    public ThunkEvaluationException(String message, Exception cause) {
+    public ThunkEvaluationException(String message, Throwable cause) {
 	super(message, cause);
     }
 }

@@ -1,5 +1,7 @@
 package org.fuelsyourcyb.exathunk;
 
+import java.util.concurrent.TimeUnit;
+
 public class PresentThunk<Value> implements Thunk<Value> {
     private State state;
     private Value result;
@@ -9,18 +11,30 @@ public class PresentThunk<Value> implements Thunk<Value> {
 	this.result = result;
     }
 
-    public boolean isFinished() {
-	return true;
-    }
-
     public void step() {}
 
     public State getState() {
 	return state;
     }
 
-    public Value getResult() {
+    public boolean cancel(boolean mayInterruptIfRunning) {
+	return false;  // always already done
+    }
+
+    public Value get() {
 	return result;
+    }
+
+    public Value get(long timeout, TimeUnit unit) {
+	return result;
+    }
+
+    public boolean isCancelled() {
+	return false;  // always already done
+    }
+
+    public boolean isDone() {
+	return true;  // always already done
     }
 
     public String toString() {

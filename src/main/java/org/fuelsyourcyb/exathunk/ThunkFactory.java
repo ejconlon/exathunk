@@ -6,12 +6,8 @@ import java.util.List;
 // Type parameters:
 //   FuncId: An identifier for function addressing/creation/resolution/etc
 //           Could be a name or address.
-//   Param:  Argument to the function.  Should apply to any implementation
-//           of the function.
-//   State:  Run-time state relating to the evaluation of the function. This
-//           could include timing/timeout stats, retry information, cost
-//           renegotiation info, etc.
-//   Value:  A boxed value for the result of any thunked computation.
+//   Value:  A boxed value for the result of any thunked computation or
+//           for function parameters.
 //
 // Calling code should be aware of RuntimeExceptions in the form of
 // ThunkEvaluationExceptions.  I may possibly try checked annotations later,
