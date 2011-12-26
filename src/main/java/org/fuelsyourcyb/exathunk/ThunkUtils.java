@@ -68,8 +68,23 @@ public class ThunkUtils {
     }
 
     public static class Evaluator<FuncId, Value> implements ParametricMutator<Either<FuncId, Thunk<Value>>, NTree<FuncId, Thunk<Value>>> {
+	private final ThunkFactory<FuncId, Value> factory;
+
+	public Evaluator(ThunkFactory<FuncId, Value> factory) {
+	    this.factory = factory;
+	}
+
 	public void mutate(Either<FuncId, Thunk<Value>> param, NTree<FuncId, Thunk<Value>> mutee) {
-	    
+	    if (param.isLeft()) {
+		if (ThunkUtils.isEvaluatable(mutee)) {
+		    List<Value> params = new ArrayList<Value>(mutee.getChildren().size());
+		    for (NTree<FuncId, Thunk<Value>> child : mutee.getChildren()) {
+			Thunk<Value> thunk = child.getValue();
+			params.add(thunk.getResult());
+		    }
+		    mutee.setValue(factory.makeThunk(param.left(), params));
+		}
+	    }
 	}
     }
 

@@ -18,9 +18,7 @@ public class ArithmeticThunkFactoryTest {
 	NTree<String, Thunk<Integer>> thunkTree = ThunkUtils.makeThunkTree(parseTree, factory);
 	System.out.println(thunkTree.toString());
 
-	assert(!thunkTree.equals(result));
-
-	thunkTree.bindInto(new ThunkUtils.Evaluator<String, Integer>());
+	thunkTree.bindInto(new ThunkUtils.Evaluator<String, Integer>(factory));
 	System.out.println(thunkTree.toString());
 
 	assert(thunkTree.equals(result));
