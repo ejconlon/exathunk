@@ -1,10 +1,10 @@
 package org.fuelsyourcyb.exathunk;
 
-public class PresentThunk<StateType, ResultType> implements Thunk<StateType, ResultType> {
-    private StateType state;
-    private ResultType result;
+public class PresentThunk<Value> implements Thunk<Value> {
+    private State state;
+    private Value result;
 
-    public PresentThunk(StateType state, ResultType result) {
+    public PresentThunk(State state, Value result) {
 	this.state = state;
 	this.result = result;
     }
@@ -15,11 +15,11 @@ public class PresentThunk<StateType, ResultType> implements Thunk<StateType, Res
 
     public void step() {}
 
-    public StateType getState() {
+    public State getState() {
 	return state;
     }
 
-    public ResultType getResult() {
+    public Value getResult() {
 	return result;
     }
 
@@ -30,6 +30,6 @@ public class PresentThunk<StateType, ResultType> implements Thunk<StateType, Res
     @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
 	if (o == null || !(o instanceof Thunk)) return false;
-	return ThunkUtils.statefulEquals(this, (Thunk)o);
+	return ThunkUtils.statefulEquals(this, (Thunk<Value>)o);
     }
 }

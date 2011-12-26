@@ -53,22 +53,6 @@ public class NTreeTest {
 	}
     }
 
-    /*private class FuncLifter<A> implements Func1<Either<Unit, A>, Either<Unit, A>> {
-	private final Func1<A, A> wrappedF;
-
-	public FuncLifter(Func1<A, A> wrappedF) {
-	    this.wrappedF = wrappedF;
-	}
-
-	public Either<Unit, A> runFunc(Either<Unit, A> x) {
-	    if (x.isLeft()) {
-		return Either.AsLeft(Unit.getInstance());
-	    } else {
-		return Either.AsRight(wrappedF.runFunc(x.right()));
-	    }
-	}
-	}*/
-
     private class Doubler implements Func1<Integer, Integer> {
 	public Integer runFunc(Integer x) {
 	    return x * 2;
@@ -88,10 +72,10 @@ public class NTreeTest {
 
     private class Halver implements ParametricMutator<Either<Unit, Integer>, NTree<Unit, Integer>> {
 	public void mutate(Either<Unit, Integer> x, NTree<Unit, Integer> t) {
-	    if (x != null && x.isRight() && x.right() > 1) {
-		t.setInner(Unit.getInstance(),
-			   makePair(new NTree<Unit, Integer>(x.right()/2),
-				    new NTree<Unit, Integer>(x.right()/2)));
+	    if (x.isRight() && x.right() > 1) {
+		t.setBranch(Unit.getInstance(),
+			    makePair(new NTree<Unit, Integer>(x.right()/2),
+				     new NTree<Unit, Integer>(x.right()/2)));
 	    }
 	}
     }
@@ -103,7 +87,10 @@ public class NTreeTest {
 							  makePair(makeTreePair(1, 1),
 								   makeTreePair(2, 2)));
 	assert(!x.equals(y));
+	System.out.println("Original: ");
+	System.out.println(x.toString());
 	x.bindInto(new Halver());
+	System.out.println("COMPARE: ");
 	System.out.println(x.toString());
 	System.out.println(y.toString());
 	assert(x.equals(y));

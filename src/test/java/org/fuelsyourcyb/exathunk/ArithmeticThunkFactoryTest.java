@@ -4,37 +4,39 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class ArithmeticThunkFactoryTest {
-    @Test
-    public void testParse() {
-	ArithmeticThunkFactory<Unit> factory = new ArithmeticThunkFactory<Unit>(Unit.getInstance());
-	ParametricMutator<Either<String, Thunk<Unit, Integer>>, NTree<String, Thunk<Unit, Integer>>> evaluator =
-	    factory.getEvaluator();
 
-	{
-	    String expression = "* 3 2";
-	    NTree<String, Thunk<Unit, Integer>> result = new NTree<String, Thunk<Unit, Integer>>(
-		 new PresentThunk<Unit, Integer>(Unit.getInstance(), 6));
-	    NTree<String, Thunk<Unit, Integer>> tree = factory.parse(expression);
-	    System.out.println(tree.toString());
-	    assert(!tree.equals(result));
-	    tree.bindInto(evaluator);
-	    System.out.println(tree.toString());
-	    assert(tree.equals(result));
-	}
-	{
-	    String expression = "+ - 1 2 * 3 / 16 4";
-	    NTree<String, Thunk<Unit, Integer>> result = new NTree<String, Thunk<Unit, Integer>>(
-		 new PresentThunk<Unit, Integer>(Unit.getInstance(), 11));
-	    NTree<String, Thunk<Unit, Integer>> tree = factory.parse(expression);
-	    System.out.println(tree.toString());
-	    assert(!tree.equals(result));
-	    tree.bindInto(evaluator);
-	    System.out.println(tree.toString());
-	    assert(tree.equals(result));
-	}
+    public void parseHelper(String expression, Integer intResult) {
+	ArithmeticThunkFactory factory = new ArithmeticThunkFactory((StateFactory<State>)Unit.getInstance());
+	ArithmeticParser parser = new ArithmeticParser(factory);
+
+	NTree<String, Thunk<Integer>> result = new NTree<String, Thunk<Integer>>(
+	    new PresentThunk<Integer>(Unit.getInstance(), intResult));
+
+	NTree<String, Integer> parseTree = parser.parse(expression);
+	System.out.println(parseTree.toString());
+
+	NTree<String, Thunk<Integer>> thunkTree = ThunkUtils.makeThunkTree(parseTree, factory);
+	System.out.println(thunkTree.toString());
+
+	assert(!thunkTree.equals(result));
+
+	thunkTree.bindInto(new ThunkUtils.Evaluator<String, Integer>());
+	System.out.println(thunkTree.toString());
+
+	assert(thunkTree.equals(result));
     }
 
-    private class DelayingThunk<Result> implements Thunk<Integer, Result> {
+    @Test
+    public void testParse1() {
+	parseHelper("* 3 2", 6);
+    }
+
+    @Test
+    public void testParse2() {
+	parseHelper("+ - 1 2 * 3 / 16 4", 11);
+    }
+
+    /*private class DelayingThunk<Result> implements Thunk<Integer, Result> {
 	private final Integer numStepsNeeded;
 	private Integer numStepsTaken;
 	private final Result delayedResult;
@@ -114,5 +116,5 @@ public class ArithmeticThunkFactoryTest {
 	System.out.println(result.toString());
 	assert(tree.equals(result));
 	
-    }
+	}*/
 }

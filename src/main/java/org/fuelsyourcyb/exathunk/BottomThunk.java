@@ -1,10 +1,10 @@
 package org.fuelsyourcyb.exathunk;
 
-public class BottomThunk<StateType, ResultType> implements Thunk<StateType, ResultType> {
-    private StateType state;
+public class BottomThunk<Value> implements Thunk<Value> {
+    private State state;
     private String message;
 
-    public BottomThunk(StateType state, String message) {
+    public BottomThunk(State state, String message) {
 	this.state = state;
 	this.message = message;
     }
@@ -15,11 +15,11 @@ public class BottomThunk<StateType, ResultType> implements Thunk<StateType, Resu
 
     public void step() {}
 
-    public StateType getState() {
+    public State getState() {
 	return state;
     }
 
-    public ResultType getResult() {
+    public Value getResult() {
 	throw new ThunkEvaluationException("Bottom: "+message);
     }
 }

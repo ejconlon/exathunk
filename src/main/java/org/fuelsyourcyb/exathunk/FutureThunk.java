@@ -5,11 +5,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CancellationException;
 import java.lang.InterruptedException;
 
-public class FutureThunk<StateType, ResultType> implements Thunk<StateType, ResultType> {
-    private final StateType state;
-    private final Future<ResultType> futureResult;
+public class FutureThunk<Value> implements Thunk<Value> {
+    private final State state;
+    private final Future<Value> futureResult;
 
-    FutureThunk(StateType state, Future<ResultType> futureResult) {
+    FutureThunk(State state, Future<Value> futureResult) {
 	this.state = state;
 	this.futureResult = futureResult;
     }
@@ -20,11 +20,11 @@ public class FutureThunk<StateType, ResultType> implements Thunk<StateType, Resu
 
     public void step() {}
 
-    public StateType getState() {
+    public State getState() {
 	return state;
     }
     
-    public ResultType getResult() {
+    public Value getResult() {
 	if (isFinished()) {
 	    try {
 		return futureResult.get();
