@@ -60,8 +60,7 @@ public class ArithmeticThunkFactoryTest {
     }
 
 
-    public void parseHelper(String expression, Integer intResult) throws ThunkEvaluationException, ParseException, TypeException {
-	ThunkFactory<String, Integer> factory = new ArithmeticThunkFactory((StateFactory<State>)Unit.getInstance());
+    public void parseHelper(ThunkFactory<String, Integer> factory, String expression, Integer intResult, int evaluations) throws ThunkEvaluationException, ParseException, TypeException {
 	SexpParser parser = new SexpParser();
 	Typer<String, String, String, Integer> typer = new DefaultTyper<>(factory, new IdFunc<String>(), new IntCast());
 
@@ -76,23 +75,27 @@ public class ArithmeticThunkFactoryTest {
 	NTree<String, Thunk<Integer>> thunkTree = ThunkUtils.makeThunkTree(typedTree, factory);
 	System.out.println(thunkTree.toString());
 
-	thunkTree.bindInto(new ThunkUtils.StepEvaluator<>(factory));
-	System.out.println(thunkTree.toString());
+	for (int i = 0; i < evaluations; ++i) {
+	    thunkTree.bindInto(new ThunkUtils.StepEvaluator<String, Integer>(factory));
+	    System.out.println(thunkTree.toString());
+	}
 
 	assert(thunkTree.equals(result));
     }
 
     @Test
     public void testParse1() throws ThunkEvaluationException, ParseException, TypeException {
-	parseHelper("(* 3 2)", 6);
+	ThunkFactory<String, Integer> factory = new ArithmeticThunkFactory((StateFactory<State>)Unit.getInstance());
+	parseHelper(factory, "(* 3 2)", 6, 1);
     }
 
     @Test
     public void testParse2() throws ThunkEvaluationException, ParseException, TypeException {
-	parseHelper("(+ (- 1 2) (* 3 (/ 16 4)))", 11);
+	ThunkFactory<String, Integer> factory = new ArithmeticThunkFactory((StateFactory<State>)Unit.getInstance());
+	parseHelper(factory, "(+ (- 1 2) (* 3 (/ 16 4)))", 11, 1);
     }
 
-    /*private class DelayingThunk<Value> implements Thunk<Value> {
+    private class DelayingThunk<Value> implements Thunk<Value> {
 	private final Integer numStepsNeeded;
 	private Integer numStepsTaken;
 	private final Thunk<Value> thunk;
@@ -168,28 +171,14 @@ public class ArithmeticThunkFactoryTest {
     }
 
     @Test
-    public void testDelaying() throws ThunkEvaluationException {
-	DelayingArithmeticThunkFactory factory = new DelayingArithmeticThunkFactory((StateFactory<State>)Unit.getInstance(), 3);
-	ArithmeticParser parser = new ArithmeticParser(factory);
+    public void testDelaying1() throws ThunkEvaluationException, ParseException, TypeException {
+	ThunkFactory<String, Integer> factory = new DelayingArithmeticThunkFactory((StateFactory<State>)Unit.getInstance(), 3);
+	parseHelper(factory, "(* 3 2)", 6, 3);
+    }
 
-	String expression = "* 3 2";
-	NTree<String, Thunk<Integer>> result =
-	    new NTree<String, Thunk<Integer>>(new PresentThunk<>(Unit.getInstance(), 6));
-
-	NTree<String, Integer> parseTree = parser.parse(expression);
-	System.out.println(parseTree.toString());
-
-	NTree<String, Thunk<Integer>> thunkTree = ThunkUtils.makeThunkTree(parseTree, factory);
-	System.out.println(thunkTree.toString());
-
-	ThunkUtils.Evaluator<String, Integer> evaluator = new ThunkUtils.StepEvaluator<>(factory);
-	for (int i = 0; i < 3; ++i) {
-	    assert(!thunkTree.equals(result));
-	    thunkTree.bindInto(evaluator);
-	    System.out.println(thunkTree.toString());
-	}
-
-	System.out.println(result.toString());
-	assert(thunkTree.equals(result));
-	}*/
+    @Test
+    public void testDelaying2() throws ThunkEvaluationException, ParseException, TypeException {
+	ThunkFactory<String, Integer> factory = new DelayingArithmeticThunkFactory((StateFactory<State>)Unit.getInstance(), 3);
+	parseHelper(factory, "(+ (- 1 2) (* 3 (/ 16 4)))", 11, 9);
+    }
 }
