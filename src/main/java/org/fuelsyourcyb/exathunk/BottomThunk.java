@@ -4,21 +4,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
 
 public class BottomThunk<Value> implements Thunk<Value> {
-    private State state;
     private String message;
     private Throwable throwable;
 
-    public BottomThunk(State state, String message, Throwable throwable) {
-	this.state = state;
+    public BottomThunk(String message, Throwable throwable) {
 	this.message = message;
 	this.throwable = throwable;
     }
 
     public void step() {}
-
-    public State getState() {
-	return state;
-    }
 
     public boolean cancel(boolean mayInterruptIfRunning) {
 	return false;  // always already done

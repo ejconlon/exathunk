@@ -77,12 +77,21 @@ public class NTree<T, L, V> {
     }
 
     // Must be a terminal branch
-    public List<Pair<T, V>> extractChildPairs() {
-	List<Pair<T, V>> pairs = new ArrayList<Pair<T, V>>(children.size());
+    public List<T> extractChildTypes() {
+	List<T> types = new ArrayList<T>(children.size());
 	for (NTree<T, L, V> child : children) {
-	    pairs.add(new Pair<T, V>(child.getType(), child.getValue()));
+	    types.add(child.getType());
 	}
-	return pairs;
+	return types;
+    }
+
+    // Must be a terminal branch
+    public List<V> extractChildValues() {
+	List<V> values = new ArrayList<V>(children.size());
+	for (NTree<T, L, V> child : children) {
+	    values.add(child.getValue());
+	}
+	return values;
     }
 
     // Turn this node into a leaf with the given value.

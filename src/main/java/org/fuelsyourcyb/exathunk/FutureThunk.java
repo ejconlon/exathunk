@@ -7,19 +7,13 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.TimeUnit;
 
 public class FutureThunk<Value> implements Thunk<Value> {
-    private final State state;
     private final Future<Value> future;
 
-    FutureThunk(State state, Future<Value> future) {
-	this.state = state;
+    FutureThunk(Future<Value> future) {
 	this.future = future;
     }
 
     public void step() {}
-
-    public State getState() {
-	return state;
-    }
 
     public boolean cancel(boolean mayInterruptIfRunning) {
 	return future.cancel(mayInterruptIfRunning);

@@ -13,8 +13,9 @@ public interface Thunk<Value> extends Future<Value> {
     //   while (!isFinished()) { step(); }
     void step();
 
+    // TODO(ejconlon) Implement this when needed.
     // While thunk implementations should manage the
     // execution of the computation, some exposure of
     // internal state is useful to propagate errors, etc.
-    State getState();
+    // State getState();
 }

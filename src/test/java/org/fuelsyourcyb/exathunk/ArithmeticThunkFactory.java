@@ -5,93 +5,97 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
-public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Integer> {
+public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Object> {
 
-    private static final Map<String, Func2<Integer, Integer, Integer>> FUNCS = makeFuncs();
-    private static final Map<String, List<Class>> TYPES = makeTypes();
-
-    private final StateFactory<State> stateFactory;
-
-    public ArithmeticThunkFactory(StateFactory<State> stateFactory) {
-	this.stateFactory = stateFactory;
-    }
+    private static final Map<String, NFunc<Class, Object>> FUNCS = makeFuncs();
 
     public boolean knowsFunc(String funcId) {
-	return TYPES.containsKey(funcId);
+	return FUNCS.containsKey(funcId);
     }
 
-    public List<Class> getTypeSpec(String funcId) throws UnknownFuncException{
-	List<Class> l = TYPES.get(funcId);
-	if (l == null) {
-	    throw new UnknownFuncException("Unknown func: "+funcId);
-	} else {
-	    return l;
+    protected NFunc<Class, Object> getFunc(String funcId) throws UnknownFuncException {
+	NFunc<Class, Object> f = FUNCS.get(funcId);
+	if (f == null) throw new UnknownFuncException("Unknown func: "+funcId);
+	return f;
+    }
+
+    public List<Class> getParameterTypes(String funcId) throws UnknownFuncException {
+	return getFunc(funcId).getParameterTypes();
+    }
+
+    public Class getReturnType(String funcId) throws UnknownFuncException {
+	return getFunc(funcId).getReturnType();
+    }
+
+    public Thunk<Object> makeThunk(String funcId, List<Object> params) throws UnknownFuncException, ExecutionException {
+	return new PresentThunk<Object>(getFunc(funcId).invoke(params));
+    }
+
+    private static abstract class IntFunc implements NFunc<Class, Object> {
+	private static final List<Class> PARAMETER_TYPES = makeParameterTypes();
+
+	private static List<Class> makeParameterTypes() {
+	    List<Class> types = new ArrayList<Class>(2);
+	    types.add(Integer.class);
+	    types.add(Integer.class);
+	    return Collections.unmodifiableList(types);
+	}
+
+	public List<Class> getParameterTypes() {
+	    return PARAMETER_TYPES;
+	}
+
+	public Class getReturnType() {
+	    return Integer.class;
+	}
+
+	public Object invoke(List<Object> args) {
+	    return subInvoke((Integer)args.get(0),
+ 		             (Integer)args.get(1));
+	}
+
+	protected abstract Integer subInvoke(Integer a, Integer b);
+    }
+
+    public static class AddFunc extends IntFunc {
+	protected Integer subInvoke(Integer a, Integer b) { return a + b; }
+    }
+
+    public static class SubFunc extends IntFunc {
+	protected Integer subInvoke(Integer a, Integer b) { return a - b; }
+    }
+
+    public static class MulFunc extends IntFunc {
+	protected Integer subInvoke(Integer a, Integer b) { return a * b; }
+    }
+
+    public static class DivFunc extends IntFunc {
+	protected Integer subInvoke(Integer a, Integer b) { return a / b; }
+    }
+
+    public static class ModFunc extends IntFunc {
+	protected Integer subInvoke(Integer a, Integer b) { return a % b; }
+    }
+
+    public static class LenFunc extends NFunc1<Class, Object> {
+	public LenFunc() { super(Integer.class, String.class); }
+
+	public Object invoke(List<Object> args) {
+	    return ((String)args.get(0)).length();
 	}
     }
 
-    public Pair<Class, Thunk<Integer>> makeThunk(String funcId, List<Pair<Class, Integer>> params) throws UnknownFuncException {
-	Func2<Integer, Integer, Integer> op = FUNCS.get(funcId);
-	if (op == null) {
-	    throw new UnknownFuncException("Unknown func: "+funcId);
-	} else {
-	    Integer a = params.get(0).getSecond();
-	    Integer b = params.get(1).getSecond();
-	    Integer c = op.runFunc(a, b);
-	    return new Pair<Class, Thunk<Integer>>(Integer.class,
-						   new PresentThunk<Integer>(stateFactory.makeInitialState(), c));
-	}
-    }
-
-    public StateFactory<State> getStateFactory() {
-	return stateFactory;
-    }
-
-
-    public static class AddFunc2 implements Func2<Integer, Integer, Integer> {
-	public Integer runFunc(Integer a, Integer b) { return a + b; }
-    }
-
-    public static class SubFunc2 implements Func2<Integer, Integer, Integer> {
-	public Integer runFunc(Integer a, Integer b) { return a - b; }
-    }
-
-    public static class MulFunc2 implements Func2<Integer, Integer, Integer> {
-	public Integer runFunc(Integer a, Integer b) { return a * b; }
-    }
-
-    public static class DivFunc2 implements Func2<Integer, Integer, Integer> {
-	public Integer runFunc(Integer a, Integer b) { return a / b; }
-    }
-
-    public static class ModFunc2 implements Func2<Integer, Integer, Integer> {
-	public Integer runFunc(Integer a, Integer b) { return a % b; }
-    }
-
-    private static Map<String, Func2<Integer, Integer, Integer>> makeFuncs() {
-	Map<String, Func2<Integer, Integer, Integer>> funcs = new TreeMap<>();
-	funcs.put("+", new AddFunc2());
-	funcs.put("-", new SubFunc2());
-	funcs.put("*", new MulFunc2());
-	funcs.put("/", new DivFunc2());
-	funcs.put("%", new ModFunc2());
+    private static Map<String, NFunc<Class, Object>> makeFuncs() {
+	Map<String, NFunc<Class, Object>> funcs = new TreeMap<>();
+	funcs.put("+", new AddFunc());
+	funcs.put("-", new SubFunc());
+	funcs.put("*", new MulFunc());
+	funcs.put("/", new DivFunc());
+	funcs.put("%", new ModFunc());
+	funcs.put("len", new LenFunc());
 	return funcs;
     }
-
-    private static Map<String, List<Class>> makeTypes() {
-	Map<String, List<Class>> types = new TreeMap<>();
-	List<Class> typeSpec = new ArrayList<Class>(3);
-	typeSpec.add(Integer.class);
-	typeSpec.add(Integer.class);
-	typeSpec.add(Integer.class);
-	typeSpec = Collections.unmodifiableList(typeSpec);
-	types.put("+", typeSpec);
-	types.put("-", typeSpec);
-	types.put("*", typeSpec);
-	types.put("/", typeSpec);
-	types.put("%", typeSpec);
-	return types;
-    }
-
 }
 					                    
