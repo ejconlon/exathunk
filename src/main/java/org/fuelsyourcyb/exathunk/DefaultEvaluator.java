@@ -22,7 +22,7 @@ public class DefaultEvaluator<T, L, V> implements NTreeEvaluator<T, L, V> {
 		}
 	    } else {
 		tree.accept(visitor);
-		Logger.getLogger("DefaultEvaluator").log(Level.FINE, "After visitor", tree);
+		Logger.getLogger("DefaultEvaluator").log(Level.FINE, "After visitor {0}", tree);
 	    }
 	}
     }

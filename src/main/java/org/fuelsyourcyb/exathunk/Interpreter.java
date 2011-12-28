@@ -23,16 +23,16 @@ public class Interpreter<Source, Type, FuncId, PValue, Value> {
     public Value interpret(Source expression) throws UnknownFuncException, ParseException, TypeException, VisitException, ExecutionException {
 	Logger logger = Logger.getLogger("Intepreter");
 
-	logger.log(Level.FINE, "Expression", expression);
+	logger.log(Level.FINE, "Expression {0}", expression);
 
 	NTree<Unit, FuncId, PValue> parseTree = parser.parse(expression);
-	logger.log(Level.FINE, "Parse tree", parseTree);
+	logger.log(Level.FINE, "Parse tree {0}", parseTree);
 
 	NTree<Type, FuncId, Value> typedTree = TypeCheckerUtils.makeTypedTree(thunkFactory, valueTyper, parseTree);
-	logger.log(Level.FINE, "Typed tree", typedTree);
+	logger.log(Level.FINE, "Typed tree {0}", typedTree);
 
 	NTree<Type, FuncId, Thunk<Value>> thunkTree = ThunkUtils.makeThunkTree(thunkFactory, typedTree);
-	logger.log(Level.FINE, "Thunk tree", thunkTree);
+	logger.log(Level.FINE, "Thunk tree {0}", thunkTree);
 
 	return evaluator.evaluate(thunkTree);
     }
