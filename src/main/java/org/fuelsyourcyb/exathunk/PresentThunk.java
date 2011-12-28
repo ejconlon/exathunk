@@ -11,6 +11,8 @@ public class PresentThunk<Value> implements Thunk<Value> {
 
     public void step() {}
 
+    public void run() {}
+
     public boolean cancel(boolean mayInterruptIfRunning) {
 	return false;  // always already done
     }

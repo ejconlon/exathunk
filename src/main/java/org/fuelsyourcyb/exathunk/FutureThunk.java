@@ -1,19 +1,27 @@
 package org.fuelsyourcyb.exathunk;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.TimeUnit;
 
 public class FutureThunk<Value> implements Thunk<Value> {
-    private final Future<Value> future;
+    private final RunnableFuture<Value> future;
 
-    FutureThunk(Future<Value> future) {
+    FutureThunk(RunnableFuture<Value> future) {
 	this.future = future;
     }
 
-    public void step() {}
+    public void step() {
+	// There is only one step - execute the
+	// wrapped future.
+	run();
+    }
+
+    public void run() {
+	future.run();
+    }
 
     public boolean cancel(boolean mayInterruptIfRunning) {
 	return future.cancel(mayInterruptIfRunning);

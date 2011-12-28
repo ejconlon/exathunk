@@ -4,22 +4,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
 
 public class BottomThunk<Value> implements Thunk<Value> {
-    private String message;
-    private Throwable throwable;
+    private final ExecutionException exception;
 
-    public BottomThunk(String message, Throwable throwable) {
-	this.message = message;
-	this.throwable = throwable;
+    public BottomThunk(ExecutionException exception) {
+	this.exception = exception;
     }
 
     public void step() {}
+
+    public void run() {}
 
     public boolean cancel(boolean mayInterruptIfRunning) {
 	return false;  // always already done
     }
 
     public Value get() throws ExecutionException {
-	throw new ThunkEvaluationException(message, throwable);
+	throw exception;
     }
 
     public Value get(long timeout, TimeUnit unit) throws ExecutionException {
@@ -35,6 +35,6 @@ public class BottomThunk<Value> implements Thunk<Value> {
     }
 
     public String toString() {
-	return "BottomThunk<"+message+">";
+	return "BottomThunk<"+exception+">";
     }
 }

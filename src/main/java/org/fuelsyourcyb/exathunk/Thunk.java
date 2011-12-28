@@ -1,10 +1,10 @@
 package org.fuelsyourcyb.exathunk;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.RunnableFuture;
 
 // A deferred computation.
 // Computation trees chould be implementation-agnostic.
-public interface Thunk<Value> extends Future<Value> {
+public interface Thunk<Value> extends RunnableFuture<Value> {
 
     // An optional callback to perform any work needed
     // to advance the computation.
