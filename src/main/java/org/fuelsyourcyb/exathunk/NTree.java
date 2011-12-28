@@ -12,6 +12,10 @@ public class NTree<T, L, V> {
 
     public static interface Visitor<T, L, V> {
 	void visit(NTree<T, L, V> tree) throws VisitException;
+
+	void start();
+
+	void end();
     }
 
     // Should not be null in any case
@@ -36,9 +40,18 @@ public class NTree<T, L, V> {
     }
 
     public void accept(Visitor<T, L, V> visitor) throws VisitException {
+	try {
+	    visitor.start();
+	    subAccept(visitor);
+	} finally {
+	    visitor.end();
+	}
+    }
+
+    protected void subAccept(Visitor<T, L, V> visitor) throws VisitException {
 	if (children != null) {
 	    for (NTree<T, L, V> child : children) {
-		child.accept(visitor);
+		child.subAccept(visitor);
 	    }
 	    // Clean up any empty nodes.
 	    children.remove(new NTree<T, L, V>());

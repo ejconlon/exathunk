@@ -51,13 +51,10 @@ public class ThunkUtils {
 	}
     }
 
-    public static interface Evaluator<Type, FuncId, Value> extends
-        NTree.Visitor<Type, FuncId, Thunk<Value>> {}
-
-    public static class StepEvaluator<Type, FuncId, Value> implements Evaluator<Type, FuncId, Value> {
+    public static class StepVisitor<Type, FuncId, Value> implements NTree.Visitor<Type, FuncId, Thunk<Value>> {
 	private final ThunkFactory<Type, FuncId, Value> factory;
 
-	public StepEvaluator(ThunkFactory<Type, FuncId, Value> factory) {
+	public StepVisitor(ThunkFactory<Type, FuncId, Value> factory) {
 	    this.factory = factory;
 	}
 
@@ -86,6 +83,10 @@ public class ThunkUtils {
 		throw new VisitException(e);
 	    }
 	}
+
+	public void start() {}
+
+	public void end() {}
     }
 
 }

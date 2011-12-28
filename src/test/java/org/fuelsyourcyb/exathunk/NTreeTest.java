@@ -61,6 +61,9 @@ public class NTreeTest {
 				     new NTree<Unit, Unit, Integer>(Unit.getInstance(), t.getValue()/2)));
 	    }
 	}
+
+	public void start() {}
+	public void end() {}
     }
     
     @Test
