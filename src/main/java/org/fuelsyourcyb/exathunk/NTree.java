@@ -1,136 +1,153 @@
 package org.fuelsyourcyb.exathunk;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 // A tree with arbirary numbers of children and separate types for
 // inner node labels and leaf node values.
 // Supports folding and mutating-fmapping on leaves or mutating-monadic-binding
 // from bottom-up.
-public class NTree<L, V> implements EndoFunctor<V>,
-				    Foldable<V>,
-				    EndoMonad<Either<L, V>, NTree<L, V>> {
+public class NTree<T, L, V> {
 
-    // Should not be null in any case.
-    private Either<L, V> labelOrValue;
-    // Should be null iff this is a leaf node.
-    private List<NTree<L, V>> children;
+    public static interface Visitor<T, L, V> {
+	void visit(NTree<T, L, V> tree) throws VisitException;
+    }
+
+    // Should not be null in any case
+    private T type;
+    // Null iff this is a leaf
+    private L label;
+    // Null iff this is a branch
+    private V value;
+    // Null iff this is a leaf
+    private List<NTree<T, L, V>> children;
 
     public NTree() {
-	this.labelOrValue = null;
-	this.children = null;
+	setEmpty();
     }
 
-    public NTree(V value) {
-	this.labelOrValue = Either.AsRight(value);
-	this.children = null;
+    public NTree(T type, V value) {
+	setLeaf(type, value);
     }
 
-    public NTree(L label, List<NTree<L, V>> children) {
-	this.labelOrValue = Either.AsLeft(label);
-	this.children = children;
+    public NTree(T type, L label, List<NTree<T, L, V>> children) {
+	setBranch(type, label, children);
     }
 
-    // Bind f into this monadic tree (bottom-up).
-    public void bindInto(ParametricMutator<Either<L, V>, NTree<L, V>> f) {
+    public void accept(Visitor<T, L, V> visitor) throws VisitException {
 	if (children != null) {
-	    for (NTree<L, V> child : children) {
-		child.bindInto(f);
+	    for (NTree<T, L, V> child : children) {
+		child.accept(visitor);
 	    }
-	    // clean up any empty nodes. this may technically break
-	    // some monad laws but I'm not going to worry about it.
-	    children.remove(new NTree<>());
+	    // Clean up any empty nodes.
+	    children.remove(new NTree<T, L, V>());
 	}
-	f.mutate(labelOrValue, this);
+	visitor.visit(this);
     }
 
-    // Fmaps into leaves.
-    public void fmapInto(Func1<V, V> f) {
-	if (labelOrValue != null && labelOrValue.isRight()) {
-	    labelOrValue = Either.AsRight(f.runFunc(labelOrValue.right()));
-	}
-	if (children != null) {
-	    for (NTree<L, V> child : children) {
-		child.fmapInto(f);
-	    }
-	}
+    // All nodes will have a non-null type.
+    public T getType() {
+	return type;
     }
 
-    // Folds along leaves.
-    // foldl: (((1 + 2) + 3) + 4)
-    public <B> B foldl(Func2<B, V, B> f, B initial) {
-	if (labelOrValue != null && labelOrValue.isRight()) {
-	    return f.runFunc(initial, labelOrValue.right());
-	} else if (children != null) {
-	    for (NTree<L, V> child : children) {
-		initial = child.foldl(f, initial);
-	    }
-	    return initial;
-	} else {
-	    return initial;
-	}
+    // Branches will have a non-null label.
+    public L getLabel() {
+	return label;
     }
 
     // Leaves will have a non-null value.
     public V getValue() {
-	return labelOrValue.right();
-    }
-
-    // Inner nodes will have a non-null label.
-    public L getLabel() {
-	return labelOrValue.left();
+	return value;
     }
 
     // Inner node will have a non-null child list (possibly empty)
-    public List<NTree<L, V>> getChildren() {
+    public List<NTree<T, L, V>> getChildren() {
 	return children;
+    }
+
+    public boolean isTerminalBranch() {
+	if (isBranch()) {
+	    for (NTree<T, L, V> child : children) {
+		if (!child.isLeaf()) return false;
+	    }
+	    return true;
+	}
+	return false;
+    }
+
+    // Must be a terminal branch
+    public List<Pair<T, V>> extractChildPairs() {
+	List<Pair<T, V>> pairs = new ArrayList<Pair<T, V>>(children.size());
+	for (NTree<T, L, V> child : children) {
+	    pairs.add(new Pair<T, V>(child.getType(), child.getValue()));
+	}
+	return pairs;
     }
 
     // Turn this node into a leaf with the given value.
     // Will discard children if present.
     // value should not be null.
-    public void setValue(V value) {
-	this.labelOrValue = Either.AsRight(value);
+    public void setLeaf(T type, V value) {
+	this.type = type;
+	this.label = null;
+	this.value = value;
 	this.children = null;
     }
 
     // Turn this node into an inner node.
     // Neither argument should be null.
-    public void setBranch(L label, List<NTree<L, V>> children) {
-	this.labelOrValue = Either.AsLeft(label);
+    public void setBranch(T type, L label, List<NTree<T, L, V>> children) {
+	this.type = type;
+	this.label = label;
+	this.value = null;
 	this.children = children;
     }
 
     // "Delete" this node. bindInto will remove it from
     // a parent node's child list.
-    public void makeEmpty() {
-	this.labelOrValue = null;
+    public void setEmpty() {
+	this.type = null;
+	this.label = null;
+	this.value = null;
 	this.children = null;
     }
 
     public boolean isLeaf() {
-	return labelOrValue != null &&
-	    labelOrValue.isRight();
+	return this.value != null;
     }
 
     public boolean isBranch() {
-	return children != null || !isLeaf();
+	return label != null;
     }
 
     public boolean isEmpty() {
-	return this.labelOrValue == null &&
-	    this.children == null;
+	return !isLeaf() && !isBranch();
     }
 
     @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
 	if (o == null || !(o instanceof NTree)) return false;
-	NTree<L, V> t = (NTree<L, V>)o;
-	if (labelOrValue != null) {
-	    if (!labelOrValue.equals(t.labelOrValue)) {
+	NTree<T, L, V> t = (NTree<T, L, V>)o;
+	if (type != null) {
+	    if (!type.equals(t.type)) {
 		return false;
 	    }
-	} else if (t.labelOrValue != null) {
+	} else if (t.type != null) {
+	    return false;
+	}
+	if (label != null) {
+	    if (!label.equals(t.label)) {
+		return false;
+	    }
+	} else if (t.label != null) {
+	    return false;
+	}
+	if (value != null) {
+	    if (!value.equals(t.value)) {
+		return false;
+	    }
+	} else if (t.value != null) {
 	    return false;
 	}
 	if (children != null) {
@@ -153,16 +170,16 @@ public class NTree<L, V> implements EndoFunctor<V>,
     public String toString() {
 	StringBuffer s = new StringBuffer();
 	s.append("{ ");
-	if (labelOrValue != null) {
-	    if (labelOrValue.isRight()) {
-		s.append("value = "+labelOrValue.right());
-	    } else {
-		s.append("label = "+labelOrValue.left()+" ");
-	    }
+	s.append("type = "+type+", ");
+	if (label != null) {
+	    s.append("label = "+label+", ");
+	}
+	if (value != null) {
+	    s.append("value = "+value+" ");
 	}
 	if (children != null) {
 	    s.append("children = [ ");
-	    for (NTree<L, V> child : children) {
+	    for (NTree<T, L, V> child : children) {
 		s.append(child.toString());
 		s.append(", ");
 	    }

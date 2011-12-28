@@ -11,72 +11,46 @@ import java.util.concurrent.TimeoutException;
 
 public class ArithmeticThunkFactoryTest {
 
-    private static class IdFunc<Value> implements Func1<Value, Value> {
-	public Value runFunc(Value value) { return value; }
-    }
-
-    private static class IntCast implements Func1<String, Integer> {
-	public Integer runFunc(String arg) { return new Integer(arg); }
-    }
-
-    private static class TypeException extends Exception {
-	public TypeException(String message) { super(message); }
-    }
-
-    private static interface Typer<FromFuncId, ToFuncId, FromValue, ToValue> {
-	NTree<ToFuncId, ToValue> type(NTree<FromFuncId, FromValue> parseTree) throws TypeException;
-    }
-
-    private static class DefaultTyper<FromFuncId, ToFuncId, FromValue, ToValue> implements Typer<FromFuncId, ToFuncId, FromValue, ToValue> {
-
-	private final ThunkFactory<ToFuncId, ToValue> thunkFactory;
-	private final Func1<FromFuncId, ToFuncId> funcIdFunc;
-	private final Func1<FromValue, ToValue> valueFunc;
-
-	public DefaultTyper(ThunkFactory<ToFuncId, ToValue> thunkFactory,
-			    Func1<FromFuncId, ToFuncId> funcIdFunc,
-			    Func1<FromValue, ToValue> valueFunc) {
-	    this.thunkFactory = thunkFactory;
-	    this.funcIdFunc = funcIdFunc;
-	    this.valueFunc = valueFunc;
-	}
-
-	public NTree<ToFuncId, ToValue> type(NTree<FromFuncId, FromValue> parseTree) {
-	    NTree<ToFuncId, ToValue> typedTree = new NTree<>();
-	    if (parseTree.isEmpty()) {
-		// pass
-	    } else if (parseTree.isLeaf()) {
-		typedTree.setValue(valueFunc.runFunc(parseTree.getValue()));
-	    } else {
-		ToFuncId funcId = funcIdFunc.runFunc(parseTree.getLabel());
-		List<NTree<ToFuncId, ToValue>> children = new ArrayList<NTree<ToFuncId, ToValue>>(parseTree.getChildren().size());
-		for (NTree<FromFuncId, FromValue> parseChild : parseTree.getChildren()) {
-		    children.add(type(parseChild));
-		}
-		typedTree.setBranch(funcId, children);
+    public class IntTypeChecker implements  TypeChecker<Class, String, Integer> {
+	public boolean check(Class type, String fromValue) {
+	    try {
+		convert(type, fromValue);
+		return true;
+	    } catch (TypeException e) {
+		return false;
 	    }
- 	    return typedTree;
+	}
+
+	public Integer convert(Class type, String fromValue) throws TypeException {
+	    if (!Integer.class.equals(type)) {
+		throw new TypeException("Expected Integer type");
+	    }
+
+	    try {
+		return new Integer(fromValue);
+	    } catch (NumberFormatException e) {
+		throw new TypeException("Invalid integer", e);
+	    }
 	}
     }
 
-
-    public void parseHelper(ThunkFactory<String, Integer> factory, String expression, Integer intResult, int evaluations) throws ThunkEvaluationException, ParseException, TypeException {
+    public void parseHelper(ThunkFactory<Class, String, Integer> factory, String expression, Integer intResult, int evaluations) throws UnknownFuncException, ParseException, TypeException, VisitException {
 	SexpParser parser = new SexpParser();
-	Typer<String, String, String, Integer> typer = new DefaultTyper<>(factory, new IdFunc<String>(), new IntCast());
+	TypeChecker<Class, String, Integer> checker = new IntTypeChecker();
 
-	NTree<String, Thunk<Integer>> result = new NTree<String, Thunk<Integer>>(
+	NTree<Class, String, Thunk<Integer>> result = new NTree<Class, String, Thunk<Integer>>(Integer.class,
 	    new PresentThunk<>(Unit.getInstance(), intResult));
 
-	NTree<String, String> parseTree = parser.parse(expression);
+	NTree<Unit, String, String> parseTree = parser.parse(expression);
 	System.out.println(parseTree.toString());
 
-	NTree<String, Integer> typedTree = typer.type(parseTree);
+	NTree<Class, String, Integer> typedTree = TypeCheckerUtils.makeTypedTree(factory, checker, parseTree);
 
-	NTree<String, Thunk<Integer>> thunkTree = ThunkUtils.makeThunkTree(typedTree, factory);
+	NTree<Class, String, Thunk<Integer>> thunkTree = ThunkUtils.makeThunkTree(typedTree, factory);
 	System.out.println(thunkTree.toString());
 
 	for (int i = 0; i < evaluations; ++i) {
-	    thunkTree.bindInto(new ThunkUtils.StepEvaluator<String, Integer>(factory));
+	    thunkTree.accept(new ThunkUtils.StepEvaluator<Class, String, Integer>(factory));
 	    System.out.println(thunkTree.toString());
 	}
 
@@ -84,14 +58,14 @@ public class ArithmeticThunkFactoryTest {
     }
 
     @Test
-    public void testParse1() throws ThunkEvaluationException, ParseException, TypeException {
-	ThunkFactory<String, Integer> factory = new ArithmeticThunkFactory((StateFactory<State>)Unit.getInstance());
+    public void testParse1() throws Exception {
+	ThunkFactory<Class, String, Integer> factory = new ArithmeticThunkFactory((StateFactory<State>)Unit.getInstance());
 	parseHelper(factory, "(* 3 2)", 6, 1);
     }
 
     @Test
-    public void testParse2() throws ThunkEvaluationException, ParseException, TypeException {
-	ThunkFactory<String, Integer> factory = new ArithmeticThunkFactory((StateFactory<State>)Unit.getInstance());
+    public void testParse2() throws Exception {
+	ThunkFactory<Class, String, Integer> factory = new ArithmeticThunkFactory((StateFactory<State>)Unit.getInstance());
 	parseHelper(factory, "(+ (- 1 2) (* 3 (/ 16 4)))", 11, 1);
     }
 
@@ -165,20 +139,21 @@ public class ArithmeticThunkFactoryTest {
 	    this.numSteps = numSteps;
 	}
 
-	public Thunk<Integer> makeThunk(String funcId, List<Integer> params) {
-	    return new DelayingThunk<>(numSteps, super.makeThunk(funcId, params));
+	public Pair<Class, Thunk<Integer>> makeThunk(String funcId, List<Pair<Class, Integer>> params) throws UnknownFuncException {
+	    Pair<Class, Thunk<Integer>> pair = super.makeThunk(funcId, params);
+	    return new Pair<Class, Thunk<Integer>>(pair.getFirst(), new DelayingThunk<Integer>(numSteps, pair.getSecond()));
 	}
     }
 
     @Test
-    public void testDelaying1() throws ThunkEvaluationException, ParseException, TypeException {
-	ThunkFactory<String, Integer> factory = new DelayingArithmeticThunkFactory((StateFactory<State>)Unit.getInstance(), 3);
+    public void testDelaying1() throws Exception {
+	ThunkFactory<Class, String, Integer> factory = new DelayingArithmeticThunkFactory((StateFactory<State>)Unit.getInstance(), 3);
 	parseHelper(factory, "(* 3 2)", 6, 3);
     }
 
     @Test
-    public void testDelaying2() throws ThunkEvaluationException, ParseException, TypeException {
-	ThunkFactory<String, Integer> factory = new DelayingArithmeticThunkFactory((StateFactory<State>)Unit.getInstance(), 3);
+    public void testDelaying2() throws Exception {
+	ThunkFactory<Class, String, Integer> factory = new DelayingArithmeticThunkFactory((StateFactory<State>)Unit.getInstance(), 3);
 	parseHelper(factory, "(+ (- 1 2) (* 3 (/ 16 4)))", 11, 9);
     }
 }

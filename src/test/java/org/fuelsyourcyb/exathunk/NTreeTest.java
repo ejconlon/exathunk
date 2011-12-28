@@ -21,92 +21,62 @@ public class NTreeTest {
 	return l;
     }
 
-    public <A> NTree<Unit, A> makeTreePair(A x, A y) {
-	NTree<Unit, A> xt, yt;
-	xt = new NTree<Unit, A>(x);
-        yt = new NTree<Unit, A>(y);
-	return new NTree<Unit, A>(Unit.getInstance(), makePair(xt, yt));
+    public <A> NTree<Unit, Unit, A> makeTreePair(A x, A y) {
+	NTree<Unit, Unit, A> xt, yt;
+	xt = new NTree<Unit, Unit, A>(Unit.getInstance(), x);
+        yt = new NTree<Unit, Unit, A>(Unit.getInstance(), y);
+	return new NTree<Unit, Unit, A>(Unit.getInstance(), Unit.getInstance(), makePair(xt, yt));
     }
 
-    public <A> NTree<Unit, A> makeTreeQuad(A x, A y, A z, A w) {
-	return new NTree<Unit, A>(Unit.getInstance(),
-				  makePair(makeTreePair(x, y),
-					   makeTreePair(z, w)));
+    public <A> NTree<Unit, Unit, A> makeTreeQuad(A x, A y, A z, A w) {
+	return new NTree<Unit, Unit, A>(Unit.getInstance(), Unit.getInstance(),
+					makePair(makeTreePair(x, y),
+						 makeTreePair(z, w)));
     }
 
     @Test
     public void testEquals() {
 	{
-	    NTree<Unit, Integer> x = makeTreePair(1, 2);
-	    NTree<Unit, Integer> y = makeTreePair(1, 4);
+	    NTree<Unit, Unit, Integer> x = makeTreePair(1, 2);
+	    NTree<Unit, Unit, Integer> y = makeTreePair(1, 4);
 	    System.out.println(x.toString());
 	    System.out.println(y.toString());
 	    assert(!x.equals(y));
 	}
 
 	{
-	    NTree<Unit, Integer> x = makeTreePair(1, 2);
-	    NTree<Unit, Integer> y = makeTreePair(1, 2);
+	    NTree<Unit, Unit, Integer> x = makeTreePair(1, 2);
+	    NTree<Unit, Unit, Integer> y = makeTreePair(1, 2);
 	    System.out.println(x.toString());
 	    System.out.println(y.toString());
 	    assert(x.equals(y));
 	}
     }
 
-    private class Doubler implements Func1<Integer, Integer> {
-	public Integer runFunc(Integer x) {
-	    return x * 2;
-	}
-    }
-
-    @Test
-    public void testFmapInto() {
-	NTree<Unit, Integer> x = makeTreePair(1, 2);
-	NTree<Unit, Integer> y = makeTreePair(2, 4);
-	assert(!x.equals(y));
-	x.fmapInto(new Doubler());
-	System.out.println(x.toString());
-	System.out.println(y.toString());
-	assert(x.equals(y));
-    }
-
-    private class Halver implements ParametricMutator<Either<Unit, Integer>, NTree<Unit, Integer>> {
-	public void mutate(Either<Unit, Integer> x, NTree<Unit, Integer> t) {
-	    if (x.isRight() && x.right() > 1) {
-		t.setBranch(Unit.getInstance(),
-			    makePair(new NTree<Unit, Integer>(x.right()/2),
-				     new NTree<Unit, Integer>(x.right()/2)));
+    private class Halver implements NTree.Visitor<Unit, Unit, Integer> {
+	public void visit(NTree<Unit, Unit, Integer> t) {
+	    if (t.isLeaf()) {
+		t.setBranch(Unit.getInstance(), Unit.getInstance(),
+			    makePair(new NTree<Unit, Unit, Integer>(Unit.getInstance(), t.getValue()/2),
+				     new NTree<Unit, Unit, Integer>(Unit.getInstance(), t.getValue()/2)));
 	    }
 	}
     }
     
     @Test
-    public void testBindInto() {
-	NTree<Unit, Integer> x = makeTreePair(2, 4);
-	NTree<Unit, Integer> y = new NTree<Unit, Integer>(Unit.getInstance(),
-							  makePair(makeTreePair(1, 1),
-								   makeTreePair(2, 2)));
+    public void testAccept() throws VisitException {
+	NTree<Unit, Unit, Integer> x = makeTreePair(2, 4);
+	NTree<Unit, Unit, Integer> y = new NTree<Unit, Unit, Integer>(Unit.getInstance(), Unit.getInstance(),
+								      makePair(makeTreePair(1, 1),
+									       makeTreePair(2, 2)));
 	assert(!x.equals(y));
 	System.out.println("Original: ");
 	System.out.println(x.toString());
-	x.bindInto(new Halver());
+	x.accept(new Halver());
 	System.out.println("COMPARE: ");
 	System.out.println(x.toString());
 	System.out.println(y.toString());
 	assert(x.equals(y));
     }
-
-    private class Summer implements Func2<Integer, Integer, Integer> {
-	public Integer runFunc(Integer x, Integer y) {
-	    return x + y;
-	}
-    }
-
-    @Test
-    public void testFoldl() {
-	NTree<Unit, Integer> x = makeTreeQuad(1, 2, 3, 4);
-	assert(10 == x.foldl(new Summer(), 0));
-	assert(13 == x.foldl(new Summer(), 3));
-     }
 
 }

@@ -26,19 +26,9 @@ public class ThunkUtils {
 	return statelessEquals(a, b);
     }
 
-    public static <FuncId, Value> boolean isTerminalInnerNode(NTree<FuncId, Value> parseTree) {
-	if (parseTree.isBranch()) {
-	    for (NTree<FuncId, Value> child : parseTree.getChildren()) {
-		if (!child.isLeaf()) return false;
-	    }
-	    return true;
-	}
-	return false;
-    }
-
-    public static <FuncId, Value> boolean isEvaluatable(NTree<FuncId, Thunk<Value>> thunkTree) {
+    public static <Type, FuncId, Value> boolean isEvaluable(NTree<Type, FuncId, Thunk<Value>> thunkTree) {
 	if (thunkTree.isBranch()) {
-	    for (NTree<FuncId, Thunk<Value>> child : thunkTree.getChildren()) {
+	    for (NTree<Type, FuncId, Thunk<Value>> child : thunkTree.getChildren()) {
 		if (!child.isLeaf()) return false;
 		if (!child.getValue().isDone()) return false;
 	    }
@@ -47,58 +37,62 @@ public class ThunkUtils {
 	return false;
     }
 
-    public static <FuncId, Value> NTree<FuncId, Thunk<Value>> makeThunkTree(
-            NTree<FuncId, Value> parseTree,
-	    ThunkFactory<FuncId, Value> thunkFactory) throws ThunkEvaluationException {
-	if (parseTree.isEmpty()) {
-	    throw new ThunkEvaluationException("Empty computation");
-	} else if (parseTree.isLeaf()) {
+    public static <Type, FuncId, Value> NTree<Type, FuncId, Thunk<Value>>  makeThunkTree(
+ 	    NTree<Type, FuncId, Value> typedTree,
+	    ThunkFactory<Type, FuncId, Value> thunkFactory) throws UnknownFuncException {
+	if (typedTree.isEmpty()) {
+	    throw new UnknownFuncException("Empty computation");
+	} else if (typedTree.isLeaf()) {
 	    State initState = thunkFactory.getStateFactory().makeInitialState();
-	    return new NTree<FuncId, Thunk<Value>>(new PresentThunk<Value>(initState, parseTree.getValue()));
-	} else if (ThunkUtils.isTerminalInnerNode(parseTree)) {
-	    List<Value> params = new ArrayList<Value>(parseTree.getChildren().size());
-	    for (NTree<FuncId, Value> child : parseTree.getChildren()) {
-		params.add(child.getValue());
-	    }
-	    return new NTree<FuncId, Thunk<Value>>(thunkFactory.makeThunk(parseTree.getLabel(), params));
+	    return new NTree<Type, FuncId, Thunk<Value>>(
+		typedTree.getType(),
+                new PresentThunk<Value>(initState, typedTree.getValue()));
+	} else if (typedTree.isTerminalBranch()) {
+	    Pair<Type, Thunk<Value>> pair = thunkFactory.makeThunk(typedTree.getLabel(), typedTree.extractChildPairs());
+	    return new NTree<Type, FuncId, Thunk<Value>>(pair.getFirst(), pair.getSecond());
 	} else {
-	    List<NTree<FuncId, Thunk<Value>>> params = new ArrayList<NTree<FuncId, Thunk<Value>>>(parseTree.getChildren().size());
-	    for (NTree<FuncId, Value> child : parseTree.getChildren()) {
-		params.add(makeThunkTree(child, thunkFactory));
+	    List<NTree<Type, FuncId, Thunk<Value>>> thunkedChildren = new ArrayList<NTree<Type, FuncId, Thunk<Value>>>(typedTree.getChildren().size());
+	    for (NTree<Type, FuncId, Value> child : typedTree.getChildren()) {
+		thunkedChildren.add(makeThunkTree(child, thunkFactory));
 	    }
-	    return new NTree<FuncId, Thunk<Value>>(parseTree.getLabel(), params);
+	    return new NTree<Type, FuncId, Thunk<Value>>(typedTree.getType(), typedTree.getLabel(), thunkedChildren);
 	}
     }
 
-    public static interface Evaluator<FuncId, Value> extends
-        ParametricMutator<Either<FuncId, Thunk<Value>>, NTree<FuncId, Thunk<Value>>> {}
+    public static interface Evaluator<Type, FuncId, Value> extends
+        NTree.Visitor<Type, FuncId, Thunk<Value>> {}
 
-    public static class StepEvaluator<FuncId, Value> implements Evaluator<FuncId, Value> {
-	private final ThunkFactory<FuncId, Value> factory;
+    public static class StepEvaluator<Type, FuncId, Value> implements Evaluator<Type, FuncId, Value> {
+	private final ThunkFactory<Type, FuncId, Value> factory;
 
-	public StepEvaluator(ThunkFactory<FuncId, Value> factory) {
+	public StepEvaluator(ThunkFactory<Type, FuncId, Value> factory) {
 	    this.factory = factory;
 	}
 
-	public void mutate(Either<FuncId, Thunk<Value>> param, NTree<FuncId, Thunk<Value>> mutee) {
-	    if (param.isLeft()) {
-		if (ThunkUtils.isEvaluatable(mutee)) {
-		    List<Value> params = new ArrayList<Value>(mutee.getChildren().size());
-		    for (NTree<FuncId, Thunk<Value>> child : mutee.getChildren()) {
-			Thunk<Value> thunk = child.getValue();
-			try {
-			    params.add(thunk.get());
-			} catch (InterruptedException e) {
-			    return;  // TODO(ejconlon) return or throw an exception
-			} catch (ExecutionException e) {
-			    return;
-			}
+	public List<Pair<Type, Value>> extractThunkValues(NTree<Type, FuncId, Thunk<Value>> tree) throws ExecutionException {
+	    List<Pair<Type, Value>> params = new ArrayList<Pair<Type, Value>>(tree.getChildren().size());
+	    for (NTree<Type, FuncId, Thunk<Value>> child : tree.getChildren()) {
+		Thunk<Value> thunk = child.getValue();
+		try {
+		    params.add(new Pair<Type, Value>(child.getType(), thunk.get()));
+		} catch (InterruptedException ignored) {
+		}
+	    }
+	    return params;
+	}
 
-		    }
-		    mutee.setValue(factory.makeThunk(param.left(), params));
-		} 
-	    } else if (!mutee.getValue().isDone()) {
-		mutee.getValue().step();
+	public void visit(NTree<Type, FuncId, Thunk<Value>> tree) throws VisitException {
+	    try {
+		if (ThunkUtils.isEvaluable(tree)) {
+		    Pair<Type, Thunk<Value>> pair = factory.makeThunk(tree.getLabel(), extractThunkValues(tree));
+		    tree.setLeaf(pair.getFirst(), pair.getSecond());
+		} else if (tree.isLeaf() && !tree.getValue().isDone()) {
+		    tree.getValue().step();
+		}
+	    } catch (ExecutionException e) {
+		throw new VisitException(e);
+	    } catch (UnknownFuncException e) {
+		throw new VisitException(e);
 	    }
 	}
     }

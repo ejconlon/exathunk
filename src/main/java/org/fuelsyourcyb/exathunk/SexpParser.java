@@ -12,13 +12,13 @@ public class SexpParser {
     private static final String OPEN_PAREN = "(";
     private static final String CLOSE_PAREN = ")";
 
-    public NTree<String, String> parse(Deque<String> src, int depth) throws ParseException {
+    public NTree<Unit, String, String> parse(Deque<String> src, int depth) throws ParseException {
 	if (src.isEmpty()) throw new ParseException("Ran out of tokens");
 	String op = src.removeFirst();
 
-	NTree<String, String> tree = new NTree<>();
-	List<NTree<String, String>> children = new ArrayList<NTree<String, String>>();
-	tree.setBranch(op, children);
+	NTree<Unit, String, String> tree = new NTree<>();
+	List<NTree<Unit, String, String>> children = new ArrayList<NTree<Unit, String, String>>();
+	tree.setBranch(Unit.getInstance(), op, children);
 
 	while (!src.isEmpty()) {
 	    String arg = src.removeFirst();
@@ -27,7 +27,7 @@ public class SexpParser {
 	    } else if (CLOSE_PAREN.equals(arg)) {
 		return tree;
 	    } else {
-		children.add(new NTree<String, String>(arg));
+		children.add(new NTree<Unit, String, String>(Unit.getInstance(), arg));
 	    }
 	}
 
@@ -35,7 +35,7 @@ public class SexpParser {
 	return tree;
     }
 
-    public NTree<String, String> parse(String expression) throws ParseException {
+    public NTree<Unit, String, String> parse(String expression) throws ParseException {
 	Scanner scanner = new Scanner(expression);
 	scanner.useDelimiter(Pattern.compile(" |(?<=\\()|(?=\\))"));
 	Deque<String> tokens = new ArrayDeque<>();
