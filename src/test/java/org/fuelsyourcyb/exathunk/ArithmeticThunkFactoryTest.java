@@ -152,4 +152,10 @@ public class ArithmeticThunkFactoryTest {
 	ThunkFactory<Class, String, Object> factory = new DelayingArithmeticThunkFactory(3);
 	parseHelper(factory, "(+ (- 1 2) (* 3 (/ 16 4)))", 11, 9);
     }
+
+    @Test
+    public void testTyping() throws Exception {
+	ThunkFactory<Class, String, Object> factory = new ArithmeticThunkFactory();
+	parseHelper(factory, "(- (len foo) 1)", 2, 1);
+    }
 }

@@ -42,9 +42,7 @@ public class SexpParser {
 	for (; scanner.hasNext(); ) {
 	    tokens.add(scanner.next());
 	}
-	for (String t : tokens) {
-	    System.out.println("TOKEN: "+t);
-	}
+	// for (String t : tokens) { System.out.println("TOKEN: "+t); }
 	if (tokens.size() < 3) {
 	    throw new ParseException("Not enough tokens: "+expression);
 	} else {
