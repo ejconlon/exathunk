@@ -19,6 +19,14 @@ public class IntTypeChecker implements  TypeChecker<Class, String, Object> {
 	    }
 	} else if (String.class.equals(type)) {
 	    return fromValue;
+	} else if (Boolean.class.equals(type)) {
+	    if ("true".equals(fromValue)) {
+		return Boolean.TRUE;
+	    } else if ("false".equals(fromValue)) {
+		return Boolean.FALSE;
+	    } else {
+		throw new TypeException("Invalid boolean: "+fromValue);
+	    }
 	} else {
 	    throw new TypeException("Cannot convert "+fromValue+" to "+type);
 	}

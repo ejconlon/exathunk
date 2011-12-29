@@ -33,22 +33,9 @@ public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Objec
 	return new PresentThunk<Object>(getFunc(funcId).invoke(params));
     }
 
-    private static abstract class IntFunc implements NFunc<Class, Object> {
-	private static final List<Class> PARAMETER_TYPES = makeParameterTypes();
-
-	private static List<Class> makeParameterTypes() {
-	    List<Class> types = new ArrayList<Class>(2);
-	    types.add(Integer.class);
-	    types.add(Integer.class);
-	    return Collections.unmodifiableList(types);
-	}
-
-	public List<Class> getParameterTypes() {
-	    return PARAMETER_TYPES;
-	}
-
-	public Class getReturnType() {
-	    return Integer.class;
+    private static abstract class IntFunc extends NFuncImpl<Class, Object> {
+	public IntFunc() {
+	    super(Integer.class, new Class[] { Integer.class, Integer.class });
 	}
 
 	public Object invoke(List<Object> args) {
@@ -79,6 +66,47 @@ public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Objec
 	protected Integer subInvoke(Integer a, Integer b) { return a % b; }
     }
 
+    private static abstract class BoolFunc2 extends NFuncImpl<Class, Object> {
+	public BoolFunc2() {
+	    super(Boolean.class, new Class[] { Boolean.class, Boolean.class });
+	}
+
+	public Object invoke(List<Object> args) {
+	    return subInvoke((Boolean)args.get(0),
+ 		             (Boolean)args.get(1));
+	}
+
+	protected abstract Boolean subInvoke(Boolean a, Boolean b);
+    }
+
+    public static class AndFunc extends BoolFunc2 {
+	protected Boolean subInvoke(Boolean a, Boolean b) { return a && b; }
+    }
+
+    public static class OrFunc extends BoolFunc2 {
+	protected Boolean subInvoke(Boolean a, Boolean b) { return a || b; }
+    }
+
+    public static class XorFunc extends BoolFunc2 {
+	protected Boolean subInvoke(Boolean a, Boolean b) { return a ^ b; }
+    }
+
+    private static abstract class BoolFunc1 extends NFuncImpl<Class, Object> {
+	public BoolFunc1() {
+	    super(Boolean.class, new Class[] { Boolean.class });
+	}
+
+	public Object invoke(List<Object> args) {
+	    return subInvoke((Boolean)args.get(0));
+	}
+
+	protected abstract Boolean subInvoke(Boolean a);
+    }
+
+    public static class NotFunc extends BoolFunc1 {
+	protected Boolean subInvoke(Boolean a) { return !a; }
+    }
+
     public static class LenFunc extends NFunc1<Class, Object> {
 	public LenFunc() { super(Integer.class, String.class); }
 
@@ -94,6 +122,10 @@ public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Objec
 	funcs.put("*", new MulFunc());
 	funcs.put("/", new DivFunc());
 	funcs.put("%", new ModFunc());
+	funcs.put("and", new AndFunc());
+	funcs.put("or", new OrFunc());
+	funcs.put("xor", new XorFunc());
+	funcs.put("not", new NotFunc());
 	funcs.put("len", new LenFunc());
 	return funcs;
     }

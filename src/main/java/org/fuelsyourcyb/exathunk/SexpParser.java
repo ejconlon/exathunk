@@ -37,7 +37,7 @@ public class SexpParser implements NTreeParser<String, String, String> {
 
     public NTree<Unit, String, String> parse(String expression) throws ParseException {
 	Scanner scanner = new Scanner(expression);
-	scanner.useDelimiter(Pattern.compile(" |(?<=\\()|(?=\\))"));
+	scanner.useDelimiter(Pattern.compile(" +|(?<=\\()|(?=\\))"));
 	Deque<String> tokens = new ArrayDeque<>();
 	for (; scanner.hasNext(); ) {
 	    tokens.add(scanner.next());
