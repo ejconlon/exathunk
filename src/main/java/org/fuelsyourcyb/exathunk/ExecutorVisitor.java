@@ -3,12 +3,13 @@ package org.fuelsyourcyb.exathunk;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public class ExecutorVisitor<T, L, V> implements NTree.Visitor<T, L, Thunk<V>> {
+public class ExecutorVisitor<T, L, V> extends ThunkUtils.StepVisitor<T, L, V> {
 
     private final Executor executor;
     private int count;
 
-    public ExecutorVisitor(Executor executor) {
+    public ExecutorVisitor(ThunkFactory<T, L, V> factory, Executor executor) {
+	super(factory);
 	this.executor = executor;
 	this.count = 0;
     }
@@ -25,12 +26,10 @@ public class ExecutorVisitor<T, L, V> implements NTree.Visitor<T, L, Thunk<V>> {
 	}
     }
 
-    public void visit(NTree<T, L, Thunk<V>> tree) throws VisitException {
-	if (tree.isLeaf() && !tree.getValue().isDone()) {
-	    final Thunk<V> thunk = tree.getValue();
-	    try {
-		incCount();
-		executor.execute(new Runnable() {
+    public void evaluateThunk(final Thunk<V> thunk) throws VisitException {
+	try {
+	    incCount();
+	    executor.execute(new Runnable() {
 		    public void run() {
 		        try {
 			    thunk.run();
@@ -39,10 +38,9 @@ public class ExecutorVisitor<T, L, V> implements NTree.Visitor<T, L, Thunk<V>> {
 			}
 		    }
 		});
-	    } catch (Exception e) {
-		decCount();
-		throw new VisitException(e);
-	    }
+	} catch (Exception e) {
+	    decCount();
+	    throw new VisitException(e);
 	}
     }
 

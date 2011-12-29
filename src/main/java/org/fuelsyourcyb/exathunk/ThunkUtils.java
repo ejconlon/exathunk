@@ -29,6 +29,16 @@ public class ThunkUtils {
 	return false;
     }
 
+    public static <Type, FuncId, Value> List<Value> unthunkValues(NTree<Type, FuncId, Thunk<Value>> tree) throws ExecutionException, InterruptedException {
+	List<Value> params = new ArrayList<Value>(tree.getChildren().size());
+	for (NTree<Type, FuncId, Thunk<Value>> child : tree.getChildren()) {
+	    Thunk<Value> thunk = child.getValue();
+	    params.add(thunk.get());
+	}
+	return params;
+    }
+
+
     public static <Type, FuncId, Value> NTree<Type, FuncId, Thunk<Value>>  makeThunkTree(
  	    ThunkFactory<Type, FuncId, Value> thunkFactory,											 
  	    NTree<Type, FuncId, Value> typedTree) throws UnknownFuncException, ExecutionException {
@@ -58,22 +68,17 @@ public class ThunkUtils {
 	    this.factory = factory;
 	}
 
-	public List<Value> unthunkValues(NTree<Type, FuncId, Thunk<Value>> tree) throws ExecutionException, InterruptedException {
-	    List<Value> params = new ArrayList<Value>(tree.getChildren().size());
-	    for (NTree<Type, FuncId, Thunk<Value>> child : tree.getChildren()) {
-		Thunk<Value> thunk = child.getValue();
-		params.add(thunk.get());
-	    }
-	    return params;
+	protected void evaluateThunk(Thunk<Value> thunk) throws VisitException {
+	    thunk.run();
 	}
 
 	public void visit(NTree<Type, FuncId, Thunk<Value>> tree) throws VisitException {
 	    try {
 		if (ThunkUtils.isEvaluable(tree)) {
-		    Thunk<Value> thunk = factory.makeThunk(tree.getLabel(), unthunkValues(tree));
+		    Thunk<Value> thunk = factory.makeThunk(tree.getLabel(), ThunkUtils.unthunkValues(tree));
 		    tree.setLeaf(tree.getType(), thunk);
 		} else if (tree.isLeaf() && !tree.getValue().isDone()) {
-		    tree.getValue().step();
+		    evaluateThunk(tree.getValue());
 		}
 	    } catch (ExecutionException e) {
 		throw new VisitException(e);

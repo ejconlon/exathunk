@@ -9,8 +9,6 @@ public class PresentThunk<Value> implements Thunk<Value> {
 	this.result = result;
     }
 
-    public void step() {}
-
     public void run() {}
 
     public boolean cancel(boolean mayInterruptIfRunning) {

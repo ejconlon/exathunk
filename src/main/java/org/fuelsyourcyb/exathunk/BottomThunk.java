@@ -10,8 +10,6 @@ public class BottomThunk<Value> implements Thunk<Value> {
 	this.exception = exception;
     }
 
-    public void step() {}
-
     public void run() {}
 
     public boolean cancel(boolean mayInterruptIfRunning) {

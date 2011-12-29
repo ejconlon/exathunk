@@ -11,31 +11,6 @@ import java.util.concurrent.TimeoutException;
 
 public class ArithmeticThunkFactoryTest {
 
-    public class IntTypeChecker implements  TypeChecker<Class, String, Object> {
-	public boolean check(Class type, String fromValue) {
-	    try {
-		convert(type, fromValue);
-		return true;
-	    } catch (TypeException e) {
-		return false;
-	    }
-	}
-
-	public Object convert(Class type, String fromValue) throws TypeException {
-	    if (Integer.class.equals(type)) {
-		try {
-		    return new Integer(fromValue);
-		} catch (NumberFormatException e) {
-		    throw new TypeException("Invalid integer", e);
-		}
-	    } else if (String.class.equals(type)) {
-		return fromValue;
-	    } else {
-		throw new TypeException("Cannot convert "+fromValue+" to "+type);
-	    }
-	}
-    }
-
     public Interpreter<String, Class, String, String, Object> makeInterpreter(ThunkFactory<Class, String, Object> factory) {
 	NTreeParser<String, String, String> parser = new SexpParser();
 	TypeChecker<Class, String, Object> checker = new IntTypeChecker();
@@ -58,70 +33,6 @@ public class ArithmeticThunkFactoryTest {
 	assertEquals(11, interpreter.interpret("(+ (- 1 2) (* 3 (/ 16 4)))"));
     }
 
-    private class DelayingThunk<Value> implements Thunk<Value> {
-	private final Integer numStepsNeeded;
-	private Integer numStepsTaken;
-	private final Thunk<Value> thunk;
-
-	public DelayingThunk(Integer numStepsNeeded, Thunk<Value> thunk) {
-	    this.numStepsNeeded = numStepsNeeded;
-	    this.thunk = thunk;
-	    this.numStepsTaken = 0;
-	}
-
-	public void step() {
-	    if (numStepsTaken < numStepsNeeded) {
-		++numStepsTaken;
-	    } else {
-		thunk.step();
-	    }
-	}
-
-	public void run() {
-	    while (!isDone()) {
-		step();
-	    }
-	}
-
-	public boolean cancel(boolean ignored) {
-	    return false;
-	}
-
-	public boolean isCancelled() {
-	    return false;
-	}
-
-	public boolean isDone() {
-	    return numStepsTaken >= numStepsNeeded && thunk.isDone();
-	}
-
-	public Value get() throws InterruptedException, ExecutionException {
-	    if (numStepsTaken >= numStepsNeeded) {
-		return thunk.get();
-	    } else {
-		throw new InterruptedException();
-	    }
-	}
-
-	public Value get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-	    if (numStepsTaken >= numStepsNeeded) {
-		return thunk.get(timeout, unit);
-	    } else {
-		throw new InterruptedException();
-	    }
-	}
-
-	public String toString() {
-	    return "DelayedThunk<"+numStepsTaken+"/"+numStepsNeeded+" "+thunk+">";
-	}
-
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object o) {
-	    if (o == null || !(o instanceof Thunk)) return false;
-	    return ThunkUtils.statelessEquals(this, (Thunk)o);
-	}
-    }
-
     private class DelayingArithmeticThunkFactory extends ArithmeticThunkFactory {
 	private final Integer numSteps;
 
@@ -130,7 +41,7 @@ public class ArithmeticThunkFactoryTest {
 	}
 
 	public Thunk<Object> makeThunk(String funcId, List<Object> params) throws UnknownFuncException, ExecutionException {
-	    return new DelayingThunk<>(numSteps, super.makeThunk(funcId, params));
+	    return new StepDelayingThunk<>(numSteps, super.makeThunk(funcId, params));
 	}
     }
 

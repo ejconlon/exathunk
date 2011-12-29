@@ -13,12 +13,6 @@ public class FutureThunk<Value> implements Thunk<Value> {
 	this.future = future;
     }
 
-    public void step() {
-	// There is only one step - execute the
-	// wrapped future.
-	run();
-    }
-
     public void run() {
 	future.run();
     }
