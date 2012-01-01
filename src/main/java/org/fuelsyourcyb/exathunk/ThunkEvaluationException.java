@@ -7,6 +7,10 @@ public class ThunkEvaluationException extends ExecutionException {
 	super(message);
     }
 
+    public ThunkEvaluationException(Throwable cause) {
+	super(cause);
+    }
+
     public ThunkEvaluationException(String message, Throwable cause) {
 	super(message, cause);
     }

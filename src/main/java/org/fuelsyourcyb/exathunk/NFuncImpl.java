@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Callable;
 
 public abstract class NFuncImpl<Type, Value> implements NFunc<Type, Value> {
     private final List<Type> parameterTypes;
@@ -26,5 +27,13 @@ public abstract class NFuncImpl<Type, Value> implements NFunc<Type, Value> {
 	return returnType;
     }
     
-    public abstract Value invoke(List<Value> args) throws ExecutionException;
+    public Thunk<Value> invoke(final List<Value> args) {
+	return new CallableThunk<Value>(new Callable<Value>() {
+		public Value call() {
+		    return subInvoke(args);
+		}	
+	    });
+    }
+
+    protected abstract Value subInvoke(final List<Value> args);
 }

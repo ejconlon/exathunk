@@ -29,89 +29,85 @@ public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Objec
 	return getFunc(funcId).getReturnType();
     }
 
-    public Thunk<Object> makeThunk(String funcId, List<Object> params) throws UnknownFuncException, ExecutionException {
-	return new PresentThunk<Object>(getFunc(funcId).invoke(params));
+    public Thunk<Object> makeThunk(String funcId, List<Object> params) throws UnknownFuncException {
+	return getFunc(funcId).invoke(params);
     }
 
     private static abstract class IntFunc extends NFuncImpl<Class, Object> {
 	public IntFunc() {
 	    super(Integer.class, new Class[] { Integer.class, Integer.class });
 	}
-
-	public Object invoke(List<Object> args) {
-	    return subInvoke((Integer)args.get(0),
- 		             (Integer)args.get(1));
-	}
-
-	protected abstract Integer subInvoke(Integer a, Integer b);
     }
 
     public static class AddFunc extends IntFunc {
-	protected Integer subInvoke(Integer a, Integer b) { return a + b; }
+	protected Object subInvoke(final List<Object> a) {
+	    return (Integer)a.get(0) + (Integer)a.get(1);
+	}
     }
 
     public static class SubFunc extends IntFunc {
-	protected Integer subInvoke(Integer a, Integer b) { return a - b; }
+	protected Object subInvoke(final List<Object> a) {
+	    return (Integer)a.get(0) - (Integer)a.get(1);
+	}
     }
 
     public static class MulFunc extends IntFunc {
-	protected Integer subInvoke(Integer a, Integer b) { return a * b; }
+	protected Object subInvoke(final List<Object> a) {
+	    return (Integer)a.get(0) * (Integer)a.get(1);
+	}
     }
 
     public static class DivFunc extends IntFunc {
-	protected Integer subInvoke(Integer a, Integer b) { return a / b; }
+	protected Object subInvoke(final List<Object> a) {
+	    return (Integer)a.get(0) / (Integer)a.get(1);
+	}
     }
 
     public static class ModFunc extends IntFunc {
-	protected Integer subInvoke(Integer a, Integer b) { return a % b; }
+	protected Object subInvoke(final List<Object> a) {
+	    return (Integer)a.get(0) % (Integer)a.get(1);
+	}
     }
 
     private static abstract class BoolFunc2 extends NFuncImpl<Class, Object> {
 	public BoolFunc2() {
 	    super(Boolean.class, new Class[] { Boolean.class, Boolean.class });
 	}
-
-	public Object invoke(List<Object> args) {
-	    return subInvoke((Boolean)args.get(0),
- 		             (Boolean)args.get(1));
-	}
-
-	protected abstract Boolean subInvoke(Boolean a, Boolean b);
     }
 
     public static class AndFunc extends BoolFunc2 {
-	protected Boolean subInvoke(Boolean a, Boolean b) { return a && b; }
+	protected Object subInvoke(final List<Object> a) {
+	    return (Boolean)a.get(0) && (Boolean)a.get(1);
+	}
     }
 
     public static class OrFunc extends BoolFunc2 {
-	protected Boolean subInvoke(Boolean a, Boolean b) { return a || b; }
+	protected Object subInvoke(final List<Object> a) {
+	    return (Boolean)a.get(0) || (Boolean)a.get(1);
+	}
     }
 
     public static class XorFunc extends BoolFunc2 {
-	protected Boolean subInvoke(Boolean a, Boolean b) { return a ^ b; }
+	protected Object subInvoke(final List<Object> a) {
+	    return (Boolean)a.get(0) ^ (Boolean)a.get(1);
+	}
     }
 
-    private static abstract class BoolFunc1 extends NFuncImpl<Class, Object> {
-	public BoolFunc1() {
+    private static class NotFunc extends NFuncImpl<Class, Object> {
+	public NotFunc() {
 	    super(Boolean.class, new Class[] { Boolean.class });
 	}
 
-	public Object invoke(List<Object> args) {
-	    return subInvoke((Boolean)args.get(0));
+	protected Object subInvoke(final List<Object> a) {
+	    return !(Boolean)a.get(0);
 	}
-
-	protected abstract Boolean subInvoke(Boolean a);
     }
 
-    public static class NotFunc extends BoolFunc1 {
-	protected Boolean subInvoke(Boolean a) { return !a; }
-    }
+    public static class LenFunc extends NFuncImpl<Class, Object> {
+	public LenFunc() { super(Integer.class, new Class[] { String.class }); }
 
-    public static class LenFunc extends NFunc1<Class, Object> {
-	public LenFunc() { super(Integer.class, String.class); }
-
-	public Object invoke(List<Object> args) {
-	    return ((String)args.get(0)).length();
+	protected Object subInvoke(final List<Object> a) {
+	    return ((String)a.get(0)).length();
 	}
     }
 
