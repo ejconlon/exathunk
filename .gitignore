@@ -5,3 +5,5 @@
 *.tmp
 *.log
 target/*
+.idea/*
+*.iml
