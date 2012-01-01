@@ -2,14 +2,14 @@ package org.fuelsyourcyb.exathunk;
 
 public class VisitException extends Exception {
     public VisitException(String message) {
-	super(message);
+        super(message);
     }
-    
+
     public VisitException(Throwable cause) {
-	super(cause);
+        super(cause);
     }
 
     public VisitException (String message, Throwable cause) {
-	super(message, cause);
+        super(message, cause);
     }
 }

@@ -7,32 +7,32 @@ public class BottomThunk<Value> implements Thunk<Value> {
     private final ExecutionException exception;
 
     public BottomThunk(ExecutionException exception) {
-	this.exception = exception;
+        this.exception = exception;
     }
 
     public void run() {}
 
     public boolean cancel(boolean mayInterruptIfRunning) {
-	return false;  // always already done
+        return false;  // always already done
     }
 
     public Value get() throws ExecutionException {
-	throw exception;
+        throw exception;
     }
 
     public Value get(long timeout, TimeUnit unit) throws ExecutionException {
-	return get();
+        return get();
     }
 
     public boolean isCancelled() {
-	return false;  // always already done
+        return false;  // always already done
     }
 
     public boolean isDone() {
-	return true;  // always already done
+        return true;  // always already done
     }
 
     public String toString() {
-	return "BottomThunk<"+exception+">";
+        return "BottomThunk<"+exception+">";
     }
 }

@@ -4,14 +4,14 @@ import java.util.concurrent.ExecutionException;
 
 public class ThunkEvaluationException extends ExecutionException {
     public ThunkEvaluationException(String message) {
-	super(message);
+        super(message);
     }
 
     public ThunkEvaluationException(Throwable cause) {
-	super(cause);
+        super(cause);
     }
 
     public ThunkEvaluationException(String message, Throwable cause) {
-	super(message, cause);
+        super(message, cause);
     }
 }

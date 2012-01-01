@@ -3,7 +3,6 @@ package org.fuelsyourcyb.exathunk;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Callable;
 
 public abstract class NFuncImpl<Type, Value> implements NFunc<Type, Value> {
@@ -11,28 +10,28 @@ public abstract class NFuncImpl<Type, Value> implements NFunc<Type, Value> {
     private final Type returnType;
 
     public NFuncImpl(Type returnType, Type[] paramTypes) {
-	this.returnType = returnType;
-	List<Type> types = new ArrayList<Type>(paramTypes.length);
-	for (int i = 0; i < paramTypes.length; ++i) {
-	    types.add(paramTypes[i]);
-	}
-	this.parameterTypes = Collections.unmodifiableList(types);
+        this.returnType = returnType;
+        List<Type> types = new ArrayList<>(paramTypes.length);
+        for (Type paramType : paramTypes) {
+            types.add(paramType);
+        }
+        this.parameterTypes = Collections.unmodifiableList(types);
     }
 
     public List<Type> getParameterTypes() {
-	return parameterTypes;
+        return parameterTypes;
     }
 
     public Type getReturnType() {
-	return returnType;
+        return returnType;
     }
-    
+
     public Thunk<Value> invoke(final List<Value> args) {
-	return new CallableThunk<Value>(new Callable<Value>() {
-		public Value call() {
-		    return subInvoke(args);
-		}	
-	    });
+        return new CallableThunk<>(new Callable<Value>() {
+            public Value call() {
+                return subInvoke(args);
+            }
+        });
     }
 
     protected abstract Value subInvoke(final List<Value> args);
