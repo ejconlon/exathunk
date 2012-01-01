@@ -40,7 +40,7 @@ public class ArithmeticThunkFactoryTest {
 	    this.numSteps = numSteps;
 	}
 
-	public Thunk<Object> makeThunk(String funcId, List<Object> params) throws UnknownFuncException, ExecutionException {
+	public Thunk<Object> makeThunk(String funcId, List<Object> params) throws UnknownFuncException {
 	    return new StepDelayingThunk<>(numSteps, super.makeThunk(funcId, params));
 	}
     }

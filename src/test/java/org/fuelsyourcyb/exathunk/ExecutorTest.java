@@ -21,7 +21,7 @@ public class ExecutorTest {
 	    this.timeUnit = timeUnit;
 	}
 
-	public Thunk<Object> makeThunk(String funcId, List<Object> params) throws UnknownFuncException, ExecutionException {
+	public Thunk<Object> makeThunk(String funcId, List<Object> params) throws UnknownFuncException {
 	    return new TimeDelayingThunk<>(timeout, timeUnit, super.makeThunk(funcId, params));
 	}
     }
