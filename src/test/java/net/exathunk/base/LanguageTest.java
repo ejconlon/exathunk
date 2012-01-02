@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -13,9 +14,8 @@ public class LanguageTest {
         ThunkFactory<Class, String, Object> factory = new ArithmeticThunkFactory();
         NTreeParser<String, String, String> parser = new SexpParser();
         TypeChecker<Class, String, Object> checker = new IntTypeChecker();
-        NTree.Visitor<Class, String, Thunk<Object>> visitor = new ThunkUtils.StepVisitor<>(factory);
-        NTreeEvaluator<Class, String, Object> evaluator = new DefaultEvaluator<>(visitor);
-        return new Interpreter<>(parser, checker, factory, evaluator);
+        ThunkExecutor<Object> executor = new DefaultThunkExecutor<>();
+        return new Interpreter<>(parser, checker, factory, executor);
     }
 
     private static Map<String, Object> makePosSpecs() {
@@ -23,8 +23,12 @@ public class LanguageTest {
 
         specs.put("(* 4 5)", 20);
         specs.put("(+ 4 (- 5 2))", 7);
+        specs.put("(* 3 2)", 6);
+        specs.put("(+ (- 1 2) (* 3 (/ 16 4)))", 11);
         specs.put("(not true)", false);
         specs.put("(or  true false)", true);
+        specs.put("(- (len foo) 1)", 2);
+        specs.put("(or true (bottom))", true);
 
         return specs;
     }
@@ -34,6 +38,7 @@ public class LanguageTest {
 
         specs.put("(* 4 true)", TypeException.class);
         specs.put("(blah 4 true)", UnknownFuncException.class);
+        specs.put("(bottom)", ExecutionException.class);
 
         return specs;
     }
@@ -45,7 +50,10 @@ public class LanguageTest {
 
         for (Map.Entry<String, Object> spec : makePosSpecs().entrySet()) {
             logger.log(Level.FINE, "Testing {0} => {1}", new Object[] { spec.getKey(), spec.getValue() });
-            assertEquals(spec.getValue(), interpreter.interpret(spec.getKey()));
+            Thunk<Object> thunk = interpreter.interpret(spec.getKey());
+            interpreter.getExecutor().execute(thunk);
+            assert thunk.isDone();
+            assertEquals(spec.getValue(), thunk.get());
         }
     }
 
@@ -58,7 +66,10 @@ public class LanguageTest {
             logger.log(Level.FINE, "Testing {0} throws {1}", new Object[] { spec.getKey(), spec.getValue() });
             boolean caught = false;
             try {
-                interpreter.interpret(spec.getKey());
+                Thunk<Object> thunk = interpreter.interpret(spec.getKey());
+                interpreter.getExecutor().execute(thunk);
+                assert thunk.isDone();
+                thunk.get();
             } catch (Exception e) {
                 caught = true;
                 assert(spec.getValue().isInstance(e));

@@ -1,4 +1,4 @@
-package net.exathunk.base;
+package net.exathunk.functional;
 
 // The signature for an impure Func1.
 // Mutates the mutee, obviously.

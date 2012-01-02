@@ -2,8 +2,10 @@ package net.exathunk.base;
 
 import java.util.List;
 
-public interface NFunc<Type, Value> {
-    List<Type> getParameterTypes();
+public interface NFunc<Type, Label, Value> {
     Type getReturnType();
-    Thunk<Value> invoke(List<Value> args);
+    List<Type> getParameterTypes();
+    List<Strictness> getStrictnesses();
+    Thunk<Value> invoke(ThunkFactory<Type, Label, Value> thunkFactory,
+                        ThunkExecutor<Value> executor, NTree<Type, Label, Value> args);
 }

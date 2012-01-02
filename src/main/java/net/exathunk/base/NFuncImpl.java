@@ -3,36 +3,38 @@ package net.exathunk.base;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.Callable;
 
-public abstract class NFuncImpl<Type, Value> implements NFunc<Type, Value> {
-    private final List<Type> parameterTypes;
+public abstract class NFuncImpl<Type, Label, Value> implements NFunc<Type, Label, Value> {
+    
     private final Type returnType;
+    private final List<Type> parameterTypes;
+    private final List<Strictness> strictnesses;
 
-    public NFuncImpl(Type returnType, Type[] paramTypes) {
+    public NFuncImpl(Type returnType, Type[] parameterTypes, Strictness[] strictnesses) {
         this.returnType = returnType;
-        List<Type> types = new ArrayList<>(paramTypes.length);
-        for (Type paramType : paramTypes) {
-            types.add(paramType);
-        }
-        this.parameterTypes = Collections.unmodifiableList(types);
+        this.parameterTypes = listify(parameterTypes);
+        this.strictnesses = listify(strictnesses);
+        assert parameterTypes.length == strictnesses.length;
     }
 
+    private static <T> List<T> listify(T[] objs) {
+        List<T> list = new ArrayList<>(objs.length);
+        for (T obj : objs) list.add(obj);
+        return Collections.unmodifiableList(list);
+    }
+    
     public List<Type> getParameterTypes() {
         return parameterTypes;
+    }
+
+    public List<Strictness> getStrictnesses() {
+        return strictnesses;
     }
 
     public Type getReturnType() {
         return returnType;
     }
 
-    public Thunk<Value> invoke(final List<Value> args) {
-        return new CallableThunk<>(new Callable<Value>() {
-            public Value call() {
-                return subInvoke(args);
-            }
-        });
-    }
-
-    protected abstract Value subInvoke(final List<Value> args);
+    public abstract Thunk<Value> invoke(ThunkFactory<Type, Label, Value> thunkFactory,
+                                        ThunkExecutor<Value> executor, NTree<Type, Label, Value> args);
 }

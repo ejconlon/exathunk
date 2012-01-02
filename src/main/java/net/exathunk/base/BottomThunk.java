@@ -1,6 +1,5 @@
 package net.exathunk.base;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
 
 public class BottomThunk<Value> implements Thunk<Value> {
@@ -10,22 +9,12 @@ public class BottomThunk<Value> implements Thunk<Value> {
         this.exception = exception;
     }
 
-    public void run() {}
+    public void prepare() {}
 
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        return false;  // always already done
-    }
+    public void run() {}
 
     public Value get() throws ExecutionException {
         throw exception;
-    }
-
-    public Value get(long timeout, TimeUnit unit) throws ExecutionException {
-        return get();
-    }
-
-    public boolean isCancelled() {
-        return false;  // always already done
     }
 
     public boolean isDone() {

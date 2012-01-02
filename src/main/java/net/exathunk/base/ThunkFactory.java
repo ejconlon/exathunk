@@ -22,10 +22,12 @@ public interface ThunkFactory<Type, FuncId, Value> {
 
     boolean knowsFunc(FuncId funcId);
 
+    List<Strictness> getStrictnesses(FuncId funcId) throws UnknownFuncException;
+    
     List<Type> getParameterTypes(FuncId funcId) throws UnknownFuncException;
 
     Type getReturnType(FuncId funcId) throws UnknownFuncException;
 
     // Create a leaf Thunk representing a deferred/remote computation.
-    Thunk<Value> makeThunk(FuncId funcId, List<Value> params) throws UnknownFuncException, ExecutionException;
+    Thunk<Value> makeThunk(ThunkExecutor<Value> executor, NTree<Type, FuncId, Value> tree) throws UnknownFuncException, ExecutionException;
 }

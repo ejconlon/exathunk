@@ -1,6 +1,7 @@
 package net.exathunk.base;
 
 import net.exathunk.functional.Unit;
+import net.exathunk.functional.VisitException;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -10,19 +11,19 @@ public class Interpreter<Source, Type, FuncId, PValue, Value> {
     private final NTreeParser<Source, FuncId, PValue> parser;
     private final TypeChecker<Type, PValue, Value> valueTyper;
     private final ThunkFactory<Type, FuncId, Value> thunkFactory;
-    private final NTreeEvaluator<Type, FuncId, Value> evaluator;
+    private final ThunkExecutor<Value> executor;
 
     public Interpreter(NTreeParser<Source, FuncId, PValue> parser,
                        TypeChecker<Type, PValue, Value> valueTyper,
                        ThunkFactory<Type, FuncId, Value> thunkFactory,
-                       NTreeEvaluator<Type, FuncId, Value> evaluator) {
+                       ThunkExecutor<Value> executor) {
         this.parser = parser;
         this.valueTyper = valueTyper;
         this.thunkFactory = thunkFactory;
-        this.evaluator = evaluator;
+        this.executor = executor;
     }
 
-    public Value interpret(Source expression) throws UnknownFuncException, ParseException, TypeException, VisitException, ExecutionException {
+    public Thunk<Value> interpret(Source expression) throws UnknownFuncException, ParseException, TypeException, VisitException, ExecutionException {
         Logger logger = Logger.getLogger("Intepreter");
 
         logger.log(Level.FINE, "Expression {0}", expression);
@@ -33,9 +34,8 @@ public class Interpreter<Source, Type, FuncId, PValue, Value> {
         NTree<Type, FuncId, Value> typedTree = TypeCheckerUtils.makeTypedTree(thunkFactory, valueTyper, parseTree);
         logger.log(Level.FINE, "Typed tree {0}", typedTree);
 
-        NTree<Type, FuncId, Thunk<Value>> thunkTree = ThunkUtils.makeThunkTree(thunkFactory, typedTree);
-        logger.log(Level.FINE, "Thunk tree {0}", thunkTree);
-
-        return evaluator.evaluate(thunkTree);
+        return thunkFactory.makeThunk(executor, typedTree);
     }
+
+    public ThunkExecutor<Value> getExecutor() { return executor; }
 }

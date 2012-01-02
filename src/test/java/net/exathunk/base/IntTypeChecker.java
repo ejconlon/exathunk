@@ -1,16 +1,13 @@
 package net.exathunk.base;
 
 public class IntTypeChecker implements  TypeChecker<Class, String, Object> {
-    public boolean check(Class type, String fromValue) {
-        try {
-            convert(type, fromValue);
-            return true;
-        } catch (TypeException e) {
-            return false;
-        }
+    public boolean canCast(Class fromType, Class toType) {
+        if (Any.class.equals(fromType)) return true;
+        else if (Object.class.equals(toType)) return true;
+        else return toType.isAssignableFrom(fromType);
     }
 
-    public Object convert(Class type, String fromValue) throws TypeException {
+    public Object cast(Class type, String fromValue) throws TypeException {
         if (Integer.class.equals(type)) {
             try {
                 return new Integer(fromValue);
@@ -27,6 +24,8 @@ public class IntTypeChecker implements  TypeChecker<Class, String, Object> {
             } else {
                 throw new TypeException("Invalid boolean: "+fromValue);
             }
+        } else if (Any.class.equals(type)) {
+            return fromValue;  // TODO(ejconlon) ugly
         } else {
             throw new TypeException("Cannot convert "+fromValue+" to "+type);
         }

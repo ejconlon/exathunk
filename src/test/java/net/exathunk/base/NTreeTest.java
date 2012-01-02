@@ -1,6 +1,7 @@
 package net.exathunk.base;
 
 import net.exathunk.functional.Unit;
+import net.exathunk.functional.VisitException;
 import org.junit.Test;
 
 import java.util.List;

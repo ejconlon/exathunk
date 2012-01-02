@@ -1,4 +1,4 @@
-package net.exathunk.base;
+package net.exathunk.functional;
 
 public class VisitException extends Exception {
     public VisitException(String message) {

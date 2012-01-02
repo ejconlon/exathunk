@@ -1,7 +1,5 @@
 package net.exathunk.base;
 
-import java.util.concurrent.TimeUnit;
-
 public class PresentThunk<Value> implements Thunk<Value> {
     private Value result;
 
@@ -9,22 +7,12 @@ public class PresentThunk<Value> implements Thunk<Value> {
         this.result = result;
     }
 
-    public void run() {}
+    public void prepare() {}
 
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        return false;  // always already done
-    }
+    public void run() {}
 
     public Value get() {
         return result;
-    }
-
-    public Value get(long timeout, TimeUnit unit) {
-        return result;
-    }
-
-    public boolean isCancelled() {
-        return false;  // always already done
     }
 
     public boolean isDone() {

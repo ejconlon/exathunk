@@ -1,7 +1,6 @@
 package net.exathunk.base;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
 
 public class CallableThunk<Value> implements Thunk<Value> {
@@ -14,39 +13,27 @@ public class CallableThunk<Value> implements Thunk<Value> {
         this.callable = callable;
     }
 
+    public void prepare() {}
+
     public void run() {
         if (!hasRun) {
             try {
                 result = callable.call();
             } catch (Exception e) {
-                thrown = new ThunkEvaluationException(e);
+                thrown = new ThunkExecutionException(e);
             }
             hasRun = true;
         }
     }
 
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        return false;  // cannot cancel
-    }
-
     public Value get() throws ExecutionException {
-        run();
+        if (!hasRun) throw new ThunkExecutionException("Has not run.");
         if (thrown != null) throw thrown;
         return result;
-    }
-
-    public Value get(long timeout, TimeUnit unit) throws ExecutionException {
-        run();
-        if (thrown != null) throw thrown;
-        return result;
-    }
-
-    public boolean isCancelled() {
-        return false;  // cannot cancel
     }
 
     public boolean isDone() {
-        return result != null;
+        return hasRun;
     }
 
     public String toString() {

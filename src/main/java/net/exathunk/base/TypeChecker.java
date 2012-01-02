@@ -1,7 +1,7 @@
 package net.exathunk.base;
 
 public interface TypeChecker<Type, FromValue, ToValue> {
-    boolean check(Type type, FromValue fromValue);
+    boolean canCast(Type fromType, Type toType);
 
-    ToValue convert(Type type, FromValue fromValue) throws TypeException;
+    ToValue cast(Type toType, FromValue fromValue) throws TypeException;
 }

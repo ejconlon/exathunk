@@ -11,6 +11,7 @@ public class TypeCheckerUtils {
             TypeChecker<Type, FromValue, ToValue> typeChecker,
             NTree<Unit, FuncId, FromValue> parseTree)
             throws TypeException, UnknownFuncException {
+        System.out.println(parseTree);
         NTree<Type, FuncId, ToValue> typedTree = new NTree<>();
         if (parseTree.isEmpty()) {
             throw new TypeException("Cannot type an empty node");
@@ -33,12 +34,12 @@ public class TypeCheckerUtils {
                 Type type = paramTypes.get(i);
                 if (parseChild.isLeaf()) {
                     FromValue fromValue = parseChild.getValue();
-                    ToValue toValue = typeChecker.convert(type, fromValue);
+                    ToValue toValue = typeChecker.cast(type, fromValue);
                     typedChildren.add(new NTree<Type, FuncId, ToValue>(type, toValue));
                 } else {
                     NTree<Type, FuncId, ToValue> typedChild =
                             makeTypedTree(thunkFactory, typeChecker, parseChild);
-                    if (!type.equals(typedChild.getType())) {
+                    if (!typeChecker.canCast(typedChild.getType(), type)) {
                         throw new TypeException("Could not type result of "+
                                 typedChild.getLabel() + ". Expected "+
                                 type + " but got "+

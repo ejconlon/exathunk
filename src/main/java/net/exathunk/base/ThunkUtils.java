@@ -1,5 +1,7 @@
 package net.exathunk.base;
 
+import net.exathunk.functional.VisitException;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -11,8 +13,8 @@ public class ThunkUtils {
         if (a.isDone() && b.isDone()) {
             try {
                 return a.get().equals(b.get());
-            } catch (InterruptedException e) {
             } catch (ExecutionException e) {
+                return false;
             }
         }
         return false;
@@ -29,43 +31,48 @@ public class ThunkUtils {
         return false;
     }
 
-    public static <Type, FuncId, Value> List<Value> unthunkValues(NTree<Type, FuncId, Thunk<Value>> tree) throws ExecutionException, InterruptedException {
-        List<Value> params = new ArrayList<>(tree.getChildren().size());
+    public static <Type, FuncId, Value> NTree<Type, FuncId, Value> unthunkValues(NTree<Type, FuncId, Thunk<Value>> tree) throws ExecutionException, InterruptedException {
+        List<NTree<Type, FuncId, Value>> unChildren = new ArrayList<>(tree.getChildren().size());
         for (NTree<Type, FuncId, Thunk<Value>> child : tree.getChildren()) {
             Thunk<Value> thunk = child.getValue();
-            params.add(thunk.get());
+            assert thunk.isDone();
+            unChildren.add(new NTree<Type, FuncId, Value>(child.getType(), thunk.get()));
         }
-        return params;
+        return new NTree<>(tree.getType(), tree.getLabel(), unChildren);
     }
 
-
-    public static <Type, FuncId, Value> NTree<Type, FuncId, Thunk<Value>>  makeThunkTree(
-            ThunkFactory<Type, FuncId, Value> thunkFactory,
-            NTree<Type, FuncId, Value> typedTree) throws UnknownFuncException, ExecutionException {
-        if (typedTree.isEmpty()) {
-            throw new UnknownFuncException("Empty computation");
-        } else if (typedTree.isLeaf()) {
-            return new NTree<Type, FuncId, Thunk<Value>>(
-                    typedTree.getType(),
-                    new PresentThunk<>(typedTree.getValue()));
-        } else if (typedTree.isTerminalBranch()) {
-            Thunk<Value> thunk = thunkFactory.makeThunk(typedTree.getLabel(), typedTree.extractChildValues());
-            return new NTree<>(typedTree.getType(), thunk);
+    public static <Type, FuncId, Value> NTree<Type, FuncId, Value> execute(ThunkFactory<Type, FuncId, Value> thunkFactory, 
+                                                                           ThunkExecutor<Value> executor,
+                                                                           NTree<Type, FuncId,Value> tree) throws UnknownFuncException, ExecutionException {
+        if (tree.isEmpty()) {
+            throw new ThunkExecutionException("Cannot execute empty tree");
+        } else if (tree.isLeaf()) {
+            return tree;
         } else {
-            List<NTree<Type, FuncId, Thunk<Value>>> thunkedChildren =
-                    new ArrayList<>(typedTree.getChildren().size());
-            for (NTree<Type, FuncId, Value> child : typedTree.getChildren()) {
-                thunkedChildren.add(makeThunkTree(thunkFactory, child));
+            List<NTree<Type, FuncId, Value>> unChildren = new ArrayList<>(tree.getChildren().size());
+            for (NTree<Type, FuncId, Value> child : tree.getChildren()) {
+                if (child.isEmpty()) {
+                    throw new ThunkExecutionException("Cannot execute empty tree");
+                } else if (child.isLeaf()) {
+                    unChildren.add(child);
+                } else {
+                    Thunk<Value> thunk = thunkFactory.makeThunk(executor, child);
+                    executor.execute(thunk);
+                    assert thunk.isDone();
+                    unChildren.add(new NTree<Type, FuncId, Value>(child.getType(), thunk.get()));
+                }
             }
-            return new NTree<>(typedTree.getType(), typedTree.getLabel(), thunkedChildren);
+            return new NTree<>(tree.getType(), tree.getLabel(), unChildren);
         }
     }
 
     public static class StepVisitor<Type, FuncId, Value> implements NTree.Visitor<Type, FuncId, Thunk<Value>> {
         private final ThunkFactory<Type, FuncId, Value> factory;
+        private final ThunkExecutor<Value> executor;
 
-        public StepVisitor(ThunkFactory<Type, FuncId, Value> factory) {
+        public StepVisitor(ThunkFactory<Type, FuncId, Value> factory, ThunkExecutor<Value> executor) {
             this.factory = factory;
+            this.executor = executor;
         }
 
         protected void evaluateThunk(Thunk<Value> thunk) throws VisitException {
@@ -75,7 +82,7 @@ public class ThunkUtils {
         public void visit(NTree<Type, FuncId, Thunk<Value>> tree) throws VisitException {
             try {
                 if (ThunkUtils.isEvaluable(tree)) {
-                    Thunk<Value> thunk = factory.makeThunk(tree.getLabel(), ThunkUtils.unthunkValues(tree));
+                    Thunk<Value> thunk = factory.makeThunk(executor, unthunkValues(tree));
                     tree.setLeaf(tree.getType(), thunk);
                 } else if (tree.isLeaf() && !tree.getValue().isDone()) {
                     evaluateThunk(tree.getValue());

@@ -1,5 +1,7 @@
 package net.exathunk.base;
 
+import net.exathunk.functional.VisitException;
+
 import java.util.List;
 import java.util.ArrayList;
 
