@@ -11,9 +11,9 @@ import java.util.logging.Level;
 
 public class LanguageTest {
     public Interpreter<String, Class, String, String, Object> makeInterpreter() {
-        ThunkFactory<Class, String, Object> factory = new ArithmeticThunkFactory();
+        ThunkFactory<Class, String, Object> factory = new SchemeyThunkFactory();
         NTreeParser<String, String, String> parser = new SexpParser();
-        TypeChecker<Class, String, Object> checker = new IntTypeChecker();
+        TypeChecker<Class, String, Object> checker = new SchemeyTypeChecker();
         ThunkExecutor<Object> executor = new DefaultThunkExecutor<>();
         return new Interpreter<>(parser, checker, factory, executor);
     }
@@ -29,7 +29,8 @@ public class LanguageTest {
         specs.put("(or  true false)", true);
         specs.put("(- (len foo) 1)", 2);
         specs.put("(or true (bottom))", true);
-
+        specs.put("(if true foo bar)", "foo");
+        specs.put("(if false foo bar)", "bar");
         return specs;
     }
 

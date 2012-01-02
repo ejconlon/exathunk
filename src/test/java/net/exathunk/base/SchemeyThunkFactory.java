@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Object> {
+public class SchemeyThunkFactory implements ThunkFactory<Class, String, Object> {
 
     private final Map<String, NFunc<Class, String, Object>> funcs = makeFuncs();
 
@@ -86,10 +86,6 @@ public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Objec
     }
 
     public static class AndFunc extends LazyBoolFunc2 {
-        protected Object subInvoke(final List<Object> a) {
-            return (Boolean)a.get(0) && (Boolean)a.get(1);
-        }
-
         @Override
         public Thunk<Object> invoke(final ThunkFactory<Class, String, Object> thunkFactory, 
                                     final ThunkExecutor<Object> executor, final NTree<Class, String, Object> args) {
@@ -111,10 +107,6 @@ public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Objec
     }
 
     public static class OrFunc extends LazyBoolFunc2 {
-        protected Object subInvoke(final List<Object> a) {
-            return (Boolean)a.get(0) || (Boolean)a.get(1);
-        }
-
         @Override
         public Thunk<Object> invoke(final ThunkFactory<Class, String, Object> thunkFactory,
                                     final ThunkExecutor<Object> executor, final NTree<Class, String, Object> args) {
@@ -171,6 +163,31 @@ public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Objec
             throw new ThunkExecutionException("Hit bottom");
         }
     }
+    
+    public static class IfFunc extends NFuncImpl<Class, String, Object> {
+        public IfFunc() {
+            super(Any.class, new Class[] { Boolean.class, Any.class, Any.class },
+                    new Strictness[] {Strictness.STRICT, Strictness.LAZY, Strictness.LAZY});
+        }
+
+        @Override
+        public Thunk<Object> invoke(final ThunkFactory<Class, String, Object> thunkFactory, final ThunkExecutor<Object> executor, final NTree<Class, String, Object> args) {
+            return new CallableThunk<>(new Callable<Object>() {
+                @Override
+                public Object call() throws ExecutionException, UnknownFuncException {
+                    ThunkUtils.execute(thunkFactory, executor, args.getChildren().get(0));
+                    int exdex;
+                    if (Boolean.TRUE.equals(args.getChildren().get(0).getValue())) {
+                        exdex = 1;
+                    } else {
+                        exdex = 2;
+                    }
+                    ThunkUtils.execute(thunkFactory, executor, args.getChildren().get(exdex));
+                    return args.getChildren().get(exdex).getValue();
+                }
+            });
+        }
+    }
 
     private static Map<String, NFunc<Class, String, Object>> makeFuncs() {
         Map<String, NFunc<Class, String, Object>> funcs = new TreeMap<>();
@@ -185,6 +202,7 @@ public class ArithmeticThunkFactory implements ThunkFactory<Class, String, Objec
         funcs.put("not", new NotFunc());
         funcs.put("len", new LenFunc());
         funcs.put("bottom", new BottomFunc());
+        funcs.put("if", new IfFunc());
         return funcs;
     }
 }

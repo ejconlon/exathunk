@@ -1,6 +1,6 @@
 package net.exathunk.base;
 
-public class IntTypeChecker implements  TypeChecker<Class, String, Object> {
+public class SchemeyTypeChecker implements  TypeChecker<Class, String, Object> {
     public boolean canCast(Class fromType, Class toType) {
         if (Any.class.equals(fromType)) return true;
         else if (Object.class.equals(toType)) return true;
