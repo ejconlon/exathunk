@@ -1,5 +1,6 @@
 package net.exathunk.base;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -92,12 +93,16 @@ public class SchemeyThunkFactory implements ThunkFactory<Class, String, Object> 
             return new CallableThunk<>(new Callable<Object>() {
                 @Override
                 public Object call() throws ExecutionException, UnknownFuncException {
-                    ThunkUtils.execute(thunkFactory, executor, args.getChildren().get(0));
-                    if (Boolean.FALSE.equals(args.getChildren().get(0).getValue())) {
+                    List<Boolean> mask1 = Arrays.asList(true, false);
+                    Thunk<NTree<Class, String, Object>> firstEvaled =
+                        TreeExecutor.execute(thunkFactory, executor, args, mask1);
+                    if (Boolean.FALSE.equals(firstEvaled.get().getChildren().get(0).getValue())) {
                         return Boolean.FALSE;
                     }
-                    ThunkUtils.execute(thunkFactory, executor, args.getChildren().get(1));
-                    if (Boolean.FALSE.equals(args.getChildren().get(1).getValue())) {
+                    List<Boolean> mask2 = Arrays.asList(false, true);
+                    Thunk<NTree<Class, String, Object>> secondEvaled =
+                            TreeExecutor.execute(thunkFactory, executor, firstEvaled.get(), mask2);
+                    if (Boolean.FALSE.equals(secondEvaled.get().getChildren().get(1).getValue())) {
                         return Boolean.FALSE;
                     }
                     return Boolean.TRUE;
@@ -113,12 +118,16 @@ public class SchemeyThunkFactory implements ThunkFactory<Class, String, Object> 
             return new CallableThunk<>(new Callable<Object>() {
                 @Override
                 public Object call() throws ExecutionException, UnknownFuncException {
-                    ThunkUtils.execute(thunkFactory, executor, args.getChildren().get(0));
-                    if (Boolean.TRUE.equals(args.getChildren().get(0).getValue())) {
+                    List<Boolean> mask1 = Arrays.asList(true, false);
+                    Thunk<NTree<Class, String, Object>> firstEvaled =
+                            TreeExecutor.execute(thunkFactory, executor, args, mask1);
+                    if (Boolean.TRUE.equals(firstEvaled.get().getChildren().get(0).getValue())) {
                         return Boolean.TRUE;
                     }
-                    ThunkUtils.execute(thunkFactory, executor, args.getChildren().get(1));
-                    if (Boolean.TRUE.equals(args.getChildren().get(1).getValue())) {
+                    List<Boolean> mask2 = Arrays.asList(false, true);
+                    Thunk<NTree<Class, String, Object>> secondEvaled =
+                            TreeExecutor.execute(thunkFactory, executor, firstEvaled.get(), mask2);
+                    if (Boolean.TRUE.equals(secondEvaled.get().getChildren().get(1).getValue())) {
                         return Boolean.TRUE;
                     }
                     return Boolean.FALSE;
@@ -175,15 +184,19 @@ public class SchemeyThunkFactory implements ThunkFactory<Class, String, Object> 
             return new CallableThunk<>(new Callable<Object>() {
                 @Override
                 public Object call() throws ExecutionException, UnknownFuncException {
-                    ThunkUtils.execute(thunkFactory, executor, args.getChildren().get(0));
+                    List<Boolean> mask1 = Arrays.asList(true, false);
+                    Thunk<NTree<Class, String, Object>> firstEvaled =
+                            TreeExecutor.execute(thunkFactory, executor, args, mask1);
                     int exdex;
                     if (Boolean.TRUE.equals(args.getChildren().get(0).getValue())) {
                         exdex = 1;
                     } else {
                         exdex = 2;
                     }
-                    ThunkUtils.execute(thunkFactory, executor, args.getChildren().get(exdex));
-                    return args.getChildren().get(exdex).getValue();
+                    List<Boolean> mask2 = Arrays.asList(false, 1 == exdex, 2 == exdex);
+                    Thunk<NTree<Class, String, Object>> secondEvaled =
+                            TreeExecutor.execute(thunkFactory, executor, firstEvaled.get(), mask2);
+                    return secondEvaled.get().getChildren().get(exdex).getValue();
                 }
             });
         }

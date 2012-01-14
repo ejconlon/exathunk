@@ -1,5 +1,7 @@
 package net.exathunk.base;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -21,8 +23,11 @@ public abstract class StrictNFuncImpl<Type, Label, Value> extends NFuncImpl<Type
         return new CallableThunk<>(new Callable<Value>() {
             @Override
             public Value call() throws Exception {
-                NTree<Type, Label, Value> execTree = ThunkUtils.execute(thunkFactory, executor, args);
-                return subInvoke(execTree.extractChildValues());
+                List<Boolean> mask = new ArrayList<>(args.getChildren().size());
+                for (int i = 0; i < args.getChildren().size(); ++i) { mask.add(true); }
+                Thunk<NTree<Type, Label, Value>> evaled =
+                        TreeExecutor.execute(thunkFactory, executor, args, mask);
+                return subInvoke(evaled.get().extractChildValues());
             }
         });
     }

@@ -52,9 +52,9 @@ public class LanguageTest {
         for (Map.Entry<String, Object> spec : makePosSpecs().entrySet()) {
             logger.log(Level.FINE, "Testing {0} => {1}", new Object[] { spec.getKey(), spec.getValue() });
             Thunk<Object> thunk = interpreter.interpret(spec.getKey());
-            interpreter.getExecutor().execute(thunk);
-            assert thunk.isDone();
-            assertEquals(spec.getValue(), thunk.get());
+            Thunk<Object> exeThunk = interpreter.getExecutor().submit(thunk);
+            assert exeThunk.isDone();
+            assertEquals(spec.getValue(), exeThunk.get());
         }
     }
 
@@ -68,9 +68,9 @@ public class LanguageTest {
             boolean caught = false;
             try {
                 Thunk<Object> thunk = interpreter.interpret(spec.getKey());
-                interpreter.getExecutor().execute(thunk);
-                assert thunk.isDone();
-                thunk.get();
+                Thunk<Object> exeThunk = interpreter.getExecutor().submit(thunk);
+                assert exeThunk.isDone();
+                exeThunk.get();
             } catch (Exception e) {
                 caught = true;
                 assert(spec.getValue().isInstance(e));
