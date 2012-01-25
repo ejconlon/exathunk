@@ -29,6 +29,9 @@ import org.slf4j.LoggerFactory;
 
 public class EvalService {
 
+  /**
+   * Submit a closure for evaluation and receive a future.
+   */
   public interface Iface {
 
     public IThunk submitEvalRequest(EvalRequest evalRequest) throws org.apache.thrift.TException;

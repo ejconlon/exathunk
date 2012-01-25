@@ -29,9 +29,12 @@ import org.slf4j.LoggerFactory;
 
 public class ThunkService {
 
+  /**
+   * Call upon that future.
+   */
   public interface Iface {
 
-    public EvalArg thunkGet(IThunk thunk) throws org.apache.thrift.TException;
+    public VarCont thunkGet(IThunk thunk) throws org.apache.thrift.TException;
 
   }
 
@@ -61,7 +64,7 @@ public class ThunkService {
       super(iprot, oprot);
     }
 
-    public EvalArg thunkGet(IThunk thunk) throws org.apache.thrift.TException
+    public VarCont thunkGet(IThunk thunk) throws org.apache.thrift.TException
     {
       send_thunkGet(thunk);
       return recv_thunkGet();
@@ -74,7 +77,7 @@ public class ThunkService {
       sendBase("thunkGet", args);
     }
 
-    public EvalArg recv_thunkGet() throws org.apache.thrift.TException
+    public VarCont recv_thunkGet() throws org.apache.thrift.TException
     {
       thunkGet_result result = new thunkGet_result();
       receiveBase(result, "thunkGet");
@@ -124,7 +127,7 @@ public class ThunkService {
         prot.writeMessageEnd();
       }
 
-      public EvalArg getResult() throws org.apache.thrift.TException {
+      public VarCont getResult() throws org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -532,7 +535,7 @@ public class ThunkService {
       schemes.put(TupleScheme.class, new thunkGet_resultTupleSchemeFactory());
     }
 
-    private EvalArg success; // required
+    private VarCont success; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -597,7 +600,7 @@ public class ThunkService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, EvalArg.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, VarCont.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(thunkGet_result.class, metaDataMap);
     }
@@ -606,7 +609,7 @@ public class ThunkService {
     }
 
     public thunkGet_result(
-      EvalArg success)
+      VarCont success)
     {
       this();
       this.success = success;
@@ -617,7 +620,7 @@ public class ThunkService {
      */
     public thunkGet_result(thunkGet_result other) {
       if (other.isSetSuccess()) {
-        this.success = new EvalArg(other.success);
+        this.success = new VarCont(other.success);
       }
     }
 
@@ -630,11 +633,11 @@ public class ThunkService {
       this.success = null;
     }
 
-    public EvalArg getSuccess() {
+    public VarCont getSuccess() {
       return this.success;
     }
 
-    public void setSuccess(EvalArg success) {
+    public void setSuccess(VarCont success) {
       this.success = success;
     }
 
@@ -659,7 +662,7 @@ public class ThunkService {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((EvalArg)value);
+          setSuccess((VarCont)value);
         }
         break;
 
@@ -807,7 +810,7 @@ public class ThunkService {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new EvalArg();
+                struct.success = new VarCont();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -864,7 +867,7 @@ public class ThunkService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.success = new EvalArg();
+          struct.success = new VarCont();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }

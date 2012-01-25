@@ -27,6 +27,9 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A unique identifier of a function
+ */
 public class FuncId implements org.apache.thrift.TBase<FuncId, FuncId._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("FuncId");
 

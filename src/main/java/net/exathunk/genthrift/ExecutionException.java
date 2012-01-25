@@ -27,6 +27,9 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Something went wrong...
+ */
 public class ExecutionException implements org.apache.thrift.TBase<ExecutionException, ExecutionException._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ExecutionException");
 

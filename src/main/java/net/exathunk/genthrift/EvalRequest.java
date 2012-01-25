@@ -27,6 +27,9 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A request to evaluate the given function
+ */
 public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalRequest._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("EvalRequest");
 
@@ -40,7 +43,7 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
   }
 
   private FuncId funcId; // required
-  private List<EvalArg> evalArgs; // required
+  private List<VarTree> evalArgs; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -111,7 +114,7 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, FuncId.class)));
     tmpMap.put(_Fields.EVAL_ARGS, new org.apache.thrift.meta_data.FieldMetaData("evalArgs", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, EvalArg.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, VarTree.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(EvalRequest.class, metaDataMap);
   }
@@ -121,7 +124,7 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
 
   public EvalRequest(
     FuncId funcId,
-    List<EvalArg> evalArgs)
+    List<VarTree> evalArgs)
   {
     this();
     this.funcId = funcId;
@@ -136,9 +139,9 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
       this.funcId = new FuncId(other.funcId);
     }
     if (other.isSetEvalArgs()) {
-      List<EvalArg> __this__evalArgs = new ArrayList<EvalArg>();
-      for (EvalArg other_element : other.evalArgs) {
-        __this__evalArgs.add(new EvalArg(other_element));
+      List<VarTree> __this__evalArgs = new ArrayList<VarTree>();
+      for (VarTree other_element : other.evalArgs) {
+        __this__evalArgs.add(new VarTree(other_element));
       }
       this.evalArgs = __this__evalArgs;
     }
@@ -181,22 +184,22 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
     return (this.evalArgs == null) ? 0 : this.evalArgs.size();
   }
 
-  public java.util.Iterator<EvalArg> getEvalArgsIterator() {
+  public java.util.Iterator<VarTree> getEvalArgsIterator() {
     return (this.evalArgs == null) ? null : this.evalArgs.iterator();
   }
 
-  public void addToEvalArgs(EvalArg elem) {
+  public void addToEvalArgs(VarTree elem) {
     if (this.evalArgs == null) {
-      this.evalArgs = new ArrayList<EvalArg>();
+      this.evalArgs = new ArrayList<VarTree>();
     }
     this.evalArgs.add(elem);
   }
 
-  public List<EvalArg> getEvalArgs() {
+  public List<VarTree> getEvalArgs() {
     return this.evalArgs;
   }
 
-  public void setEvalArgs(List<EvalArg> evalArgs) {
+  public void setEvalArgs(List<VarTree> evalArgs) {
     this.evalArgs = evalArgs;
   }
 
@@ -229,7 +232,7 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
       if (value == null) {
         unsetEvalArgs();
       } else {
-        setEvalArgs((List<EvalArg>)value);
+        setEvalArgs((List<VarTree>)value);
       }
       break;
 
@@ -423,14 +426,14 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
           case 2: // EVAL_ARGS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.evalArgs = new ArrayList<EvalArg>(_list0.size);
-                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
+                struct.evalArgs = new ArrayList<VarTree>(_list42.size);
+                for (int _i43 = 0; _i43 < _list42.size; ++_i43)
                 {
-                  EvalArg _elem2; // required
-                  _elem2 = new EvalArg();
-                  _elem2.read(iprot);
-                  struct.evalArgs.add(_elem2);
+                  VarTree _elem44; // required
+                  _elem44 = new VarTree();
+                  _elem44.read(iprot);
+                  struct.evalArgs.add(_elem44);
                 }
                 iprot.readListEnd();
               }
@@ -461,9 +464,9 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
         oprot.writeFieldBegin(EVAL_ARGS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.evalArgs.size()));
-          for (EvalArg _iter3 : struct.evalArgs)
+          for (VarTree _iter45 : struct.evalArgs)
           {
-            _iter3.write(oprot);
+            _iter45.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -495,9 +498,9 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
       if (struct.isSetEvalArgs()) {
         {
           oprot.writeI32(struct.evalArgs.size());
-          for (EvalArg _iter4 : struct.evalArgs)
+          for (VarTree _iter46 : struct.evalArgs)
           {
-            _iter4.write(oprot);
+            _iter46.write(oprot);
           }
         }
       }
@@ -512,14 +515,14 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.evalArgs = new ArrayList<EvalArg>(_list5.size);
-          for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+          org.apache.thrift.protocol.TList _list47 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.evalArgs = new ArrayList<VarTree>(_list47.size);
+          for (int _i48 = 0; _i48 < _list47.size; ++_i48)
           {
-            EvalArg _elem7; // required
-            _elem7 = new EvalArg();
-            _elem7.read(iprot);
-            struct.evalArgs.add(_elem7);
+            VarTree _elem49; // required
+            _elem49 = new VarTree();
+            _elem49.read(iprot);
+            struct.evalArgs.add(_elem49);
           }
         }
         struct.setEvalArgsIsSet(true);

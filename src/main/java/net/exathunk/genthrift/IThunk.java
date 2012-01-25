@@ -27,6 +27,9 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A future.
+ */
 public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("IThunk");
 
