@@ -85,6 +85,19 @@ struct FuncId {
        1: required string name
 }
 
+enum Strictness {
+    STRICT, LENIENT, LAZY
+}
+
+/**
+ * Function definition
+ */
+struct FuncDef {
+    1: required FuncId funcId,
+    2: required list<ContType> argTypes,
+    3: optional list<Strictness> strictnesses
+}
+
 /**
  * A request to evaluate the given function
  */
@@ -103,7 +116,7 @@ struct ThunkId {
 /**
  * A future.
  */
-struct IThunk {
+struct Thunk {
        1: required ThunkId thunkId
 }
 
@@ -118,13 +131,13 @@ struct ExecutionException {
  * Submit a closure for evaluation and receive a future.
  */
 service EvalService {
-	IThunk submitEvalRequest(1: EvalRequest evalRequest)
+	Thunk submitEvalRequest(1: EvalRequest evalRequest)
 }
 
 /**
  * Call upon that future.
  */
 service ThunkService {
-	VarCont thunkGet(1: IThunk thunk)
+	VarCont thunkGet(1: Thunk thunk)
 }
 

@@ -1,109 +1,109 @@
 <project
-   xmlns="http://maven.apache.org/POM/4.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.fuelsyourcyb</groupId>
-  <artifactId>exathunk</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>Exathunk</name>
-  <url>http://fuelsyourcyb.org</url>
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.fuelsyourcyb</groupId>
+    <artifactId>exathunk</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>Exathunk</name>
+    <url>http://fuelsyourcyb.org</url>
 
-  <build>
-    <plugins>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<version>2.3.2</version>
-	<configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-surefire-plugin</artifactId>
-	<configuration>
-	  <systemProperties>
-	    <property>
-	      <name>java.util.logging.config.file</name>
-	      <value>logging.properties</value>
-	    </property>
-	  </systemProperties>
-	</configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-<profiles>
-    <profile>
-      <id>profile-buildthrift</id>
-      <activation>
-        <file>
-          <exists>/usr/local/bin/thrift</exists>
-        </file>
-      </activation>
-      <build>
+    <build>
         <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>generate-sources</id>
-                <phase>generate-sources</phase>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
-                  <tasks>
-                    <mkdir dir="target/generated-sources" />
-                    <exec executable="/usr/local/bin/thrift">
-                      <arg value="--gen" />
-                      <arg value="java:beans"/>
-                      <arg value="-o"/>
-                      <arg value="target/generated-sources"/>
-                      <arg value="src/main/resources/market.thrift"/>
-                    </exec>
-		    <exec executable="chmod">
-		      <arg value="-R"/>
-		      <arg value="770"/>
-		      <arg value="src/main/java/net/exathunk/genthrift"/>		      
-		    </exec>
-                    <delete>
-                      <fileset dir="src/main/java/net/exathunk/genthrift" includes="**/*"/>
-                    </delete>
-                    <copy todir="src/main/java/net/exathunk/genthrift">
-                      <fileset dir="target/generated-sources/gen-javabean/net/exathunk/genthrift"/>
-                    </copy>
-		    <exec executable="chmod">
-		      <arg value="-R"/>
-		      <arg value="550"/>
-		      <arg value="src/main/java/net/exathunk/genthrift"/>		      
-		    </exec>
-                  </tasks>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+            </plugin>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.thrift</groupId>
-      <artifactId>libthrift</artifactId>
-      <version>0.8.0</version>
-    </dependency>
-  </dependencies>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>java.util.logging.config.file</name>
+                            <value>logging.properties</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>profile-buildthrift</id>
+            <activation>
+                <file>
+                    <exists>/usr/local/bin/thrift</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-sources</id>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <tasks>
+                                        <mkdir dir="target/generated-sources" />
+                                        <exec executable="/usr/local/bin/thrift">
+                                            <arg value="--gen" />
+                                            <arg value="java:beans"/>
+                                            <arg value="-o"/>
+                                            <arg value="target/generated-sources"/>
+                                            <arg value="src/main/resources/market.thrift"/>
+                                        </exec>
+                                        <exec executable="chmod">
+                                            <arg value="-R"/>
+                                            <arg value="770"/>
+                                            <arg value="src/main/java/net/exathunk/genthrift"/>
+                                        </exec>
+                                        <delete>
+                                            <fileset dir="src/main/java/net/exathunk/genthrift" includes="**/*"/>
+                                        </delete>
+                                        <copy todir="src/main/java/net/exathunk/genthrift">
+                                            <fileset dir="target/generated-sources/gen-javabean/net/exathunk/genthrift"/>
+                                        </copy>
+                                        <exec executable="chmod">
+                                            <arg value="-R"/>
+                                            <arg value="550"/>
+                                            <arg value="src/main/java/net/exathunk/genthrift"/>
+                                        </exec>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

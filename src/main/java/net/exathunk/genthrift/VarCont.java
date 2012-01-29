@@ -658,7 +658,7 @@ public class VarCont implements org.apache.thrift.TBase<VarCont, VarCont._Fields
                 for (int _i7 = 0; _i7 < _map6.size; ++_i7)
                 {
                   Var _key8; // required
-                  Var _val9; // required
+                  Var _val9; // optional
                   _key8 = new Var();
                   _key8.read(iprot);
                   _val9 = new Var();
@@ -843,7 +843,7 @@ public class VarCont implements org.apache.thrift.TBase<VarCont, VarCont._Fields
           for (int _i23 = 0; _i23 < _map22.size; ++_i23)
           {
             Var _key24; // required
-            Var _val25; // required
+            Var _val25; // optional
             _key24 = new Var();
             _key24.read(iprot);
             _val25 = new Var();

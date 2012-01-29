@@ -34,13 +34,13 @@ public class ThunkService {
    */
   public interface Iface {
 
-    public VarCont thunkGet(IThunk thunk) throws org.apache.thrift.TException;
+    public VarCont thunkGet(Thunk thunk) throws org.apache.thrift.TException;
 
   }
 
   public interface AsyncIface {
 
-    public void thunkGet(IThunk thunk, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.thunkGet_call> resultHandler) throws org.apache.thrift.TException;
+    public void thunkGet(Thunk thunk, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.thunkGet_call> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -64,13 +64,13 @@ public class ThunkService {
       super(iprot, oprot);
     }
 
-    public VarCont thunkGet(IThunk thunk) throws org.apache.thrift.TException
+    public VarCont thunkGet(Thunk thunk) throws org.apache.thrift.TException
     {
       send_thunkGet(thunk);
       return recv_thunkGet();
     }
 
-    public void send_thunkGet(IThunk thunk) throws org.apache.thrift.TException
+    public void send_thunkGet(Thunk thunk) throws org.apache.thrift.TException
     {
       thunkGet_args args = new thunkGet_args();
       args.setThunk(thunk);
@@ -105,7 +105,7 @@ public class ThunkService {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void thunkGet(IThunk thunk, org.apache.thrift.async.AsyncMethodCallback<thunkGet_call> resultHandler) throws org.apache.thrift.TException {
+    public void thunkGet(Thunk thunk, org.apache.thrift.async.AsyncMethodCallback<thunkGet_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       thunkGet_call method_call = new thunkGet_call(thunk, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
@@ -113,8 +113,8 @@ public class ThunkService {
     }
 
     public static class thunkGet_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private IThunk thunk;
-      public thunkGet_call(IThunk thunk, org.apache.thrift.async.AsyncMethodCallback<thunkGet_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Thunk thunk;
+      public thunkGet_call(Thunk thunk, org.apache.thrift.async.AsyncMethodCallback<thunkGet_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.thunk = thunk;
       }
@@ -183,7 +183,7 @@ public class ThunkService {
       schemes.put(TupleScheme.class, new thunkGet_argsTupleSchemeFactory());
     }
 
-    private IThunk thunk; // required
+    private Thunk thunk; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -248,7 +248,7 @@ public class ThunkService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.THUNK, new org.apache.thrift.meta_data.FieldMetaData("thunk", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, IThunk.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Thunk.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(thunkGet_args.class, metaDataMap);
     }
@@ -257,7 +257,7 @@ public class ThunkService {
     }
 
     public thunkGet_args(
-      IThunk thunk)
+      Thunk thunk)
     {
       this();
       this.thunk = thunk;
@@ -268,7 +268,7 @@ public class ThunkService {
      */
     public thunkGet_args(thunkGet_args other) {
       if (other.isSetThunk()) {
-        this.thunk = new IThunk(other.thunk);
+        this.thunk = new Thunk(other.thunk);
       }
     }
 
@@ -281,11 +281,11 @@ public class ThunkService {
       this.thunk = null;
     }
 
-    public IThunk getThunk() {
+    public Thunk getThunk() {
       return this.thunk;
     }
 
-    public void setThunk(IThunk thunk) {
+    public void setThunk(Thunk thunk) {
       this.thunk = thunk;
     }
 
@@ -310,7 +310,7 @@ public class ThunkService {
         if (value == null) {
           unsetThunk();
         } else {
-          setThunk((IThunk)value);
+          setThunk((Thunk)value);
         }
         break;
 
@@ -458,7 +458,7 @@ public class ThunkService {
           switch (schemeField.id) {
             case 1: // THUNK
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.thunk = new IThunk();
+                struct.thunk = new Thunk();
                 struct.thunk.read(iprot);
                 struct.setThunkIsSet(true);
               } else { 
@@ -515,7 +515,7 @@ public class ThunkService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.thunk = new IThunk();
+          struct.thunk = new Thunk();
           struct.thunk.read(iprot);
           struct.setThunkIsSet(true);
         }

@@ -11,19 +11,14 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum RawType implements org.apache.thrift.TEnum {
-  VOID(0),
-  BOOL(1),
-  BYTE(2),
-  I16(3),
-  I32(4),
-  I64(5),
-  DOUBLE(6),
-  STRING(7);
+public enum Strictness implements org.apache.thrift.TEnum {
+  STRICT(0),
+  LENIENT(1),
+  LAZY(2);
 
   private final int value;
 
-  private RawType(int value) {
+  private Strictness(int value) {
     this.value = value;
   }
 
@@ -38,24 +33,14 @@ public enum RawType implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static RawType findByValue(int value) { 
+  public static Strictness findByValue(int value) { 
     switch (value) {
       case 0:
-        return VOID;
+        return STRICT;
       case 1:
-        return BOOL;
+        return LENIENT;
       case 2:
-        return BYTE;
-      case 3:
-        return I16;
-      case 4:
-        return I32;
-      case 5:
-        return I64;
-      case 6:
-        return DOUBLE;
-      case 7:
-        return STRING;
+        return LAZY;
       default:
         return null;
     }

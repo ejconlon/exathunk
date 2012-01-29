@@ -30,15 +30,15 @@ import org.slf4j.LoggerFactory;
 /**
  * A future.
  */
-public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, java.io.Serializable, Cloneable {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("IThunk");
+public class Thunk implements org.apache.thrift.TBase<Thunk, Thunk._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Thunk");
 
   private static final org.apache.thrift.protocol.TField THUNK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("thunkId", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new IThunkStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new IThunkTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new ThunkStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new ThunkTupleSchemeFactory());
   }
 
   private ThunkId thunkId; // required
@@ -108,13 +108,13 @@ public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, 
     tmpMap.put(_Fields.THUNK_ID, new org.apache.thrift.meta_data.FieldMetaData("thunkId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ThunkId.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(IThunk.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Thunk.class, metaDataMap);
   }
 
-  public IThunk() {
+  public Thunk() {
   }
 
-  public IThunk(
+  public Thunk(
     ThunkId thunkId)
   {
     this();
@@ -124,14 +124,14 @@ public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public IThunk(IThunk other) {
+  public Thunk(Thunk other) {
     if (other.isSetThunkId()) {
       this.thunkId = new ThunkId(other.thunkId);
     }
   }
 
-  public IThunk deepCopy() {
-    return new IThunk(this);
+  public Thunk deepCopy() {
+    return new Thunk(this);
   }
 
   @Override
@@ -201,12 +201,12 @@ public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, 
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof IThunk)
-      return this.equals((IThunk)that);
+    if (that instanceof Thunk)
+      return this.equals((Thunk)that);
     return false;
   }
 
-  public boolean equals(IThunk that) {
+  public boolean equals(Thunk that) {
     if (that == null)
       return false;
 
@@ -227,13 +227,13 @@ public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, 
     return 0;
   }
 
-  public int compareTo(IThunk other) {
+  public int compareTo(Thunk other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
-    IThunk typedOther = (IThunk)other;
+    Thunk typedOther = (Thunk)other;
 
     lastComparison = Boolean.valueOf(isSetThunkId()).compareTo(typedOther.isSetThunkId());
     if (lastComparison != 0) {
@@ -262,7 +262,7 @@ public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, 
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("IThunk(");
+    StringBuilder sb = new StringBuilder("Thunk(");
     boolean first = true;
 
     sb.append("thunkId:");
@@ -300,15 +300,15 @@ public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, 
     }
   }
 
-  private static class IThunkStandardSchemeFactory implements SchemeFactory {
-    public IThunkStandardScheme getScheme() {
-      return new IThunkStandardScheme();
+  private static class ThunkStandardSchemeFactory implements SchemeFactory {
+    public ThunkStandardScheme getScheme() {
+      return new ThunkStandardScheme();
     }
   }
 
-  private static class IThunkStandardScheme extends StandardScheme<IThunk> {
+  private static class ThunkStandardScheme extends StandardScheme<Thunk> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, IThunk struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, Thunk struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -336,7 +336,7 @@ public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, 
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, IThunk struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, Thunk struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -351,22 +351,22 @@ public class IThunk implements org.apache.thrift.TBase<IThunk, IThunk._Fields>, 
 
   }
 
-  private static class IThunkTupleSchemeFactory implements SchemeFactory {
-    public IThunkTupleScheme getScheme() {
-      return new IThunkTupleScheme();
+  private static class ThunkTupleSchemeFactory implements SchemeFactory {
+    public ThunkTupleScheme getScheme() {
+      return new ThunkTupleScheme();
     }
   }
 
-  private static class IThunkTupleScheme extends TupleScheme<IThunk> {
+  private static class ThunkTupleScheme extends TupleScheme<Thunk> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, IThunk struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, Thunk struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       struct.thunkId.write(oprot);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, IThunk struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, Thunk struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.thunkId = new ThunkId();
       struct.thunkId.read(iprot);

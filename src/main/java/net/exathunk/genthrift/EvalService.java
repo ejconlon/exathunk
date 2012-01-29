@@ -34,7 +34,7 @@ public class EvalService {
    */
   public interface Iface {
 
-    public IThunk submitEvalRequest(EvalRequest evalRequest) throws org.apache.thrift.TException;
+    public Thunk submitEvalRequest(EvalRequest evalRequest) throws org.apache.thrift.TException;
 
   }
 
@@ -64,7 +64,7 @@ public class EvalService {
       super(iprot, oprot);
     }
 
-    public IThunk submitEvalRequest(EvalRequest evalRequest) throws org.apache.thrift.TException
+    public Thunk submitEvalRequest(EvalRequest evalRequest) throws org.apache.thrift.TException
     {
       send_submitEvalRequest(evalRequest);
       return recv_submitEvalRequest();
@@ -77,7 +77,7 @@ public class EvalService {
       sendBase("submitEvalRequest", args);
     }
 
-    public IThunk recv_submitEvalRequest() throws org.apache.thrift.TException
+    public Thunk recv_submitEvalRequest() throws org.apache.thrift.TException
     {
       submitEvalRequest_result result = new submitEvalRequest_result();
       receiveBase(result, "submitEvalRequest");
@@ -127,7 +127,7 @@ public class EvalService {
         prot.writeMessageEnd();
       }
 
-      public IThunk getResult() throws org.apache.thrift.TException {
+      public Thunk getResult() throws org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -535,7 +535,7 @@ public class EvalService {
       schemes.put(TupleScheme.class, new submitEvalRequest_resultTupleSchemeFactory());
     }
 
-    private IThunk success; // required
+    private Thunk success; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -600,7 +600,7 @@ public class EvalService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, IThunk.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Thunk.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(submitEvalRequest_result.class, metaDataMap);
     }
@@ -609,7 +609,7 @@ public class EvalService {
     }
 
     public submitEvalRequest_result(
-      IThunk success)
+      Thunk success)
     {
       this();
       this.success = success;
@@ -620,7 +620,7 @@ public class EvalService {
      */
     public submitEvalRequest_result(submitEvalRequest_result other) {
       if (other.isSetSuccess()) {
-        this.success = new IThunk(other.success);
+        this.success = new Thunk(other.success);
       }
     }
 
@@ -633,11 +633,11 @@ public class EvalService {
       this.success = null;
     }
 
-    public IThunk getSuccess() {
+    public Thunk getSuccess() {
       return this.success;
     }
 
-    public void setSuccess(IThunk success) {
+    public void setSuccess(Thunk success) {
       this.success = success;
     }
 
@@ -662,7 +662,7 @@ public class EvalService {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((IThunk)value);
+          setSuccess((Thunk)value);
         }
         break;
 
@@ -810,7 +810,7 @@ public class EvalService {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new IThunk();
+                struct.success = new Thunk();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -867,7 +867,7 @@ public class EvalService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.success = new IThunk();
+          struct.success = new Thunk();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }

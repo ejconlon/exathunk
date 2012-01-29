@@ -426,14 +426,14 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
           case 2: // EVAL_ARGS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
-                struct.evalArgs = new ArrayList<VarTree>(_list42.size);
-                for (int _i43 = 0; _i43 < _list42.size; ++_i43)
+                org.apache.thrift.protocol.TList _list58 = iprot.readListBegin();
+                struct.evalArgs = new ArrayList<VarTree>(_list58.size);
+                for (int _i59 = 0; _i59 < _list58.size; ++_i59)
                 {
-                  VarTree _elem44; // required
-                  _elem44 = new VarTree();
-                  _elem44.read(iprot);
-                  struct.evalArgs.add(_elem44);
+                  VarTree _elem60; // required
+                  _elem60 = new VarTree();
+                  _elem60.read(iprot);
+                  struct.evalArgs.add(_elem60);
                 }
                 iprot.readListEnd();
               }
@@ -464,9 +464,9 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
         oprot.writeFieldBegin(EVAL_ARGS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.evalArgs.size()));
-          for (VarTree _iter45 : struct.evalArgs)
+          for (VarTree _iter61 : struct.evalArgs)
           {
-            _iter45.write(oprot);
+            _iter61.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -498,9 +498,9 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
       if (struct.isSetEvalArgs()) {
         {
           oprot.writeI32(struct.evalArgs.size());
-          for (VarTree _iter46 : struct.evalArgs)
+          for (VarTree _iter62 : struct.evalArgs)
           {
-            _iter46.write(oprot);
+            _iter62.write(oprot);
           }
         }
       }
@@ -515,14 +515,14 @@ public class EvalRequest implements org.apache.thrift.TBase<EvalRequest, EvalReq
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list47 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.evalArgs = new ArrayList<VarTree>(_list47.size);
-          for (int _i48 = 0; _i48 < _list47.size; ++_i48)
+          org.apache.thrift.protocol.TList _list63 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.evalArgs = new ArrayList<VarTree>(_list63.size);
+          for (int _i64 = 0; _i64 < _list63.size; ++_i64)
           {
-            VarTree _elem49; // required
-            _elem49 = new VarTree();
-            _elem49.read(iprot);
-            struct.evalArgs.add(_elem49);
+            VarTree _elem65; // required
+            _elem65 = new VarTree();
+            _elem65.read(iprot);
+            struct.evalArgs.add(_elem65);
           }
         }
         struct.setEvalArgsIsSet(true);
