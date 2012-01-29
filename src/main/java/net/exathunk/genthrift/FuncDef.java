@@ -34,8 +34,9 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("FuncDef");
 
   private static final org.apache.thrift.protocol.TField FUNC_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("funcId", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-  private static final org.apache.thrift.protocol.TField ARG_TYPES_FIELD_DESC = new org.apache.thrift.protocol.TField("argTypes", org.apache.thrift.protocol.TType.LIST, (short)2);
-  private static final org.apache.thrift.protocol.TField STRICTNESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("strictnesses", org.apache.thrift.protocol.TType.LIST, (short)3);
+  private static final org.apache.thrift.protocol.TField RETURN_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("returnType", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+  private static final org.apache.thrift.protocol.TField PARAMETER_TYPES_FIELD_DESC = new org.apache.thrift.protocol.TField("parameterTypes", org.apache.thrift.protocol.TType.LIST, (short)3);
+  private static final org.apache.thrift.protocol.TField STRICTNESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("strictnesses", org.apache.thrift.protocol.TType.LIST, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -44,14 +45,16 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
   }
 
   private FuncId funcId; // required
-  private List<ContType> argTypes; // required
+  private VarContType returnType; // required
+  private List<VarContType> parameterTypes; // required
   private List<Strictness> strictnesses; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     FUNC_ID((short)1, "funcId"),
-    ARG_TYPES((short)2, "argTypes"),
-    STRICTNESSES((short)3, "strictnesses");
+    RETURN_TYPE((short)2, "returnType"),
+    PARAMETER_TYPES((short)3, "parameterTypes"),
+    STRICTNESSES((short)4, "strictnesses");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -68,9 +71,11 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
       switch(fieldId) {
         case 1: // FUNC_ID
           return FUNC_ID;
-        case 2: // ARG_TYPES
-          return ARG_TYPES;
-        case 3: // STRICTNESSES
+        case 2: // RETURN_TYPE
+          return RETURN_TYPE;
+        case 3: // PARAMETER_TYPES
+          return PARAMETER_TYPES;
+        case 4: // STRICTNESSES
           return STRICTNESSES;
         default:
           return null;
@@ -118,9 +123,11 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.FUNC_ID, new org.apache.thrift.meta_data.FieldMetaData("funcId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, FuncId.class)));
-    tmpMap.put(_Fields.ARG_TYPES, new org.apache.thrift.meta_data.FieldMetaData("argTypes", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.RETURN_TYPE, new org.apache.thrift.meta_data.FieldMetaData("returnType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, VarContType.class)));
+    tmpMap.put(_Fields.PARAMETER_TYPES, new org.apache.thrift.meta_data.FieldMetaData("parameterTypes", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ContType.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, VarContType.class))));
     tmpMap.put(_Fields.STRICTNESSES, new org.apache.thrift.meta_data.FieldMetaData("strictnesses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, Strictness.class))));
@@ -133,11 +140,13 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
 
   public FuncDef(
     FuncId funcId,
-    List<ContType> argTypes)
+    VarContType returnType,
+    List<VarContType> parameterTypes)
   {
     this();
     this.funcId = funcId;
-    this.argTypes = argTypes;
+    this.returnType = returnType;
+    this.parameterTypes = parameterTypes;
   }
 
   /**
@@ -147,12 +156,15 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
     if (other.isSetFuncId()) {
       this.funcId = new FuncId(other.funcId);
     }
-    if (other.isSetArgTypes()) {
-      List<ContType> __this__argTypes = new ArrayList<ContType>();
-      for (ContType other_element : other.argTypes) {
-        __this__argTypes.add(other_element);
+    if (other.isSetReturnType()) {
+      this.returnType = new VarContType(other.returnType);
+    }
+    if (other.isSetParameterTypes()) {
+      List<VarContType> __this__parameterTypes = new ArrayList<VarContType>();
+      for (VarContType other_element : other.parameterTypes) {
+        __this__parameterTypes.add(new VarContType(other_element));
       }
-      this.argTypes = __this__argTypes;
+      this.parameterTypes = __this__parameterTypes;
     }
     if (other.isSetStrictnesses()) {
       List<Strictness> __this__strictnesses = new ArrayList<Strictness>();
@@ -170,7 +182,8 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
   @Override
   public void clear() {
     this.funcId = null;
-    this.argTypes = null;
+    this.returnType = null;
+    this.parameterTypes = null;
     this.strictnesses = null;
   }
 
@@ -197,41 +210,64 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
     }
   }
 
-  public int getArgTypesSize() {
-    return (this.argTypes == null) ? 0 : this.argTypes.size();
+  public VarContType getReturnType() {
+    return this.returnType;
   }
 
-  public java.util.Iterator<ContType> getArgTypesIterator() {
-    return (this.argTypes == null) ? null : this.argTypes.iterator();
+  public void setReturnType(VarContType returnType) {
+    this.returnType = returnType;
   }
 
-  public void addToArgTypes(ContType elem) {
-    if (this.argTypes == null) {
-      this.argTypes = new ArrayList<ContType>();
-    }
-    this.argTypes.add(elem);
+  public void unsetReturnType() {
+    this.returnType = null;
   }
 
-  public List<ContType> getArgTypes() {
-    return this.argTypes;
+  /** Returns true if field returnType is set (has been assigned a value) and false otherwise */
+  public boolean isSetReturnType() {
+    return this.returnType != null;
   }
 
-  public void setArgTypes(List<ContType> argTypes) {
-    this.argTypes = argTypes;
-  }
-
-  public void unsetArgTypes() {
-    this.argTypes = null;
-  }
-
-  /** Returns true if field argTypes is set (has been assigned a value) and false otherwise */
-  public boolean isSetArgTypes() {
-    return this.argTypes != null;
-  }
-
-  public void setArgTypesIsSet(boolean value) {
+  public void setReturnTypeIsSet(boolean value) {
     if (!value) {
-      this.argTypes = null;
+      this.returnType = null;
+    }
+  }
+
+  public int getParameterTypesSize() {
+    return (this.parameterTypes == null) ? 0 : this.parameterTypes.size();
+  }
+
+  public java.util.Iterator<VarContType> getParameterTypesIterator() {
+    return (this.parameterTypes == null) ? null : this.parameterTypes.iterator();
+  }
+
+  public void addToParameterTypes(VarContType elem) {
+    if (this.parameterTypes == null) {
+      this.parameterTypes = new ArrayList<VarContType>();
+    }
+    this.parameterTypes.add(elem);
+  }
+
+  public List<VarContType> getParameterTypes() {
+    return this.parameterTypes;
+  }
+
+  public void setParameterTypes(List<VarContType> parameterTypes) {
+    this.parameterTypes = parameterTypes;
+  }
+
+  public void unsetParameterTypes() {
+    this.parameterTypes = null;
+  }
+
+  /** Returns true if field parameterTypes is set (has been assigned a value) and false otherwise */
+  public boolean isSetParameterTypes() {
+    return this.parameterTypes != null;
+  }
+
+  public void setParameterTypesIsSet(boolean value) {
+    if (!value) {
+      this.parameterTypes = null;
     }
   }
 
@@ -283,11 +319,19 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
       }
       break;
 
-    case ARG_TYPES:
+    case RETURN_TYPE:
       if (value == null) {
-        unsetArgTypes();
+        unsetReturnType();
       } else {
-        setArgTypes((List<ContType>)value);
+        setReturnType((VarContType)value);
+      }
+      break;
+
+    case PARAMETER_TYPES:
+      if (value == null) {
+        unsetParameterTypes();
+      } else {
+        setParameterTypes((List<VarContType>)value);
       }
       break;
 
@@ -307,8 +351,11 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
     case FUNC_ID:
       return getFuncId();
 
-    case ARG_TYPES:
-      return getArgTypes();
+    case RETURN_TYPE:
+      return getReturnType();
+
+    case PARAMETER_TYPES:
+      return getParameterTypes();
 
     case STRICTNESSES:
       return getStrictnesses();
@@ -326,8 +373,10 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
     switch (field) {
     case FUNC_ID:
       return isSetFuncId();
-    case ARG_TYPES:
-      return isSetArgTypes();
+    case RETURN_TYPE:
+      return isSetReturnType();
+    case PARAMETER_TYPES:
+      return isSetParameterTypes();
     case STRICTNESSES:
       return isSetStrictnesses();
     }
@@ -356,12 +405,21 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
         return false;
     }
 
-    boolean this_present_argTypes = true && this.isSetArgTypes();
-    boolean that_present_argTypes = true && that.isSetArgTypes();
-    if (this_present_argTypes || that_present_argTypes) {
-      if (!(this_present_argTypes && that_present_argTypes))
+    boolean this_present_returnType = true && this.isSetReturnType();
+    boolean that_present_returnType = true && that.isSetReturnType();
+    if (this_present_returnType || that_present_returnType) {
+      if (!(this_present_returnType && that_present_returnType))
         return false;
-      if (!this.argTypes.equals(that.argTypes))
+      if (!this.returnType.equals(that.returnType))
+        return false;
+    }
+
+    boolean this_present_parameterTypes = true && this.isSetParameterTypes();
+    boolean that_present_parameterTypes = true && that.isSetParameterTypes();
+    if (this_present_parameterTypes || that_present_parameterTypes) {
+      if (!(this_present_parameterTypes && that_present_parameterTypes))
+        return false;
+      if (!this.parameterTypes.equals(that.parameterTypes))
         return false;
     }
 
@@ -400,12 +458,22 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetArgTypes()).compareTo(typedOther.isSetArgTypes());
+    lastComparison = Boolean.valueOf(isSetReturnType()).compareTo(typedOther.isSetReturnType());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetArgTypes()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.argTypes, typedOther.argTypes);
+    if (isSetReturnType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.returnType, typedOther.returnType);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetParameterTypes()).compareTo(typedOther.isSetParameterTypes());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParameterTypes()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parameterTypes, typedOther.parameterTypes);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -448,11 +516,19 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("argTypes:");
-    if (this.argTypes == null) {
+    sb.append("returnType:");
+    if (this.returnType == null) {
       sb.append("null");
     } else {
-      sb.append(this.argTypes);
+      sb.append(this.returnType);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("parameterTypes:");
+    if (this.parameterTypes == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.parameterTypes);
     }
     first = false;
     if (isSetStrictnesses()) {
@@ -475,8 +551,12 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'funcId' is unset! Struct:" + toString());
     }
 
-    if (!isSetArgTypes()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'argTypes' is unset! Struct:" + toString());
+    if (!isSetReturnType()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'returnType' is unset! Struct:" + toString());
+    }
+
+    if (!isSetParameterTypes()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parameterTypes' is unset! Struct:" + toString());
     }
 
   }
@@ -524,25 +604,35 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // ARG_TYPES
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
-                struct.argTypes = new ArrayList<ContType>(_list42.size);
-                for (int _i43 = 0; _i43 < _list42.size; ++_i43)
-                {
-                  ContType _elem44; // required
-                  _elem44 = ContType.findByValue(iprot.readI32());
-                  struct.argTypes.add(_elem44);
-                }
-                iprot.readListEnd();
-              }
-              struct.setArgTypesIsSet(true);
+          case 2: // RETURN_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.returnType = new VarContType();
+              struct.returnType.read(iprot);
+              struct.setReturnTypeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // STRICTNESSES
+          case 3: // PARAMETER_TYPES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
+                struct.parameterTypes = new ArrayList<VarContType>(_list42.size);
+                for (int _i43 = 0; _i43 < _list42.size; ++_i43)
+                {
+                  VarContType _elem44; // required
+                  _elem44 = new VarContType();
+                  _elem44.read(iprot);
+                  struct.parameterTypes.add(_elem44);
+                }
+                iprot.readListEnd();
+              }
+              struct.setParameterTypesIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // STRICTNESSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list45 = iprot.readListBegin();
@@ -578,13 +668,18 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
         struct.funcId.write(oprot);
         oprot.writeFieldEnd();
       }
-      if (struct.argTypes != null) {
-        oprot.writeFieldBegin(ARG_TYPES_FIELD_DESC);
+      if (struct.returnType != null) {
+        oprot.writeFieldBegin(RETURN_TYPE_FIELD_DESC);
+        struct.returnType.write(oprot);
+        oprot.writeFieldEnd();
+      }
+      if (struct.parameterTypes != null) {
+        oprot.writeFieldBegin(PARAMETER_TYPES_FIELD_DESC);
         {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.argTypes.size()));
-          for (ContType _iter48 : struct.argTypes)
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.parameterTypes.size()));
+          for (VarContType _iter48 : struct.parameterTypes)
           {
-            oprot.writeI32(_iter48.getValue());
+            _iter48.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -622,11 +717,12 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
     public void write(org.apache.thrift.protocol.TProtocol prot, FuncDef struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       struct.funcId.write(oprot);
+      struct.returnType.write(oprot);
       {
-        oprot.writeI32(struct.argTypes.size());
-        for (ContType _iter50 : struct.argTypes)
+        oprot.writeI32(struct.parameterTypes.size());
+        for (VarContType _iter50 : struct.parameterTypes)
         {
-          oprot.writeI32(_iter50.getValue());
+          _iter50.write(oprot);
         }
       }
       BitSet optionals = new BitSet();
@@ -651,17 +747,21 @@ public class FuncDef implements org.apache.thrift.TBase<FuncDef, FuncDef._Fields
       struct.funcId = new FuncId();
       struct.funcId.read(iprot);
       struct.setFuncIdIsSet(true);
+      struct.returnType = new VarContType();
+      struct.returnType.read(iprot);
+      struct.setReturnTypeIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list52 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-        struct.argTypes = new ArrayList<ContType>(_list52.size);
+        org.apache.thrift.protocol.TList _list52 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+        struct.parameterTypes = new ArrayList<VarContType>(_list52.size);
         for (int _i53 = 0; _i53 < _list52.size; ++_i53)
         {
-          ContType _elem54; // required
-          _elem54 = ContType.findByValue(iprot.readI32());
-          struct.argTypes.add(_elem54);
+          VarContType _elem54; // required
+          _elem54 = new VarContType();
+          _elem54.read(iprot);
+          struct.parameterTypes.add(_elem54);
         }
       }
-      struct.setArgTypesIsSet(true);
+      struct.setParameterTypesIsSet(true);
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {

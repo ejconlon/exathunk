@@ -9,7 +9,7 @@ import java.util.ArrayDeque;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class SexpParser implements NTreeParser<String, String, String> {
+public class SexpParser implements NTreeParser {
 
     private static final String OPEN_PAREN = "(";
     private static final String CLOSE_PAREN = ")";

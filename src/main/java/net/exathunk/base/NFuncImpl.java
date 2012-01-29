@@ -1,40 +1,24 @@
 package net.exathunk.base;
 
+import net.exathunk.genthrift.FuncDef;
+import net.exathunk.genthrift.FuncId;
+import net.exathunk.genthrift.VarCont;
+import net.exathunk.genthrift.VarContType;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public abstract class NFuncImpl<Type, Label, Value> implements NFunc<Type, Label, Value> {
+public abstract class NFuncImpl implements NFunc {
     
-    private final Type returnType;
-    private final List<Type> parameterTypes;
-    private final List<Strictness> strictnesses;
+    private final FuncDef funcDef;
 
-    public NFuncImpl(Type returnType, Type[] parameterTypes, Strictness[] strictnesses) {
-        this.returnType = returnType;
-        this.parameterTypes = listify(parameterTypes);
-        this.strictnesses = listify(strictnesses);
-        assert parameterTypes.length == strictnesses.length;
+    public NFuncImpl(FuncDef funcDef) {
+        this.funcDef = funcDef;
     }
 
-    private static <T> List<T> listify(T[] objs) {
-        List<T> list = new ArrayList<>(objs.length);
-        for (T obj : objs) list.add(obj);
-        return Collections.unmodifiableList(list);
-    }
-    
-    public List<Type> getParameterTypes() {
-        return parameterTypes;
-    }
+    public FuncDef getFuncDef() { return funcDef; }
 
-    public List<Strictness> getStrictnesses() {
-        return strictnesses;
-    }
-
-    public Type getReturnType() {
-        return returnType;
-    }
-
-    public abstract Thunk<Value> invoke(ThunkFactory<Type, Label, Value> thunkFactory,
-                                        ThunkExecutor<Value> executor, NTree<Type, Label, Value> args);
+    public abstract Thunk<VarCont> invoke(ThunkFactory thunkFactory,
+                                          ThunkExecutor<VarCont> executor, NTree<VarContType, FuncId, VarCont> args);
 }

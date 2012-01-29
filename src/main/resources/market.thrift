@@ -11,14 +11,14 @@ enum VarType {
  * A union of concrete variable types, to be accompanied by a VarType
  */
 struct Var {
-       2: optional bool boolVar,
-       3: optional byte byteVar,
-       4: optional i16 i16Var,
-       5: optional i32 i32Var,
-       6: optional i64 i64Var,
-       7: optional double doubleVar,
-       8: optional string stringVar,
-       9: optional binary binaryVar
+       1: optional bool boolVar,
+       2: optional byte byteVar,
+       3: optional i16 i16Var,
+       4: optional i32 i32Var,
+       5: optional i64 i64Var,
+       6: optional double doubleVar,
+       7: optional string stringVar,
+       8: optional binary binaryVar
 }
 
 /**
@@ -94,8 +94,9 @@ enum Strictness {
  */
 struct FuncDef {
     1: required FuncId funcId,
-    2: required list<ContType> argTypes,
-    3: optional list<Strictness> strictnesses
+    2: required VarContType returnType,
+    3: required list<VarContType> parameterTypes,
+    4: optional list<Strictness> strictnesses
 }
 
 /**

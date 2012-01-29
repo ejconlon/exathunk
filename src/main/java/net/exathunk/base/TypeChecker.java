@@ -1,7 +1,10 @@
 package net.exathunk.base;
 
-public interface TypeChecker<Type, FromValue, ToValue> {
-    boolean canCast(Type fromType, Type toType);
+import net.exathunk.genthrift.VarCont;
+import net.exathunk.genthrift.VarContType;
 
-    ToValue cast(Type toType, FromValue fromValue) throws TypeException;
+public interface TypeChecker {
+    boolean canCast(VarContType fromType, VarContType toType);
+
+    VarCont cast(VarContType toType, String fromValue) throws TypeException;
 }

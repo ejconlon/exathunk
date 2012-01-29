@@ -1,11 +1,12 @@
 package net.exathunk.base;
 
-import java.util.List;
+import net.exathunk.genthrift.FuncDef;
+import net.exathunk.genthrift.FuncId;
+import net.exathunk.genthrift.VarCont;
+import net.exathunk.genthrift.VarContType;
 
-public interface NFunc<Type, Label, Value> {
-    Type getReturnType();
-    List<Type> getParameterTypes();
-    List<Strictness> getStrictnesses();
-    Thunk<Value> invoke(ThunkFactory<Type, Label, Value> thunkFactory,
-                        ThunkExecutor<Value> executor, NTree<Type, Label, Value> args);
+public interface NFunc {
+    FuncDef getFuncDef();
+    Thunk<VarCont> invoke(ThunkFactory thunkFactory,
+                          ThunkExecutor<VarCont> executor, NTree<VarContType, FuncId, VarCont> args);
 }

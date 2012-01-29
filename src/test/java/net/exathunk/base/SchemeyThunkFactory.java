@@ -1,5 +1,10 @@
 package net.exathunk.base;
 
+import net.exathunk.genthrift.FuncDef;
+import net.exathunk.genthrift.FuncId;
+import net.exathunk.genthrift.VarCont;
+import net.exathunk.genthrift.VarContType;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -7,160 +12,205 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-public class SchemeyThunkFactory implements ThunkFactory<Class, String, Object> {
+public class SchemeyThunkFactory implements ThunkFactory {
 
-    private final Map<String, NFunc<Class, String, Object>> funcs = makeFuncs();
+    private final Map<FuncId, NFunc> funcs = makeFuncs();
 
-    public boolean knowsFunc(String funcId) {
+    public boolean knowsFunc(FuncId funcId) {
         return funcs.containsKey(funcId);
     }
 
-    public List<Strictness> getStrictnesses(String funcId) throws UnknownFuncException {
-        return getFunc(funcId).getStrictnesses();
-    }
-
-    protected NFunc<Class, String, Object> getFunc(String funcId) throws UnknownFuncException {
-        NFunc<Class, String, Object> f = funcs.get(funcId);
+    public NFunc getFunc(FuncId funcId) throws UnknownFuncException {
+        NFunc f = funcs.get(funcId);
         if (f == null) throw new UnknownFuncException("Unknown func: "+funcId);
         return f;
     }
 
-    public List<Class> getParameterTypes(String funcId) throws UnknownFuncException {
-        return getFunc(funcId).getParameterTypes();
-    }
-
-    public Class getReturnType(String funcId) throws UnknownFuncException {
-        return getFunc(funcId).getReturnType();
-    }
-
-    public Thunk<Object> makeThunk(ThunkExecutor<Object> executor, NTree<Class, String, Object> tree) throws UnknownFuncException {
+    public Thunk<VarCont> makeThunk(ThunkExecutor<VarCont> executor, NTree<VarContType, FuncId, VarCont> tree) throws UnknownFuncException {
         return getFunc(tree.getLabel()).invoke(this, executor, tree);
     }
 
-    private static abstract class IntFunc extends StrictNFuncImpl<Class, String, Object> {
+    private static abstract class IntFunc extends StrictNFuncImpl {
         public IntFunc() {
-            super(Integer.class, new Class[] { Integer.class, Integer.class });
+            super(makeFuncDef());
+        }
+        
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeLongVarContType());
+            def.addToParameterTypes(VarUtils.makeLongVarContType());
+            def.addToParameterTypes(VarUtils.makeLongVarContType());
+            return def;
         }
     }
 
     public static class AddFunc extends IntFunc {
-        protected Object subInvoke(final List<Object> a) {
-            return (Integer)a.get(0) + (Integer)a.get(1);
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeLongVarCont(
+                    values.get(0).getSingletonCont().getI64Var() +
+                            values.get(1).getSingletonCont().getI64Var());
         }
     }
 
     public static class SubFunc extends IntFunc {
-        protected Object subInvoke(final List<Object> a) {
-            return (Integer)a.get(0) - (Integer)a.get(1);
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeLongVarCont(
+                    values.get(0).getSingletonCont().getI64Var() -
+                            values.get(1).getSingletonCont().getI64Var());
         }
     }
 
     public static class MulFunc extends IntFunc {
-        protected Object subInvoke(final List<Object> a) {
-            return (Integer)a.get(0) * (Integer)a.get(1);
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeLongVarCont(
+                    values.get(0).getSingletonCont().getI64Var() *
+                            values.get(1).getSingletonCont().getI64Var());
         }
     }
 
     public static class DivFunc extends IntFunc {
-        protected Object subInvoke(final List<Object> a) {
-            return (Integer)a.get(0) / (Integer)a.get(1);
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeLongVarCont(
+                    values.get(0).getSingletonCont().getI64Var() /
+                            values.get(1).getSingletonCont().getI64Var());
         }
     }
 
     public static class ModFunc extends IntFunc {
-        protected Object subInvoke(final List<Object> a) {
-            return (Integer)a.get(0) % (Integer)a.get(1);
-        }
-    }
-
-    private static abstract class StrictBoolFunc2 extends StrictNFuncImpl<Class, String, Object> {
-        public StrictBoolFunc2() {
-            super(Boolean.class, new Class[] { Boolean.class, Boolean.class });
-        }
-    }
-
-    private static abstract class LazyBoolFunc2 extends NFuncImpl<Class, String, Object> {
-        public LazyBoolFunc2() {
-            super(Boolean.class, new Class[] { Boolean.class, Boolean.class },
-                    new Strictness[] {Strictness.STRICT, Strictness.LAZY});
-        }
-    }
-
-    public static class AndFunc extends LazyBoolFunc2 {
         @Override
-        public Thunk<Object> invoke(final ThunkFactory<Class, String, Object> thunkFactory, 
-                                    final ThunkExecutor<Object> executor, final NTree<Class, String, Object> args) {
-            return new CallableThunk<>(new Callable<Object>() {
-                @Override
-                public Object call() throws ExecutionException, UnknownFuncException {
-                    List<Boolean> mask1 = Arrays.asList(true, false);
-                    Thunk<NTree<Class, String, Object>> firstEvaled =
-                        TreeExecutor.execute(thunkFactory, executor, args, mask1);
-                    if (Boolean.FALSE.equals(firstEvaled.get().getChildren().get(0).getValue())) {
-                        return Boolean.FALSE;
-                    }
-                    List<Boolean> mask2 = Arrays.asList(false, true);
-                    Thunk<NTree<Class, String, Object>> secondEvaled =
-                            TreeExecutor.execute(thunkFactory, executor, firstEvaled.get(), mask2);
-                    if (Boolean.FALSE.equals(secondEvaled.get().getChildren().get(1).getValue())) {
-                        return Boolean.FALSE;
-                    }
-                    return Boolean.TRUE;
-                }
-            });
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeLongVarCont(
+                    values.get(0).getSingletonCont().getI64Var() %
+                            values.get(1).getSingletonCont().getI64Var());
         }
     }
 
-    public static class OrFunc extends LazyBoolFunc2 {
+    private static abstract class BoolFunc2 extends NFuncImpl {
+        public BoolFunc2() {
+            super(makeFuncDef());
+        }
+
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeBoolVarContType());
+            def.addToParameterTypes(VarUtils.makeBoolVarContType());
+            def.addToParameterTypes(VarUtils.makeBoolVarContType());
+            return def;
+        }
+    }
+
+    public static class AndFunc extends BoolFunc2 {
         @Override
-        public Thunk<Object> invoke(final ThunkFactory<Class, String, Object> thunkFactory,
-                                    final ThunkExecutor<Object> executor, final NTree<Class, String, Object> args) {
-            return new CallableThunk<>(new Callable<Object>() {
+        public Thunk<VarCont> invoke(final ThunkFactory thunkFactory, final ThunkExecutor<VarCont> executor, final NTree<VarContType, FuncId, VarCont> args) {
+            return new CallableThunk<>(new Callable<VarCont>() {
                 @Override
-                public Object call() throws ExecutionException, UnknownFuncException {
+                public VarCont call() throws ExecutionException, UnknownFuncException {
                     List<Boolean> mask1 = Arrays.asList(true, false);
-                    Thunk<NTree<Class, String, Object>> firstEvaled =
+                    Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
                             TreeExecutor.execute(thunkFactory, executor, args, mask1);
-                    if (Boolean.TRUE.equals(firstEvaled.get().getChildren().get(0).getValue())) {
-                        return Boolean.TRUE;
+                    if (!firstEvaled.get().getChildren().get(0).getValue().getSingletonCont().isBoolVar()) {
+                        return VarUtils.makeBoolVarCont(false);
                     }
                     List<Boolean> mask2 = Arrays.asList(false, true);
-                    Thunk<NTree<Class, String, Object>> secondEvaled =
+                    Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
                             TreeExecutor.execute(thunkFactory, executor, firstEvaled.get(), mask2);
-                    if (Boolean.TRUE.equals(secondEvaled.get().getChildren().get(1).getValue())) {
-                        return Boolean.TRUE;
+                    if (!secondEvaled.get().getChildren().get(1).getValue().getSingletonCont().isBoolVar()) {
+                        return VarUtils.makeBoolVarCont(false);
                     }
-                    return Boolean.FALSE;
+                    return VarUtils.makeBoolVarCont(true);
                 }
             });
         }
     }
 
-    public static class XorFunc extends StrictBoolFunc2 {
-        protected Object subInvoke(final List<Object> a) {
-            return (Boolean)a.get(0) ^ (Boolean)a.get(1);
+    public static class OrFunc extends BoolFunc2 {
+        @Override
+        public Thunk<VarCont> invoke(final ThunkFactory thunkFactory, final ThunkExecutor<VarCont> executor, final NTree<VarContType, FuncId, VarCont> args) {
+            return new CallableThunk<>(new Callable<VarCont>() {
+                @Override
+                public VarCont call() throws ExecutionException, UnknownFuncException {
+                    List<Boolean> mask1 = Arrays.asList(true, false);
+                    Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
+                            TreeExecutor.execute(thunkFactory, executor, args, mask1);
+                    if (firstEvaled.get().getChildren().get(0).getValue().getSingletonCont().isBoolVar()) {
+                        return VarUtils.makeBoolVarCont(true);
+                    }
+                    List<Boolean> mask2 = Arrays.asList(false, true);
+                    Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
+                            TreeExecutor.execute(thunkFactory, executor, firstEvaled.get(), mask2);
+                    if (secondEvaled.get().getChildren().get(1).getValue().getSingletonCont().isBoolVar()) {
+                        return VarUtils.makeBoolVarCont(true);
+                    }
+                    return VarUtils.makeBoolVarCont(false);
+                }
+            });
         }
     }
 
-    private static class NotFunc extends StrictNFuncImpl<Class, String, Object> {
-        public NotFunc() {
-            super(Boolean.class, new Class[] { Boolean.class });
+    private static abstract class StrictBoolFunc2 extends StrictNFuncImpl {
+        public StrictBoolFunc2() {
+            super(makeFuncDef());
         }
 
-        protected Object subInvoke(final List<Object> a) {
-            return !(Boolean)a.get(0);
-        }
-    }
-
-    public static class LenFunc extends StrictNFuncImpl<Class, String, Object> {
-        public LenFunc() { super(Integer.class, new Class[] { String.class }); }
-
-        protected Object subInvoke(final List<Object> a) {
-            return ((String)a.get(0)).length();
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeBoolVarContType());
+            def.addToParameterTypes(VarUtils.makeBoolVarContType());
+            def.addToParameterTypes(VarUtils.makeBoolVarContType());
+            return def;
         }
     }
     
-    public static class BottomFunc extends StrictNFuncImpl<Class, String, Object> {
+    public static class XorFunc extends StrictBoolFunc2 {
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeBoolVarCont(
+                    values.get(0).getSingletonCont().isBoolVar() ^
+                            values.get(1).getSingletonCont().isBoolVar());
+        }
+    }
+
+    private static class NotFunc extends StrictNFuncImpl {
+        public NotFunc() {
+            super(makeFuncDef());
+        }
+
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeBoolVarContType());
+            def.addToParameterTypes(VarUtils.makeBoolVarContType());
+            return def;
+        }
+
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeBoolVarCont(
+                    !values.get(0).getSingletonCont().isBoolVar());
+        }
+    }
+
+    public static class LenFunc extends StrictNFuncImpl {
+        public LenFunc() { super(makeFuncDef()); }
+
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeLongVarContType());
+            def.addToParameterTypes(VarUtils.makeStringVarContType());
+            return def;
+        }
+
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeLongVarCont(
+                    values.get(0).getSingletonCont().getStringVar().length());
+        }
+    }
+    
+    /*public static class BottomFunc extends StrictNFuncImpl {
 
         public BottomFunc() {
             super(Any.class, new Class[] {});
@@ -173,7 +223,7 @@ public class SchemeyThunkFactory implements ThunkFactory<Class, String, Object> 
         }
     }
     
-    public static class IfFunc extends NFuncImpl<Class, String, Object> {
+    public static class IfFunc extends NFuncImpl {
         public IfFunc() {
             super(Any.class, new Class[] { Boolean.class, Any.class, Any.class },
                     new Strictness[] {Strictness.STRICT, Strictness.LAZY, Strictness.LAZY});
@@ -200,22 +250,22 @@ public class SchemeyThunkFactory implements ThunkFactory<Class, String, Object> 
                 }
             });
         }
-    }
+    }*/
 
-    private static Map<String, NFunc<Class, String, Object>> makeFuncs() {
-        Map<String, NFunc<Class, String, Object>> funcs = new TreeMap<>();
-        funcs.put("+", new AddFunc());
-        funcs.put("-", new SubFunc());
-        funcs.put("*", new MulFunc());
-        funcs.put("/", new DivFunc());
-        funcs.put("%", new ModFunc());
-        funcs.put("and", new AndFunc());
-        funcs.put("or", new OrFunc());
-        funcs.put("xor", new XorFunc());
-        funcs.put("not", new NotFunc());
-        funcs.put("len", new LenFunc());
-        funcs.put("bottom", new BottomFunc());
-        funcs.put("if", new IfFunc());
+    private static Map<FuncId, NFunc> makeFuncs() {
+        Map<FuncId, NFunc> funcs = new TreeMap<>();
+        funcs.put(new FuncId("+"), new AddFunc());
+        funcs.put(new FuncId("-"), new SubFunc());
+        funcs.put(new FuncId("*"), new MulFunc());
+        funcs.put(new FuncId("/"), new DivFunc());
+        funcs.put(new FuncId("%"), new ModFunc());
+        funcs.put(new FuncId("and"), new AndFunc());
+        funcs.put(new FuncId("or"), new OrFunc());
+        funcs.put(new FuncId("xor"), new XorFunc());
+        funcs.put(new FuncId("not"), new NotFunc());
+        funcs.put(new FuncId("len"), new LenFunc());
+        //funcs.put(new FuncId("bottom"), new BottomFunc());
+        //funcs.put(new FuncId("if"), new IfFunc());
         return funcs;
     }
 }

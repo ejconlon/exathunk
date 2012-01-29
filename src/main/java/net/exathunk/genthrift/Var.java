@@ -33,14 +33,14 @@ import org.slf4j.LoggerFactory;
 public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Var");
 
-  private static final org.apache.thrift.protocol.TField BOOL_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("boolVar", org.apache.thrift.protocol.TType.BOOL, (short)2);
-  private static final org.apache.thrift.protocol.TField BYTE_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("byteVar", org.apache.thrift.protocol.TType.BYTE, (short)3);
-  private static final org.apache.thrift.protocol.TField I16_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("i16Var", org.apache.thrift.protocol.TType.I16, (short)4);
-  private static final org.apache.thrift.protocol.TField I32_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("i32Var", org.apache.thrift.protocol.TType.I32, (short)5);
-  private static final org.apache.thrift.protocol.TField I64_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("i64Var", org.apache.thrift.protocol.TType.I64, (short)6);
-  private static final org.apache.thrift.protocol.TField DOUBLE_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("doubleVar", org.apache.thrift.protocol.TType.DOUBLE, (short)7);
-  private static final org.apache.thrift.protocol.TField STRING_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("stringVar", org.apache.thrift.protocol.TType.STRING, (short)8);
-  private static final org.apache.thrift.protocol.TField BINARY_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("binaryVar", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField BOOL_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("boolVar", org.apache.thrift.protocol.TType.BOOL, (short)1);
+  private static final org.apache.thrift.protocol.TField BYTE_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("byteVar", org.apache.thrift.protocol.TType.BYTE, (short)2);
+  private static final org.apache.thrift.protocol.TField I16_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("i16Var", org.apache.thrift.protocol.TType.I16, (short)3);
+  private static final org.apache.thrift.protocol.TField I32_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("i32Var", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField I64_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("i64Var", org.apache.thrift.protocol.TType.I64, (short)5);
+  private static final org.apache.thrift.protocol.TField DOUBLE_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("doubleVar", org.apache.thrift.protocol.TType.DOUBLE, (short)6);
+  private static final org.apache.thrift.protocol.TField STRING_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("stringVar", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField BINARY_VAR_FIELD_DESC = new org.apache.thrift.protocol.TField("binaryVar", org.apache.thrift.protocol.TType.STRING, (short)8);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -59,14 +59,14 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    BOOL_VAR((short)2, "boolVar"),
-    BYTE_VAR((short)3, "byteVar"),
-    I16_VAR((short)4, "i16Var"),
-    I32_VAR((short)5, "i32Var"),
-    I64_VAR((short)6, "i64Var"),
-    DOUBLE_VAR((short)7, "doubleVar"),
-    STRING_VAR((short)8, "stringVar"),
-    BINARY_VAR((short)9, "binaryVar");
+    BOOL_VAR((short)1, "boolVar"),
+    BYTE_VAR((short)2, "byteVar"),
+    I16_VAR((short)3, "i16Var"),
+    I32_VAR((short)4, "i32Var"),
+    I64_VAR((short)5, "i64Var"),
+    DOUBLE_VAR((short)6, "doubleVar"),
+    STRING_VAR((short)7, "stringVar"),
+    BINARY_VAR((short)8, "binaryVar");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -81,21 +81,21 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 2: // BOOL_VAR
+        case 1: // BOOL_VAR
           return BOOL_VAR;
-        case 3: // BYTE_VAR
+        case 2: // BYTE_VAR
           return BYTE_VAR;
-        case 4: // I16_VAR
+        case 3: // I16_VAR
           return I16_VAR;
-        case 5: // I32_VAR
+        case 4: // I32_VAR
           return I32_VAR;
-        case 6: // I64_VAR
+        case 5: // I64_VAR
           return I64_VAR;
-        case 7: // DOUBLE_VAR
+        case 6: // DOUBLE_VAR
           return DOUBLE_VAR;
-        case 8: // STRING_VAR
+        case 7: // STRING_VAR
           return STRING_VAR;
-        case 9: // BINARY_VAR
+        case 8: // BINARY_VAR
           return BINARY_VAR;
         default:
           return null;
@@ -827,7 +827,7 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
           break;
         }
         switch (schemeField.id) {
-          case 2: // BOOL_VAR
+          case 1: // BOOL_VAR
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.boolVar = iprot.readBool();
               struct.setBoolVarIsSet(true);
@@ -835,7 +835,7 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // BYTE_VAR
+          case 2: // BYTE_VAR
             if (schemeField.type == org.apache.thrift.protocol.TType.BYTE) {
               struct.byteVar = iprot.readByte();
               struct.setByteVarIsSet(true);
@@ -843,7 +843,7 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // I16_VAR
+          case 3: // I16_VAR
             if (schemeField.type == org.apache.thrift.protocol.TType.I16) {
               struct.i16Var = iprot.readI16();
               struct.setI16VarIsSet(true);
@@ -851,7 +851,7 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // I32_VAR
+          case 4: // I32_VAR
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.i32Var = iprot.readI32();
               struct.setI32VarIsSet(true);
@@ -859,7 +859,7 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // I64_VAR
+          case 5: // I64_VAR
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.i64Var = iprot.readI64();
               struct.setI64VarIsSet(true);
@@ -867,7 +867,7 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // DOUBLE_VAR
+          case 6: // DOUBLE_VAR
             if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
               struct.doubleVar = iprot.readDouble();
               struct.setDoubleVarIsSet(true);
@@ -875,7 +875,7 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // STRING_VAR
+          case 7: // STRING_VAR
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.stringVar = iprot.readString();
               struct.setStringVarIsSet(true);
@@ -883,7 +883,7 @@ public class Var implements org.apache.thrift.TBase<Var, Var._Fields>, java.io.S
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // BINARY_VAR
+          case 8: // BINARY_VAR
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.binaryVar = iprot.readBinary();
               struct.setBinaryVarIsSet(true);
