@@ -1,5 +1,7 @@
-package net.exathunk.base;
+package net.exathunk.remote;
 
+import net.exathunk.base.*;
+import net.exathunk.schemey.*;
 import net.exathunk.genthrift.*;
 import org.junit.Test;
 

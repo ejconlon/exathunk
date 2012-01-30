@@ -1,5 +1,6 @@
-package net.exathunk.base;
+package net.exathunk.schemey;
 
+import net.exathunk.base.*;
 import net.exathunk.genthrift.ContType;
 import net.exathunk.genthrift.VarCont;
 import net.exathunk.genthrift.VarContType;

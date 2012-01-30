@@ -1,5 +1,6 @@
-package net.exathunk.base;
+package net.exathunk.remote;
 
+import net.exathunk.base.*;
 import net.exathunk.genthrift.NotDoneException;
 import net.exathunk.genthrift.RemoteExecutionService;
 import net.exathunk.genthrift.RemoteThunk;

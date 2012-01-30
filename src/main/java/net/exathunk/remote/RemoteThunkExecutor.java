@@ -1,5 +1,6 @@
-package net.exathunk.base;
+package net.exathunk.remote;
 
+import net.exathunk.base.*;
 import net.exathunk.genthrift.*;
 import net.exathunk.genthrift.UnknownFuncException;
 import org.apache.thrift.TException;

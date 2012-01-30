@@ -1,5 +1,6 @@
-package net.exathunk.base;
+package net.exathunk.schemey;
 
+import net.exathunk.base.*;
 import net.exathunk.genthrift.FuncDef;
 import net.exathunk.genthrift.FuncId;
 import net.exathunk.genthrift.VarCont;
