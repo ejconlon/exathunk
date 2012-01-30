@@ -3,18 +3,16 @@ package net.exathunk.base;
 import java.util.concurrent.ExecutionException;
 
 public class BottomThunk<Value> implements Thunk<Value> {
-    private final ExecutionException exception;
+    private final Throwable exception;
 
-    public BottomThunk(ExecutionException exception) {
+    public BottomThunk(Throwable exception) {
         this.exception = exception;
     }
-
-    public void prepare() {}
 
     public void run() {}
 
     public Value get() throws ExecutionException {
-        throw exception;
+        throw new ExecutionException(exception);
     }
 
     public boolean isDone() {

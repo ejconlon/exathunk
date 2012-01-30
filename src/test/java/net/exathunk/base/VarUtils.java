@@ -2,6 +2,9 @@ package net.exathunk.base;
 
 import net.exathunk.genthrift.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VarUtils {
     public static VarCont makeVarCont(Var var) {
         VarCont varCont = new VarCont();

@@ -13,8 +13,6 @@ public class CallableThunk<Value> implements Thunk<Value> {
         this.callable = callable;
     }
 
-    public void prepare() {}
-
     public void run() {
         if (!hasRun) {
             try {

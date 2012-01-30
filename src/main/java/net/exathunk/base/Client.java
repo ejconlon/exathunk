@@ -31,7 +31,7 @@ public class Client implements AutoCloseable {
     }
     
     public void close() {
-        transport.close();
+        if (transport != null) transport.close();
         stub = null;
         transport = null;
     }

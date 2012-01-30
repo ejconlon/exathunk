@@ -6,12 +6,20 @@ import net.exathunk.genthrift.VarContType;
 import net.exathunk.genthrift.VarType;
 
 public class SchemeyTypeChecker implements TypeChecker {
+    @Override
     public boolean canCast(VarContType fromType, VarContType toType) {
-        // TODO
+        // TODO allow upcasts
         return fromType.getContType().equals(toType.getContType()) &&
                 fromType.getValueType().equals(toType.getValueType());
     }
 
+    @Override
+    public boolean canCast(VarContType type, VarCont value) {
+        // TODO big ugly switch
+        return true;
+    }
+
+    @Override
     public VarCont cast(VarContType type, String fromValue) throws TypeException {
         if (!type.getContType().equals(ContType.SINGLETON)) throw new TypeException("Need singleton cont type");
         if (type.getValueType().equals(VarType.BOOL)) {

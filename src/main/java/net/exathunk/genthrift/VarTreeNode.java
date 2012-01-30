@@ -46,7 +46,7 @@ public class VarTreeNode implements org.apache.thrift.TBase<VarTreeNode, VarTree
   }
 
   private VarCont value; // optional
-  private VarCont label; // optional
+  private FuncId label; // optional
   private List<Integer> children; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -121,7 +121,7 @@ public class VarTreeNode implements org.apache.thrift.TBase<VarTreeNode, VarTree
     tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, VarCont.class)));
     tmpMap.put(_Fields.LABEL, new org.apache.thrift.meta_data.FieldMetaData("label", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, VarCont.class)));
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, FuncId.class)));
     tmpMap.put(_Fields.CHILDREN, new org.apache.thrift.meta_data.FieldMetaData("children", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32))));
@@ -140,7 +140,7 @@ public class VarTreeNode implements org.apache.thrift.TBase<VarTreeNode, VarTree
       this.value = new VarCont(other.value);
     }
     if (other.isSetLabel()) {
-      this.label = new VarCont(other.label);
+      this.label = new FuncId(other.label);
     }
     if (other.isSetChildren()) {
       List<Integer> __this__children = new ArrayList<Integer>();
@@ -185,11 +185,11 @@ public class VarTreeNode implements org.apache.thrift.TBase<VarTreeNode, VarTree
     }
   }
 
-  public VarCont getLabel() {
+  public FuncId getLabel() {
     return this.label;
   }
 
-  public void setLabel(VarCont label) {
+  public void setLabel(FuncId label) {
     this.label = label;
   }
 
@@ -260,7 +260,7 @@ public class VarTreeNode implements org.apache.thrift.TBase<VarTreeNode, VarTree
       if (value == null) {
         unsetLabel();
       } else {
-        setLabel((VarCont)value);
+        setLabel((FuncId)value);
       }
       break;
 
@@ -495,7 +495,7 @@ public class VarTreeNode implements org.apache.thrift.TBase<VarTreeNode, VarTree
             break;
           case 2: // LABEL
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.label = new VarCont();
+              struct.label = new FuncId();
               struct.label.read(iprot);
               struct.setLabelIsSet(true);
             } else { 
@@ -616,7 +616,7 @@ public class VarTreeNode implements org.apache.thrift.TBase<VarTreeNode, VarTree
         struct.setValueIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.label = new VarCont();
+        struct.label = new FuncId();
         struct.label.read(iprot);
         struct.setLabelIsSet(true);
       }

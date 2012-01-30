@@ -17,7 +17,7 @@ public abstract class StrictNFuncImpl extends NFuncImpl {
     }
 
     @Override
-    public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor<VarCont> executor,
+    public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor executor,
                                  final NTree<VarContType, FuncId, VarCont> args) {
         assert args.isBranch();
         return new CallableThunk<>(new Callable<VarCont>() {
@@ -26,7 +26,7 @@ public abstract class StrictNFuncImpl extends NFuncImpl {
                 List<Boolean> mask = new ArrayList<>(args.getChildren().size());
                 for (int i = 0; i < args.getChildren().size(); ++i) { mask.add(true); }
                 Thunk<NTree<VarContType, FuncId, VarCont>> evaled =
-                        TreeExecutor.execute(library, executor, args, mask);
+                        TreeExecutor.execute(executor, args, mask);
                 return subInvoke(evaled.get().extractChildValues());
             }
         });

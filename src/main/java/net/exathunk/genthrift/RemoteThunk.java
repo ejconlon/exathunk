@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteThunk._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("RemoteThunk");
 
-  private static final org.apache.thrift.protocol.TField THUNK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("thunkId", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -41,11 +41,11 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
     schemes.put(TupleScheme.class, new RemoteThunkTupleSchemeFactory());
   }
 
-  private RemoteThunkId thunkId; // required
+  private String id; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    THUNK_ID((short)1, "thunkId");
+    ID((short)1, "id");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -60,8 +60,8 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // THUNK_ID
-          return THUNK_ID;
+        case 1: // ID
+          return ID;
         default:
           return null;
       }
@@ -105,8 +105,8 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.THUNK_ID, new org.apache.thrift.meta_data.FieldMetaData("thunkId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, RemoteThunkId.class)));
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(RemoteThunk.class, metaDataMap);
   }
@@ -115,18 +115,18 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
   }
 
   public RemoteThunk(
-    RemoteThunkId thunkId)
+    String id)
   {
     this();
-    this.thunkId = thunkId;
+    this.id = id;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public RemoteThunk(RemoteThunk other) {
-    if (other.isSetThunkId()) {
-      this.thunkId = new RemoteThunkId(other.thunkId);
+    if (other.isSetId()) {
+      this.id = other.id;
     }
   }
 
@@ -136,39 +136,39 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
 
   @Override
   public void clear() {
-    this.thunkId = null;
+    this.id = null;
   }
 
-  public RemoteThunkId getThunkId() {
-    return this.thunkId;
+  public String getId() {
+    return this.id;
   }
 
-  public void setThunkId(RemoteThunkId thunkId) {
-    this.thunkId = thunkId;
+  public void setId(String id) {
+    this.id = id;
   }
 
-  public void unsetThunkId() {
-    this.thunkId = null;
+  public void unsetId() {
+    this.id = null;
   }
 
-  /** Returns true if field thunkId is set (has been assigned a value) and false otherwise */
-  public boolean isSetThunkId() {
-    return this.thunkId != null;
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return this.id != null;
   }
 
-  public void setThunkIdIsSet(boolean value) {
+  public void setIdIsSet(boolean value) {
     if (!value) {
-      this.thunkId = null;
+      this.id = null;
     }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case THUNK_ID:
+    case ID:
       if (value == null) {
-        unsetThunkId();
+        unsetId();
       } else {
-        setThunkId((RemoteThunkId)value);
+        setId((String)value);
       }
       break;
 
@@ -177,8 +177,8 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case THUNK_ID:
-      return getThunkId();
+    case ID:
+      return getId();
 
     }
     throw new IllegalStateException();
@@ -191,8 +191,8 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
     }
 
     switch (field) {
-    case THUNK_ID:
-      return isSetThunkId();
+    case ID:
+      return isSetId();
     }
     throw new IllegalStateException();
   }
@@ -210,12 +210,12 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
     if (that == null)
       return false;
 
-    boolean this_present_thunkId = true && this.isSetThunkId();
-    boolean that_present_thunkId = true && that.isSetThunkId();
-    if (this_present_thunkId || that_present_thunkId) {
-      if (!(this_present_thunkId && that_present_thunkId))
+    boolean this_present_id = true && this.isSetId();
+    boolean that_present_id = true && that.isSetId();
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
         return false;
-      if (!this.thunkId.equals(that.thunkId))
+      if (!this.id.equals(that.id))
         return false;
     }
 
@@ -235,12 +235,12 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
     int lastComparison = 0;
     RemoteThunk typedOther = (RemoteThunk)other;
 
-    lastComparison = Boolean.valueOf(isSetThunkId()).compareTo(typedOther.isSetThunkId());
+    lastComparison = Boolean.valueOf(isSetId()).compareTo(typedOther.isSetId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetThunkId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.thunkId, typedOther.thunkId);
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, typedOther.id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -265,11 +265,11 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
     StringBuilder sb = new StringBuilder("RemoteThunk(");
     boolean first = true;
 
-    sb.append("thunkId:");
-    if (this.thunkId == null) {
+    sb.append("id:");
+    if (this.id == null) {
       sb.append("null");
     } else {
-      sb.append(this.thunkId);
+      sb.append(this.id);
     }
     first = false;
     sb.append(")");
@@ -278,8 +278,8 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetThunkId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'thunkId' is unset! Struct:" + toString());
+    if (!isSetId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' is unset! Struct:" + toString());
     }
 
   }
@@ -318,11 +318,10 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
           break;
         }
         switch (schemeField.id) {
-          case 1: // THUNK_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.thunkId = new RemoteThunkId();
-              struct.thunkId.read(iprot);
-              struct.setThunkIdIsSet(true);
+          case 1: // ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.id = iprot.readString();
+              struct.setIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -340,9 +339,9 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.thunkId != null) {
-        oprot.writeFieldBegin(THUNK_ID_FIELD_DESC);
-        struct.thunkId.write(oprot);
+      if (struct.id != null) {
+        oprot.writeFieldBegin(ID_FIELD_DESC);
+        oprot.writeString(struct.id);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -362,15 +361,14 @@ public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteT
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, RemoteThunk struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      struct.thunkId.write(oprot);
+      oprot.writeString(struct.id);
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, RemoteThunk struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.thunkId = new RemoteThunkId();
-      struct.thunkId.read(iprot);
-      struct.setThunkIdIsSet(true);
+      struct.id = iprot.readString();
+      struct.setIdIsSet(true);
     }
   }
 

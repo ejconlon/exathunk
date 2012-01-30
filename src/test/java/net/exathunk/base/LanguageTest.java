@@ -14,7 +14,7 @@ public class LanguageTest {
         NFuncLibrary library = new SchemeyNFuncLibrary();
         NTreeParser parser = new SexpParser();
         TypeChecker checker = new SchemeyTypeChecker();
-        ThunkExecutor<VarCont> executor = new DefaultThunkExecutor<>();
+        ThunkExecutor executor = new DefaultThunkExecutor(library);
         return new Interpreter(parser, checker, library, executor);
     }
 
@@ -53,9 +53,7 @@ public class LanguageTest {
         for (Map.Entry<String, VarCont> spec : makePosSpecs().entrySet()) {
             logger.log(Level.FINE, "Testing {0} => {1}", new Object[] { spec.getKey(), spec.getValue() });
             Thunk<VarCont> thunk = interpreter.interpret(spec.getKey());
-            Thunk<VarCont> exeThunk = interpreter.getExecutor().submit(thunk);
-            assert exeThunk.isDone();
-            assertEquals(spec.getValue(), exeThunk.get());
+            assertEquals(spec.getValue(), thunk.get());
         }
     }
 
@@ -69,9 +67,7 @@ public class LanguageTest {
             boolean caught = false;
             try {
                 Thunk<VarCont> thunk = interpreter.interpret(spec.getKey());
-                Thunk<VarCont> exeThunk = interpreter.getExecutor().submit(thunk);
-                assert exeThunk.isDone();
-                exeThunk.get();
+                thunk.get();
             } catch (Exception e) {
                 caught = true;
                 System.err.println("Expected "+spec.getValue());

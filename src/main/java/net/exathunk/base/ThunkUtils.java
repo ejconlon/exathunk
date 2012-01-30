@@ -43,7 +43,7 @@ public class ThunkUtils {
         return new NTree<>(tree.getType(), tree.getLabel(), unChildren);
     }
 
-    public static Thunk<VarCont> makeThunk(NFuncLibrary library, ThunkExecutor<VarCont> executor,
+    public static Thunk<VarCont> makeThunk(NFuncLibrary library, ThunkExecutor executor,
                              NTree<VarContType, FuncId, VarCont> tree) throws UnknownFuncException, ExecutionException {
         NFunc func = library.getFunc(tree.getLabel());
         return func.invoke(library, executor, tree);

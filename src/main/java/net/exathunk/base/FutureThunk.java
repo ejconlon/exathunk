@@ -10,8 +10,6 @@ public class FutureThunk<Value> implements Thunk<Value> {
         this.future = future;
     }
 
-    public void prepare() {}
-
     public void run() {
         future.run();
     }

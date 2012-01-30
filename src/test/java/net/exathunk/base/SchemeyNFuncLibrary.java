@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 
 public class SchemeyNFuncLibrary implements NFuncLibrary {
 
-    private final Map<FuncId, NFunc> funcs = makeFuncs();
+    private final Map<String, NFunc> funcs = makeFuncs();
 
     public boolean knowsFunc(FuncId funcId) {
         return funcs.containsKey(funcId);
@@ -25,7 +25,7 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
     }
 
     public NFunc getFunc(FuncId funcId) throws UnknownFuncException {
-        NFunc f = funcs.get(funcId);
+        NFunc f = funcs.get(funcId.getName());
         if (f == null) throw new UnknownFuncException("Unknown func: "+funcId);
         return f;
     }
@@ -105,19 +105,19 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
 
     public static class AndFunc extends BoolFunc2 {
         @Override
-        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor<VarCont> executor, final NTree<VarContType, FuncId, VarCont> args) {
+        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor executor, final NTree<VarContType, FuncId, VarCont> args) {
             return new CallableThunk<>(new Callable<VarCont>() {
                 @Override
                 public VarCont call() throws ExecutionException, UnknownFuncException {
                     List<Boolean> mask1 = Arrays.asList(true, false);
                     Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
-                            TreeExecutor.execute(library, executor, args, mask1);
+                            TreeExecutor.execute(executor, args, mask1);
                     if (!firstEvaled.get().getChildren().get(0).getValue().getSingletonCont().isBoolVar()) {
                         return VarUtils.makeBoolVarCont(false);
                     }
                     List<Boolean> mask2 = Arrays.asList(false, true);
                     Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
-                            TreeExecutor.execute(library, executor, firstEvaled.get(), mask2);
+                            TreeExecutor.execute(executor, firstEvaled.get(), mask2);
                     if (!secondEvaled.get().getChildren().get(1).getValue().getSingletonCont().isBoolVar()) {
                         return VarUtils.makeBoolVarCont(false);
                     }
@@ -129,19 +129,19 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
 
     public static class OrFunc extends BoolFunc2 {
         @Override
-        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor<VarCont> executor, final NTree<VarContType, FuncId, VarCont> args) {
+        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor executor, final NTree<VarContType, FuncId, VarCont> args) {
             return new CallableThunk<>(new Callable<VarCont>() {
                 @Override
                 public VarCont call() throws ExecutionException, UnknownFuncException {
                     List<Boolean> mask1 = Arrays.asList(true, false);
                     Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
-                            TreeExecutor.execute(library, executor, args, mask1);
+                            TreeExecutor.execute(executor, args, mask1);
                     if (firstEvaled.get().getChildren().get(0).getValue().getSingletonCont().isBoolVar()) {
                         return VarUtils.makeBoolVarCont(true);
                     }
                     List<Boolean> mask2 = Arrays.asList(false, true);
                     Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
-                            TreeExecutor.execute(library, executor, firstEvaled.get(), mask2);
+                            TreeExecutor.execute(executor, firstEvaled.get(), mask2);
                     if (secondEvaled.get().getChildren().get(1).getValue().getSingletonCont().isBoolVar()) {
                         return VarUtils.makeBoolVarCont(true);
                     }
@@ -209,7 +209,8 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
                     values.get(0).getSingletonCont().getStringVar().length());
         }
     }
-    
+
+    // TODO add parametric/wildcard types to support these
     /*public static class BottomFunc extends StrictNFuncImpl {
 
         public BottomFunc() {
@@ -252,20 +253,20 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         }
     }*/
 
-    private static Map<FuncId, NFunc> makeFuncs() {
-        Map<FuncId, NFunc> funcs = new TreeMap<>();
-        funcs.put(new FuncId("+"), new AddFunc());
-        funcs.put(new FuncId("-"), new SubFunc());
-        funcs.put(new FuncId("*"), new MulFunc());
-        funcs.put(new FuncId("/"), new DivFunc());
-        funcs.put(new FuncId("%"), new ModFunc());
-        funcs.put(new FuncId("and"), new AndFunc());
-        funcs.put(new FuncId("or"), new OrFunc());
-        funcs.put(new FuncId("xor"), new XorFunc());
-        funcs.put(new FuncId("not"), new NotFunc());
-        funcs.put(new FuncId("len"), new LenFunc());
-        //funcs.put(new FuncId("bottom"), new BottomFunc());
-        //funcs.put(new FuncId("if"), new IfFunc());
+    private static Map<String, NFunc> makeFuncs() {
+        Map<String, NFunc> funcs = new TreeMap<>();
+        funcs.put("+", new AddFunc());
+        funcs.put("-", new SubFunc());
+        funcs.put("*", new MulFunc());
+        funcs.put("/", new DivFunc());
+        funcs.put("%", new ModFunc());
+        funcs.put("and", new AndFunc());
+        funcs.put("or", new OrFunc());
+        funcs.put("xor", new XorFunc());
+        funcs.put("not", new NotFunc());
+        funcs.put("len", new LenFunc());
+        //funcs.put("bottom", new BottomFunc());
+        //funcs.put("if", new IfFunc());
         return funcs;
     }
 }

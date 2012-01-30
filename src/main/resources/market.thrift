@@ -58,13 +58,20 @@ struct VarTreeType {
 }
 
 /**
+ * A unique identifier of a function
+ */
+struct FuncId {
+       1: required string name
+}
+
+/**
  * A node in a VarTree. It will be either a leaf and only have a value,
  * or it will be a branch with a label and children.
  * See VarTree for child index info.
  */
 struct VarTreeNode {
        1: optional VarCont value,
-       2: optional VarCont label,
+       2: optional FuncId label,
        3: optional list<i32> children
 }
 
@@ -76,13 +83,6 @@ struct VarTreeNode {
 struct VarTree {
        1: required list<VarTreeNode> nodes,
        2: required i32 rootIndex
-}
-
-/**
- * A unique identifier of a function
- */
-struct FuncId {
-       1: required string name
 }
 
 enum Strictness {
@@ -108,17 +108,10 @@ struct EvalRequest {
 }
 
 /**
- * An identifier of a future value.
- */
-struct RemoteThunkId {
-       1: required string id
-}
-
-/**
  * A future.
  */
 struct RemoteThunk {
-       1: required RemoteThunkId thunkId
+       1: required string id
 }
 
 /**

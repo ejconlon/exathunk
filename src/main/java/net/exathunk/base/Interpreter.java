@@ -13,13 +13,13 @@ import java.util.concurrent.ExecutionException;
 public class Interpreter {
     private final NTreeParser parser;
     private final TypeChecker valueTyper;
-    private final NFuncLibrary library;
-    private final ThunkExecutor<VarCont> executor;
+    private final FuncDefLibrary library;
+    private final ThunkExecutor executor;
 
     public Interpreter(NTreeParser parser,
                        TypeChecker valueTyper,
-                       NFuncLibrary library,
-                       ThunkExecutor<VarCont> executor) {
+                       FuncDefLibrary library,
+                       ThunkExecutor executor) {
         this.parser = parser;
         this.valueTyper = valueTyper;
         this.library = library;
@@ -37,8 +37,8 @@ public class Interpreter {
         NTree<VarContType, FuncId, VarCont> typedTree = TypeCheckerUtils.makeTypedTree(library, valueTyper, parseTree);
         logger.log(Level.FINE, "Typed tree {0}", typedTree);
 
-        return ThunkUtils.makeThunk(library, executor, typedTree);
+        return executor.submit(typedTree);
     }
 
-    public ThunkExecutor<VarCont> getExecutor() { return executor; }
+    public ThunkExecutor getExecutor() { return executor; }
 }

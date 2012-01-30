@@ -11,8 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 public class TreeExecutor {
     public static Thunk<NTree<VarContType, FuncId, VarCont>> execute(
-            NFuncLibrary library,
-            ThunkExecutor<VarCont> executor,
+            ThunkExecutor executor,
             NTree<VarContType, FuncId, VarCont> tree,
             List<Boolean> executeMask) throws UnknownFuncException, ExecutionException {
         if (tree.isEmpty()) {
@@ -30,8 +29,7 @@ public class TreeExecutor {
                     // Already evaluated or evaluation not requested
                     unevaluated.put(i, child);
                 } else {
-                    Thunk<VarCont> thunk = ThunkUtils.makeThunk(library, executor, child);
-                    futures.put(i, new Pair<>(child.getType(), executor.submit(thunk)));
+                    futures.put(i, new Pair<>(child.getType(), executor.submit(child)));
                 }
             }
             return new TreeSusp<>(tree.getType(), tree.getLabel(), unevaluated, futures);
