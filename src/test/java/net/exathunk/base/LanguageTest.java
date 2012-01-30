@@ -1,5 +1,6 @@
 package net.exathunk.base;
 
+import net.exathunk.schemey.*;
 import net.exathunk.genthrift.VarCont;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
