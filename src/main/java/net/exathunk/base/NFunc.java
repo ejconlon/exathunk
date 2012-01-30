@@ -7,6 +7,7 @@ import net.exathunk.genthrift.VarContType;
 
 public interface NFunc {
     FuncDef getFuncDef();
-    Thunk<VarCont> invoke(ThunkFactory thunkFactory,
-                          ThunkExecutor<VarCont> executor, NTree<VarContType, FuncId, VarCont> args);
+    Thunk<VarCont> invoke(NFuncLibrary library,
+                          ThunkExecutor<VarCont> executor,
+                          NTree<VarContType, FuncId, VarCont> args);
 }

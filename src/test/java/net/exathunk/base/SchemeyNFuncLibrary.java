@@ -12,7 +12,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-public class SchemeyThunkFactory implements ThunkFactory {
+public class SchemeyNFuncLibrary implements NFuncLibrary {
 
     private final Map<FuncId, NFunc> funcs = makeFuncs();
 
@@ -20,14 +20,14 @@ public class SchemeyThunkFactory implements ThunkFactory {
         return funcs.containsKey(funcId);
     }
 
+    public FuncDef getFuncDef(FuncId funcId) throws UnknownFuncException {
+        return getFunc(funcId).getFuncDef();
+    }
+
     public NFunc getFunc(FuncId funcId) throws UnknownFuncException {
         NFunc f = funcs.get(funcId);
         if (f == null) throw new UnknownFuncException("Unknown func: "+funcId);
         return f;
-    }
-
-    public Thunk<VarCont> makeThunk(ThunkExecutor<VarCont> executor, NTree<VarContType, FuncId, VarCont> tree) throws UnknownFuncException {
-        return getFunc(tree.getLabel()).invoke(this, executor, tree);
     }
 
     private static abstract class IntFunc extends StrictNFuncImpl {
@@ -105,19 +105,19 @@ public class SchemeyThunkFactory implements ThunkFactory {
 
     public static class AndFunc extends BoolFunc2 {
         @Override
-        public Thunk<VarCont> invoke(final ThunkFactory thunkFactory, final ThunkExecutor<VarCont> executor, final NTree<VarContType, FuncId, VarCont> args) {
+        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor<VarCont> executor, final NTree<VarContType, FuncId, VarCont> args) {
             return new CallableThunk<>(new Callable<VarCont>() {
                 @Override
                 public VarCont call() throws ExecutionException, UnknownFuncException {
                     List<Boolean> mask1 = Arrays.asList(true, false);
                     Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
-                            TreeExecutor.execute(thunkFactory, executor, args, mask1);
+                            TreeExecutor.execute(library, executor, args, mask1);
                     if (!firstEvaled.get().getChildren().get(0).getValue().getSingletonCont().isBoolVar()) {
                         return VarUtils.makeBoolVarCont(false);
                     }
                     List<Boolean> mask2 = Arrays.asList(false, true);
                     Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
-                            TreeExecutor.execute(thunkFactory, executor, firstEvaled.get(), mask2);
+                            TreeExecutor.execute(library, executor, firstEvaled.get(), mask2);
                     if (!secondEvaled.get().getChildren().get(1).getValue().getSingletonCont().isBoolVar()) {
                         return VarUtils.makeBoolVarCont(false);
                     }
@@ -129,19 +129,19 @@ public class SchemeyThunkFactory implements ThunkFactory {
 
     public static class OrFunc extends BoolFunc2 {
         @Override
-        public Thunk<VarCont> invoke(final ThunkFactory thunkFactory, final ThunkExecutor<VarCont> executor, final NTree<VarContType, FuncId, VarCont> args) {
+        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor<VarCont> executor, final NTree<VarContType, FuncId, VarCont> args) {
             return new CallableThunk<>(new Callable<VarCont>() {
                 @Override
                 public VarCont call() throws ExecutionException, UnknownFuncException {
                     List<Boolean> mask1 = Arrays.asList(true, false);
                     Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
-                            TreeExecutor.execute(thunkFactory, executor, args, mask1);
+                            TreeExecutor.execute(library, executor, args, mask1);
                     if (firstEvaled.get().getChildren().get(0).getValue().getSingletonCont().isBoolVar()) {
                         return VarUtils.makeBoolVarCont(true);
                     }
                     List<Boolean> mask2 = Arrays.asList(false, true);
                     Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
-                            TreeExecutor.execute(thunkFactory, executor, firstEvaled.get(), mask2);
+                            TreeExecutor.execute(library, executor, firstEvaled.get(), mask2);
                     if (secondEvaled.get().getChildren().get(1).getValue().getSingletonCont().isBoolVar()) {
                         return VarUtils.makeBoolVarCont(true);
                     }

@@ -1,5 +1,9 @@
 package net.exathunk.base;
 
+import net.exathunk.genthrift.FuncId;
+import net.exathunk.genthrift.VarCont;
+import net.exathunk.genthrift.VarContType;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -39,4 +43,9 @@ public class ThunkUtils {
         return new NTree<>(tree.getType(), tree.getLabel(), unChildren);
     }
 
+    public static Thunk<VarCont> makeThunk(NFuncLibrary library, ThunkExecutor<VarCont> executor,
+                             NTree<VarContType, FuncId, VarCont> tree) throws UnknownFuncException, ExecutionException {
+        NFunc func = library.getFunc(tree.getLabel());
+        return func.invoke(library, executor, tree);
+    }
 }

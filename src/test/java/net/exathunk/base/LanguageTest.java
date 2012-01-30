@@ -11,11 +11,11 @@ import java.util.logging.Level;
 
 public class LanguageTest {
     public Interpreter makeInterpreter() {
-        ThunkFactory factory = new SchemeyThunkFactory();
+        NFuncLibrary library = new SchemeyNFuncLibrary();
         NTreeParser parser = new SexpParser();
         TypeChecker checker = new SchemeyTypeChecker();
         ThunkExecutor<VarCont> executor = new DefaultThunkExecutor<>();
-        return new Interpreter(parser, checker, factory, executor);
+        return new Interpreter(parser, checker, library, executor);
     }
 
     private static Map<String, VarCont> makePosSpecs() {

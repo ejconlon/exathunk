@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class TypeCheckerUtils {
     public static NTree<VarContType, FuncId, VarCont> makeTypedTree(
-            ThunkFactory thunkFactory,
+            FuncDefLibrary funcDefLibrary,
             TypeChecker typeChecker,
             NTree<Unit, String, String> parseTree)
             throws TypeException, UnknownFuncException {
@@ -24,8 +24,7 @@ public class TypeCheckerUtils {
         } else {
             String funcName = parseTree.getLabel();
             FuncId funcId = new FuncId(funcName);
-            NFunc nfunc = thunkFactory.getFunc(funcId);
-            FuncDef funcDef = nfunc.getFuncDef();
+            FuncDef funcDef = funcDefLibrary.getFuncDef(funcId);
             VarContType returnType = funcDef.getReturnType();
             List<VarContType> paramTypes = funcDef.getParameterTypes();
             List<NTree<Unit, String, String>> parseChildren = parseTree.getChildren();
@@ -45,7 +44,7 @@ public class TypeCheckerUtils {
                     typedChildren.add(new NTree<VarContType, FuncId, VarCont>(type, toValue));
                 } else {
                     NTree<VarContType, FuncId, VarCont> typedChild =
-                            makeTypedTree(thunkFactory, typeChecker, parseChild);
+                            makeTypedTree(funcDefLibrary, typeChecker, parseChild);
                     if (!typeChecker.canCast(typedChild.getType(), type)) {
                         throw new TypeException("Could not type result of "+
                                 typedChild.getLabel() + ". Expected "+

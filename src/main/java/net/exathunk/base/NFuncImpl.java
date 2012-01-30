@@ -19,6 +19,6 @@ public abstract class NFuncImpl implements NFunc {
 
     public FuncDef getFuncDef() { return funcDef; }
 
-    public abstract Thunk<VarCont> invoke(ThunkFactory thunkFactory,
+    public abstract Thunk<VarCont> invoke(NFuncLibrary library,
                                           ThunkExecutor<VarCont> executor, NTree<VarContType, FuncId, VarCont> args);
 }
