@@ -22,10 +22,13 @@ public class RemoteTest {
         int port = 45679;
         RemoteExecutionServiceHandler handler = makeHandler();
 
-        //try (Server server = new Server(makeHandler(), port); Client client = new Client(host, port)) {
-        //    server.open();
-        //    new Thread(server).start();
-        //    client.open();
+        try (Server server = new Server(makeHandler(), port); Client client = new Client(host, port)) {
+            server.open();
+            new Thread(server).start();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {}
+            client.open();
 
             EvalRequest evalRequest = new EvalRequest();
             evalRequest.setFuncId(new FuncId("*"));
@@ -38,9 +41,9 @@ public class RemoteTest {
             evalRequest.addToEvalArgs(new VarTree(Collections.singletonList(vtn1), 0));
             evalRequest.addToEvalArgs(new VarTree(Collections.singletonList(vtn2), 0));
 
-            RemoteThunk thunk = handler.submitEvalRequest(evalRequest);
-            VarCont value = handler.thunkGet(thunk);
+            RemoteThunk thunk = client.getStub().submitEvalRequest(evalRequest);
+            VarCont value = client.getStub().thunkGet(thunk);
             assertEquals(20, value.getSingletonCont().getI64Var());
-        //}
+        }
     }
 }
