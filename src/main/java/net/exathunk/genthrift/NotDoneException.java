@@ -27,18 +27,15 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Something went wrong...
- */
-public class ExecutionException extends Exception implements org.apache.thrift.TBase<ExecutionException, ExecutionException._Fields>, java.io.Serializable, Cloneable {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ExecutionException");
+public class NotDoneException extends Exception implements org.apache.thrift.TBase<NotDoneException, NotDoneException._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("NotDoneException");
 
   private static final org.apache.thrift.protocol.TField REASON_FIELD_DESC = new org.apache.thrift.protocol.TField("reason", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new ExecutionExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new ExecutionExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new NotDoneExceptionStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new NotDoneExceptionTupleSchemeFactory());
   }
 
   private String reason; // required
@@ -108,13 +105,13 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
     tmpMap.put(_Fields.REASON, new org.apache.thrift.meta_data.FieldMetaData("reason", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExecutionException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(NotDoneException.class, metaDataMap);
   }
 
-  public ExecutionException() {
+  public NotDoneException() {
   }
 
-  public ExecutionException(
+  public NotDoneException(
     String reason)
   {
     this();
@@ -124,14 +121,14 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public ExecutionException(ExecutionException other) {
+  public NotDoneException(NotDoneException other) {
     if (other.isSetReason()) {
       this.reason = other.reason;
     }
   }
 
-  public ExecutionException deepCopy() {
-    return new ExecutionException(this);
+  public NotDoneException deepCopy() {
+    return new NotDoneException(this);
   }
 
   @Override
@@ -201,12 +198,12 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof ExecutionException)
-      return this.equals((ExecutionException)that);
+    if (that instanceof NotDoneException)
+      return this.equals((NotDoneException)that);
     return false;
   }
 
-  public boolean equals(ExecutionException that) {
+  public boolean equals(NotDoneException that) {
     if (that == null)
       return false;
 
@@ -227,13 +224,13 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
     return 0;
   }
 
-  public int compareTo(ExecutionException other) {
+  public int compareTo(NotDoneException other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
-    ExecutionException typedOther = (ExecutionException)other;
+    NotDoneException typedOther = (NotDoneException)other;
 
     lastComparison = Boolean.valueOf(isSetReason()).compareTo(typedOther.isSetReason());
     if (lastComparison != 0) {
@@ -262,7 +259,7 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("ExecutionException(");
+    StringBuilder sb = new StringBuilder("NotDoneException(");
     boolean first = true;
 
     sb.append("reason:");
@@ -300,15 +297,15 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
     }
   }
 
-  private static class ExecutionExceptionStandardSchemeFactory implements SchemeFactory {
-    public ExecutionExceptionStandardScheme getScheme() {
-      return new ExecutionExceptionStandardScheme();
+  private static class NotDoneExceptionStandardSchemeFactory implements SchemeFactory {
+    public NotDoneExceptionStandardScheme getScheme() {
+      return new NotDoneExceptionStandardScheme();
     }
   }
 
-  private static class ExecutionExceptionStandardScheme extends StandardScheme<ExecutionException> {
+  private static class NotDoneExceptionStandardScheme extends StandardScheme<NotDoneException> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, ExecutionException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, NotDoneException struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -335,7 +332,7 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, ExecutionException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, NotDoneException struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -350,22 +347,22 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
 
   }
 
-  private static class ExecutionExceptionTupleSchemeFactory implements SchemeFactory {
-    public ExecutionExceptionTupleScheme getScheme() {
-      return new ExecutionExceptionTupleScheme();
+  private static class NotDoneExceptionTupleSchemeFactory implements SchemeFactory {
+    public NotDoneExceptionTupleScheme getScheme() {
+      return new NotDoneExceptionTupleScheme();
     }
   }
 
-  private static class ExecutionExceptionTupleScheme extends TupleScheme<ExecutionException> {
+  private static class NotDoneExceptionTupleScheme extends TupleScheme<NotDoneException> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, ExecutionException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, NotDoneException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.reason);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, ExecutionException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, NotDoneException struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.reason = iprot.readString();
       struct.setReasonIsSet(true);

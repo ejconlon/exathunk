@@ -34,13 +34,13 @@ public class ThunkService {
    */
   public interface Iface {
 
-    public VarCont thunkGet(Thunk thunk) throws org.apache.thrift.TException;
+    public VarCont thunkGet(RemoteThunk thunk) throws ExecutionException, NotDoneException, org.apache.thrift.TException;
 
   }
 
   public interface AsyncIface {
 
-    public void thunkGet(Thunk thunk, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.thunkGet_call> resultHandler) throws org.apache.thrift.TException;
+    public void thunkGet(RemoteThunk thunk, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.thunkGet_call> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -64,25 +64,31 @@ public class ThunkService {
       super(iprot, oprot);
     }
 
-    public VarCont thunkGet(Thunk thunk) throws org.apache.thrift.TException
+    public VarCont thunkGet(RemoteThunk thunk) throws ExecutionException, NotDoneException, org.apache.thrift.TException
     {
       send_thunkGet(thunk);
       return recv_thunkGet();
     }
 
-    public void send_thunkGet(Thunk thunk) throws org.apache.thrift.TException
+    public void send_thunkGet(RemoteThunk thunk) throws org.apache.thrift.TException
     {
       thunkGet_args args = new thunkGet_args();
       args.setThunk(thunk);
       sendBase("thunkGet", args);
     }
 
-    public VarCont recv_thunkGet() throws org.apache.thrift.TException
+    public VarCont recv_thunkGet() throws ExecutionException, NotDoneException, org.apache.thrift.TException
     {
       thunkGet_result result = new thunkGet_result();
       receiveBase(result, "thunkGet");
       if (result.isSetSuccess()) {
         return result.success;
+      }
+      if (result.execution != null) {
+        throw result.execution;
+      }
+      if (result.notDone != null) {
+        throw result.notDone;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "thunkGet failed: unknown result");
     }
@@ -105,7 +111,7 @@ public class ThunkService {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void thunkGet(Thunk thunk, org.apache.thrift.async.AsyncMethodCallback<thunkGet_call> resultHandler) throws org.apache.thrift.TException {
+    public void thunkGet(RemoteThunk thunk, org.apache.thrift.async.AsyncMethodCallback<thunkGet_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       thunkGet_call method_call = new thunkGet_call(thunk, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
@@ -113,8 +119,8 @@ public class ThunkService {
     }
 
     public static class thunkGet_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private Thunk thunk;
-      public thunkGet_call(Thunk thunk, org.apache.thrift.async.AsyncMethodCallback<thunkGet_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private RemoteThunk thunk;
+      public thunkGet_call(RemoteThunk thunk, org.apache.thrift.async.AsyncMethodCallback<thunkGet_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.thunk = thunk;
       }
@@ -127,7 +133,7 @@ public class ThunkService {
         prot.writeMessageEnd();
       }
 
-      public VarCont getResult() throws org.apache.thrift.TException {
+      public VarCont getResult() throws ExecutionException, NotDoneException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -165,7 +171,13 @@ public class ThunkService {
 
       protected thunkGet_result getResult(I iface, thunkGet_args args) throws org.apache.thrift.TException {
         thunkGet_result result = new thunkGet_result();
-        result.success = iface.thunkGet(args.thunk);
+        try {
+          result.success = iface.thunkGet(args.thunk);
+        } catch (ExecutionException execution) {
+          result.execution = execution;
+        } catch (NotDoneException notDone) {
+          result.notDone = notDone;
+        }
         return result;
       }
     }
@@ -183,7 +195,7 @@ public class ThunkService {
       schemes.put(TupleScheme.class, new thunkGet_argsTupleSchemeFactory());
     }
 
-    private Thunk thunk; // required
+    private RemoteThunk thunk; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -248,7 +260,7 @@ public class ThunkService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.THUNK, new org.apache.thrift.meta_data.FieldMetaData("thunk", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Thunk.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, RemoteThunk.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(thunkGet_args.class, metaDataMap);
     }
@@ -257,7 +269,7 @@ public class ThunkService {
     }
 
     public thunkGet_args(
-      Thunk thunk)
+      RemoteThunk thunk)
     {
       this();
       this.thunk = thunk;
@@ -268,7 +280,7 @@ public class ThunkService {
      */
     public thunkGet_args(thunkGet_args other) {
       if (other.isSetThunk()) {
-        this.thunk = new Thunk(other.thunk);
+        this.thunk = new RemoteThunk(other.thunk);
       }
     }
 
@@ -281,11 +293,11 @@ public class ThunkService {
       this.thunk = null;
     }
 
-    public Thunk getThunk() {
+    public RemoteThunk getThunk() {
       return this.thunk;
     }
 
-    public void setThunk(Thunk thunk) {
+    public void setThunk(RemoteThunk thunk) {
       this.thunk = thunk;
     }
 
@@ -310,7 +322,7 @@ public class ThunkService {
         if (value == null) {
           unsetThunk();
         } else {
-          setThunk((Thunk)value);
+          setThunk((RemoteThunk)value);
         }
         break;
 
@@ -458,7 +470,7 @@ public class ThunkService {
           switch (schemeField.id) {
             case 1: // THUNK
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.thunk = new Thunk();
+                struct.thunk = new RemoteThunk();
                 struct.thunk.read(iprot);
                 struct.setThunkIsSet(true);
               } else { 
@@ -515,7 +527,7 @@ public class ThunkService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.thunk = new Thunk();
+          struct.thunk = new RemoteThunk();
           struct.thunk.read(iprot);
           struct.setThunkIsSet(true);
         }
@@ -528,6 +540,8 @@ public class ThunkService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("thunkGet_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField EXECUTION_FIELD_DESC = new org.apache.thrift.protocol.TField("execution", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField NOT_DONE_FIELD_DESC = new org.apache.thrift.protocol.TField("notDone", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -536,10 +550,14 @@ public class ThunkService {
     }
 
     private VarCont success; // required
+    private ExecutionException execution; // required
+    private NotDoneException notDone; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      EXECUTION((short)1, "execution"),
+      NOT_DONE((short)2, "notDone");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -556,6 +574,10 @@ public class ThunkService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // EXECUTION
+            return EXECUTION;
+          case 2: // NOT_DONE
+            return NOT_DONE;
           default:
             return null;
         }
@@ -601,6 +623,10 @@ public class ThunkService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, VarCont.class)));
+      tmpMap.put(_Fields.EXECUTION, new org.apache.thrift.meta_data.FieldMetaData("execution", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.NOT_DONE, new org.apache.thrift.meta_data.FieldMetaData("notDone", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(thunkGet_result.class, metaDataMap);
     }
@@ -609,10 +635,14 @@ public class ThunkService {
     }
 
     public thunkGet_result(
-      VarCont success)
+      VarCont success,
+      ExecutionException execution,
+      NotDoneException notDone)
     {
       this();
       this.success = success;
+      this.execution = execution;
+      this.notDone = notDone;
     }
 
     /**
@@ -621,6 +651,12 @@ public class ThunkService {
     public thunkGet_result(thunkGet_result other) {
       if (other.isSetSuccess()) {
         this.success = new VarCont(other.success);
+      }
+      if (other.isSetExecution()) {
+        this.execution = new ExecutionException(other.execution);
+      }
+      if (other.isSetNotDone()) {
+        this.notDone = new NotDoneException(other.notDone);
       }
     }
 
@@ -631,6 +667,8 @@ public class ThunkService {
     @Override
     public void clear() {
       this.success = null;
+      this.execution = null;
+      this.notDone = null;
     }
 
     public VarCont getSuccess() {
@@ -656,6 +694,52 @@ public class ThunkService {
       }
     }
 
+    public ExecutionException getExecution() {
+      return this.execution;
+    }
+
+    public void setExecution(ExecutionException execution) {
+      this.execution = execution;
+    }
+
+    public void unsetExecution() {
+      this.execution = null;
+    }
+
+    /** Returns true if field execution is set (has been assigned a value) and false otherwise */
+    public boolean isSetExecution() {
+      return this.execution != null;
+    }
+
+    public void setExecutionIsSet(boolean value) {
+      if (!value) {
+        this.execution = null;
+      }
+    }
+
+    public NotDoneException getNotDone() {
+      return this.notDone;
+    }
+
+    public void setNotDone(NotDoneException notDone) {
+      this.notDone = notDone;
+    }
+
+    public void unsetNotDone() {
+      this.notDone = null;
+    }
+
+    /** Returns true if field notDone is set (has been assigned a value) and false otherwise */
+    public boolean isSetNotDone() {
+      return this.notDone != null;
+    }
+
+    public void setNotDoneIsSet(boolean value) {
+      if (!value) {
+        this.notDone = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -666,6 +750,22 @@ public class ThunkService {
         }
         break;
 
+      case EXECUTION:
+        if (value == null) {
+          unsetExecution();
+        } else {
+          setExecution((ExecutionException)value);
+        }
+        break;
+
+      case NOT_DONE:
+        if (value == null) {
+          unsetNotDone();
+        } else {
+          setNotDone((NotDoneException)value);
+        }
+        break;
+
       }
     }
 
@@ -673,6 +773,12 @@ public class ThunkService {
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case EXECUTION:
+        return getExecution();
+
+      case NOT_DONE:
+        return getNotDone();
 
       }
       throw new IllegalStateException();
@@ -687,6 +793,10 @@ public class ThunkService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case EXECUTION:
+        return isSetExecution();
+      case NOT_DONE:
+        return isSetNotDone();
       }
       throw new IllegalStateException();
     }
@@ -710,6 +820,24 @@ public class ThunkService {
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_execution = true && this.isSetExecution();
+      boolean that_present_execution = true && that.isSetExecution();
+      if (this_present_execution || that_present_execution) {
+        if (!(this_present_execution && that_present_execution))
+          return false;
+        if (!this.execution.equals(that.execution))
+          return false;
+      }
+
+      boolean this_present_notDone = true && this.isSetNotDone();
+      boolean that_present_notDone = true && that.isSetNotDone();
+      if (this_present_notDone || that_present_notDone) {
+        if (!(this_present_notDone && that_present_notDone))
+          return false;
+        if (!this.notDone.equals(that.notDone))
           return false;
       }
 
@@ -739,6 +867,26 @@ public class ThunkService {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetExecution()).compareTo(typedOther.isSetExecution());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetExecution()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.execution, typedOther.execution);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetNotDone()).compareTo(typedOther.isSetNotDone());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetNotDone()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.notDone, typedOther.notDone);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -764,6 +912,22 @@ public class ThunkService {
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("execution:");
+      if (this.execution == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.execution);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("notDone:");
+      if (this.notDone == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.notDone);
       }
       first = false;
       sb.append(")");
@@ -817,6 +981,24 @@ public class ThunkService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // EXECUTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.execution = new ExecutionException();
+                struct.execution.read(iprot);
+                struct.setExecutionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // NOT_DONE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.notDone = new NotDoneException();
+                struct.notDone.read(iprot);
+                struct.setNotDoneIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -833,6 +1015,16 @@ public class ThunkService {
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.execution != null) {
+          oprot.writeFieldBegin(EXECUTION_FIELD_DESC);
+          struct.execution.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.notDone != null) {
+          oprot.writeFieldBegin(NOT_DONE_FIELD_DESC);
+          struct.notDone.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -856,20 +1048,42 @@ public class ThunkService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetExecution()) {
+          optionals.set(1);
+        }
+        if (struct.isSetNotDone()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
+        }
+        if (struct.isSetExecution()) {
+          struct.execution.write(oprot);
+        }
+        if (struct.isSetNotDone()) {
+          struct.notDone.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, thunkGet_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = new VarCont();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.execution = new ExecutionException();
+          struct.execution.read(iprot);
+          struct.setExecutionIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.notDone = new NotDoneException();
+          struct.notDone.read(iprot);
+          struct.setNotDoneIsSet(true);
         }
       }
     }

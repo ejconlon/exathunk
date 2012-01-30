@@ -28,24 +28,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Something went wrong...
+ * A future.
  */
-public class ExecutionException extends Exception implements org.apache.thrift.TBase<ExecutionException, ExecutionException._Fields>, java.io.Serializable, Cloneable {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ExecutionException");
+public class RemoteThunk implements org.apache.thrift.TBase<RemoteThunk, RemoteThunk._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("RemoteThunk");
 
-  private static final org.apache.thrift.protocol.TField REASON_FIELD_DESC = new org.apache.thrift.protocol.TField("reason", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField THUNK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("thunkId", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new ExecutionExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new ExecutionExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new RemoteThunkStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new RemoteThunkTupleSchemeFactory());
   }
 
-  private String reason; // required
+  private RemoteThunkId thunkId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    REASON((short)1, "reason");
+    THUNK_ID((short)1, "thunkId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -60,8 +60,8 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // REASON
-          return REASON;
+        case 1: // THUNK_ID
+          return THUNK_ID;
         default:
           return null;
       }
@@ -105,70 +105,70 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.REASON, new org.apache.thrift.meta_data.FieldMetaData("reason", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.THUNK_ID, new org.apache.thrift.meta_data.FieldMetaData("thunkId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, RemoteThunkId.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExecutionException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(RemoteThunk.class, metaDataMap);
   }
 
-  public ExecutionException() {
+  public RemoteThunk() {
   }
 
-  public ExecutionException(
-    String reason)
+  public RemoteThunk(
+    RemoteThunkId thunkId)
   {
     this();
-    this.reason = reason;
+    this.thunkId = thunkId;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public ExecutionException(ExecutionException other) {
-    if (other.isSetReason()) {
-      this.reason = other.reason;
+  public RemoteThunk(RemoteThunk other) {
+    if (other.isSetThunkId()) {
+      this.thunkId = new RemoteThunkId(other.thunkId);
     }
   }
 
-  public ExecutionException deepCopy() {
-    return new ExecutionException(this);
+  public RemoteThunk deepCopy() {
+    return new RemoteThunk(this);
   }
 
   @Override
   public void clear() {
-    this.reason = null;
+    this.thunkId = null;
   }
 
-  public String getReason() {
-    return this.reason;
+  public RemoteThunkId getThunkId() {
+    return this.thunkId;
   }
 
-  public void setReason(String reason) {
-    this.reason = reason;
+  public void setThunkId(RemoteThunkId thunkId) {
+    this.thunkId = thunkId;
   }
 
-  public void unsetReason() {
-    this.reason = null;
+  public void unsetThunkId() {
+    this.thunkId = null;
   }
 
-  /** Returns true if field reason is set (has been assigned a value) and false otherwise */
-  public boolean isSetReason() {
-    return this.reason != null;
+  /** Returns true if field thunkId is set (has been assigned a value) and false otherwise */
+  public boolean isSetThunkId() {
+    return this.thunkId != null;
   }
 
-  public void setReasonIsSet(boolean value) {
+  public void setThunkIdIsSet(boolean value) {
     if (!value) {
-      this.reason = null;
+      this.thunkId = null;
     }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case REASON:
+    case THUNK_ID:
       if (value == null) {
-        unsetReason();
+        unsetThunkId();
       } else {
-        setReason((String)value);
+        setThunkId((RemoteThunkId)value);
       }
       break;
 
@@ -177,8 +177,8 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case REASON:
-      return getReason();
+    case THUNK_ID:
+      return getThunkId();
 
     }
     throw new IllegalStateException();
@@ -191,8 +191,8 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
     }
 
     switch (field) {
-    case REASON:
-      return isSetReason();
+    case THUNK_ID:
+      return isSetThunkId();
     }
     throw new IllegalStateException();
   }
@@ -201,21 +201,21 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof ExecutionException)
-      return this.equals((ExecutionException)that);
+    if (that instanceof RemoteThunk)
+      return this.equals((RemoteThunk)that);
     return false;
   }
 
-  public boolean equals(ExecutionException that) {
+  public boolean equals(RemoteThunk that) {
     if (that == null)
       return false;
 
-    boolean this_present_reason = true && this.isSetReason();
-    boolean that_present_reason = true && that.isSetReason();
-    if (this_present_reason || that_present_reason) {
-      if (!(this_present_reason && that_present_reason))
+    boolean this_present_thunkId = true && this.isSetThunkId();
+    boolean that_present_thunkId = true && that.isSetThunkId();
+    if (this_present_thunkId || that_present_thunkId) {
+      if (!(this_present_thunkId && that_present_thunkId))
         return false;
-      if (!this.reason.equals(that.reason))
+      if (!this.thunkId.equals(that.thunkId))
         return false;
     }
 
@@ -227,20 +227,20 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
     return 0;
   }
 
-  public int compareTo(ExecutionException other) {
+  public int compareTo(RemoteThunk other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
-    ExecutionException typedOther = (ExecutionException)other;
+    RemoteThunk typedOther = (RemoteThunk)other;
 
-    lastComparison = Boolean.valueOf(isSetReason()).compareTo(typedOther.isSetReason());
+    lastComparison = Boolean.valueOf(isSetThunkId()).compareTo(typedOther.isSetThunkId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetReason()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reason, typedOther.reason);
+    if (isSetThunkId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.thunkId, typedOther.thunkId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -262,14 +262,14 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("ExecutionException(");
+    StringBuilder sb = new StringBuilder("RemoteThunk(");
     boolean first = true;
 
-    sb.append("reason:");
-    if (this.reason == null) {
+    sb.append("thunkId:");
+    if (this.thunkId == null) {
       sb.append("null");
     } else {
-      sb.append(this.reason);
+      sb.append(this.thunkId);
     }
     first = false;
     sb.append(")");
@@ -278,8 +278,8 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetReason()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'reason' is unset! Struct:" + toString());
+    if (!isSetThunkId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'thunkId' is unset! Struct:" + toString());
     }
 
   }
@@ -300,15 +300,15 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
     }
   }
 
-  private static class ExecutionExceptionStandardSchemeFactory implements SchemeFactory {
-    public ExecutionExceptionStandardScheme getScheme() {
-      return new ExecutionExceptionStandardScheme();
+  private static class RemoteThunkStandardSchemeFactory implements SchemeFactory {
+    public RemoteThunkStandardScheme getScheme() {
+      return new RemoteThunkStandardScheme();
     }
   }
 
-  private static class ExecutionExceptionStandardScheme extends StandardScheme<ExecutionException> {
+  private static class RemoteThunkStandardScheme extends StandardScheme<RemoteThunk> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, ExecutionException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, RemoteThunk struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -318,10 +318,11 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
           break;
         }
         switch (schemeField.id) {
-          case 1: // REASON
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.reason = iprot.readString();
-              struct.setReasonIsSet(true);
+          case 1: // THUNK_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.thunkId = new RemoteThunkId();
+              struct.thunkId.read(iprot);
+              struct.setThunkIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -335,13 +336,13 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, ExecutionException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, RemoteThunk struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.reason != null) {
-        oprot.writeFieldBegin(REASON_FIELD_DESC);
-        oprot.writeString(struct.reason);
+      if (struct.thunkId != null) {
+        oprot.writeFieldBegin(THUNK_ID_FIELD_DESC);
+        struct.thunkId.write(oprot);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -350,25 +351,26 @@ public class ExecutionException extends Exception implements org.apache.thrift.T
 
   }
 
-  private static class ExecutionExceptionTupleSchemeFactory implements SchemeFactory {
-    public ExecutionExceptionTupleScheme getScheme() {
-      return new ExecutionExceptionTupleScheme();
+  private static class RemoteThunkTupleSchemeFactory implements SchemeFactory {
+    public RemoteThunkTupleScheme getScheme() {
+      return new RemoteThunkTupleScheme();
     }
   }
 
-  private static class ExecutionExceptionTupleScheme extends TupleScheme<ExecutionException> {
+  private static class RemoteThunkTupleScheme extends TupleScheme<RemoteThunk> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, ExecutionException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, RemoteThunk struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.reason);
+      struct.thunkId.write(oprot);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, ExecutionException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, RemoteThunk struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.reason = iprot.readString();
-      struct.setReasonIsSet(true);
+      struct.thunkId = new RemoteThunkId();
+      struct.thunkId.read(iprot);
+      struct.setThunkIdIsSet(true);
     }
   }
 

@@ -110,35 +110,38 @@ struct EvalRequest {
 /**
  * An identifier of a future value.
  */
-struct ThunkId {
+struct RemoteThunkId {
        1: required string id
 }
 
 /**
  * A future.
  */
-struct Thunk {
-       1: required ThunkId thunkId
+struct RemoteThunk {
+       1: required RemoteThunkId thunkId
 }
 
 /**
  * Something went wrong...
  */
-struct ExecutionException {
+exception ExecutionException {
+       1: required string reason
+}
+exception UnknownFuncException {
+       1: required string reason
+}
+exception NotDoneException {
        1: required string reason
 }
 
-/**
- * Submit a closure for evaluation and receive a future.
- */
-service EvalService {
-	Thunk submitEvalRequest(1: EvalRequest evalRequest)
-}
-
-/**
- * Call upon that future.
- */
-service ThunkService {
-	VarCont thunkGet(1: Thunk thunk)
+service RemoteExecutionService {
+    FuncDef getFuncDef(1: FuncId funcId)
+        throws (1: UnknownFuncException unknown)
+    list<FuncDef> getFuncDefs(1: list<FuncId> funcIds)
+        throws (1: UnknownFuncException unknown)
+    RemoteThunk submitEvalRequest(1: EvalRequest evalRequest)
+    	throws (1: ExecutionException execution, 2: UnknownFuncException unknown)
+	VarCont thunkGet(1: RemoteThunk thunk)
+	    throws (1: ExecutionException execution, 2: NotDoneException notDone)
 }
 

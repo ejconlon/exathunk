@@ -34,7 +34,7 @@ public class EvalService {
    */
   public interface Iface {
 
-    public Thunk submitEvalRequest(EvalRequest evalRequest) throws org.apache.thrift.TException;
+    public RemoteThunk submitEvalRequest(EvalRequest evalRequest) throws ExecutionException, UnknownFuncException, org.apache.thrift.TException;
 
   }
 
@@ -64,7 +64,7 @@ public class EvalService {
       super(iprot, oprot);
     }
 
-    public Thunk submitEvalRequest(EvalRequest evalRequest) throws org.apache.thrift.TException
+    public RemoteThunk submitEvalRequest(EvalRequest evalRequest) throws ExecutionException, UnknownFuncException, org.apache.thrift.TException
     {
       send_submitEvalRequest(evalRequest);
       return recv_submitEvalRequest();
@@ -77,12 +77,18 @@ public class EvalService {
       sendBase("submitEvalRequest", args);
     }
 
-    public Thunk recv_submitEvalRequest() throws org.apache.thrift.TException
+    public RemoteThunk recv_submitEvalRequest() throws ExecutionException, UnknownFuncException, org.apache.thrift.TException
     {
       submitEvalRequest_result result = new submitEvalRequest_result();
       receiveBase(result, "submitEvalRequest");
       if (result.isSetSuccess()) {
         return result.success;
+      }
+      if (result.execution != null) {
+        throw result.execution;
+      }
+      if (result.unknown != null) {
+        throw result.unknown;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "submitEvalRequest failed: unknown result");
     }
@@ -127,7 +133,7 @@ public class EvalService {
         prot.writeMessageEnd();
       }
 
-      public Thunk getResult() throws org.apache.thrift.TException {
+      public RemoteThunk getResult() throws ExecutionException, UnknownFuncException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -165,7 +171,13 @@ public class EvalService {
 
       protected submitEvalRequest_result getResult(I iface, submitEvalRequest_args args) throws org.apache.thrift.TException {
         submitEvalRequest_result result = new submitEvalRequest_result();
-        result.success = iface.submitEvalRequest(args.evalRequest);
+        try {
+          result.success = iface.submitEvalRequest(args.evalRequest);
+        } catch (ExecutionException execution) {
+          result.execution = execution;
+        } catch (UnknownFuncException unknown) {
+          result.unknown = unknown;
+        }
         return result;
       }
     }
@@ -528,6 +540,8 @@ public class EvalService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("submitEvalRequest_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField EXECUTION_FIELD_DESC = new org.apache.thrift.protocol.TField("execution", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField UNKNOWN_FIELD_DESC = new org.apache.thrift.protocol.TField("unknown", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -535,11 +549,15 @@ public class EvalService {
       schemes.put(TupleScheme.class, new submitEvalRequest_resultTupleSchemeFactory());
     }
 
-    private Thunk success; // required
+    private RemoteThunk success; // required
+    private ExecutionException execution; // required
+    private UnknownFuncException unknown; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      EXECUTION((short)1, "execution"),
+      UNKNOWN((short)2, "unknown");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -556,6 +574,10 @@ public class EvalService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // EXECUTION
+            return EXECUTION;
+          case 2: // UNKNOWN
+            return UNKNOWN;
           default:
             return null;
         }
@@ -600,7 +622,11 @@ public class EvalService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Thunk.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, RemoteThunk.class)));
+      tmpMap.put(_Fields.EXECUTION, new org.apache.thrift.meta_data.FieldMetaData("execution", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.UNKNOWN, new org.apache.thrift.meta_data.FieldMetaData("unknown", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(submitEvalRequest_result.class, metaDataMap);
     }
@@ -609,10 +635,14 @@ public class EvalService {
     }
 
     public submitEvalRequest_result(
-      Thunk success)
+      RemoteThunk success,
+      ExecutionException execution,
+      UnknownFuncException unknown)
     {
       this();
       this.success = success;
+      this.execution = execution;
+      this.unknown = unknown;
     }
 
     /**
@@ -620,7 +650,13 @@ public class EvalService {
      */
     public submitEvalRequest_result(submitEvalRequest_result other) {
       if (other.isSetSuccess()) {
-        this.success = new Thunk(other.success);
+        this.success = new RemoteThunk(other.success);
+      }
+      if (other.isSetExecution()) {
+        this.execution = new ExecutionException(other.execution);
+      }
+      if (other.isSetUnknown()) {
+        this.unknown = new UnknownFuncException(other.unknown);
       }
     }
 
@@ -631,13 +667,15 @@ public class EvalService {
     @Override
     public void clear() {
       this.success = null;
+      this.execution = null;
+      this.unknown = null;
     }
 
-    public Thunk getSuccess() {
+    public RemoteThunk getSuccess() {
       return this.success;
     }
 
-    public void setSuccess(Thunk success) {
+    public void setSuccess(RemoteThunk success) {
       this.success = success;
     }
 
@@ -656,13 +694,75 @@ public class EvalService {
       }
     }
 
+    public ExecutionException getExecution() {
+      return this.execution;
+    }
+
+    public void setExecution(ExecutionException execution) {
+      this.execution = execution;
+    }
+
+    public void unsetExecution() {
+      this.execution = null;
+    }
+
+    /** Returns true if field execution is set (has been assigned a value) and false otherwise */
+    public boolean isSetExecution() {
+      return this.execution != null;
+    }
+
+    public void setExecutionIsSet(boolean value) {
+      if (!value) {
+        this.execution = null;
+      }
+    }
+
+    public UnknownFuncException getUnknown() {
+      return this.unknown;
+    }
+
+    public void setUnknown(UnknownFuncException unknown) {
+      this.unknown = unknown;
+    }
+
+    public void unsetUnknown() {
+      this.unknown = null;
+    }
+
+    /** Returns true if field unknown is set (has been assigned a value) and false otherwise */
+    public boolean isSetUnknown() {
+      return this.unknown != null;
+    }
+
+    public void setUnknownIsSet(boolean value) {
+      if (!value) {
+        this.unknown = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((Thunk)value);
+          setSuccess((RemoteThunk)value);
+        }
+        break;
+
+      case EXECUTION:
+        if (value == null) {
+          unsetExecution();
+        } else {
+          setExecution((ExecutionException)value);
+        }
+        break;
+
+      case UNKNOWN:
+        if (value == null) {
+          unsetUnknown();
+        } else {
+          setUnknown((UnknownFuncException)value);
         }
         break;
 
@@ -673,6 +773,12 @@ public class EvalService {
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case EXECUTION:
+        return getExecution();
+
+      case UNKNOWN:
+        return getUnknown();
 
       }
       throw new IllegalStateException();
@@ -687,6 +793,10 @@ public class EvalService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case EXECUTION:
+        return isSetExecution();
+      case UNKNOWN:
+        return isSetUnknown();
       }
       throw new IllegalStateException();
     }
@@ -710,6 +820,24 @@ public class EvalService {
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_execution = true && this.isSetExecution();
+      boolean that_present_execution = true && that.isSetExecution();
+      if (this_present_execution || that_present_execution) {
+        if (!(this_present_execution && that_present_execution))
+          return false;
+        if (!this.execution.equals(that.execution))
+          return false;
+      }
+
+      boolean this_present_unknown = true && this.isSetUnknown();
+      boolean that_present_unknown = true && that.isSetUnknown();
+      if (this_present_unknown || that_present_unknown) {
+        if (!(this_present_unknown && that_present_unknown))
+          return false;
+        if (!this.unknown.equals(that.unknown))
           return false;
       }
 
@@ -739,6 +867,26 @@ public class EvalService {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetExecution()).compareTo(typedOther.isSetExecution());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetExecution()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.execution, typedOther.execution);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetUnknown()).compareTo(typedOther.isSetUnknown());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUnknown()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.unknown, typedOther.unknown);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -764,6 +912,22 @@ public class EvalService {
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("execution:");
+      if (this.execution == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.execution);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("unknown:");
+      if (this.unknown == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.unknown);
       }
       first = false;
       sb.append(")");
@@ -810,9 +974,27 @@ public class EvalService {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new Thunk();
+                struct.success = new RemoteThunk();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // EXECUTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.execution = new ExecutionException();
+                struct.execution.read(iprot);
+                struct.setExecutionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // UNKNOWN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.unknown = new UnknownFuncException();
+                struct.unknown.read(iprot);
+                struct.setUnknownIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -833,6 +1015,16 @@ public class EvalService {
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.execution != null) {
+          oprot.writeFieldBegin(EXECUTION_FIELD_DESC);
+          struct.execution.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.unknown != null) {
+          oprot.writeFieldBegin(UNKNOWN_FIELD_DESC);
+          struct.unknown.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -856,20 +1048,42 @@ public class EvalService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetExecution()) {
+          optionals.set(1);
+        }
+        if (struct.isSetUnknown()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
+        }
+        if (struct.isSetExecution()) {
+          struct.execution.write(oprot);
+        }
+        if (struct.isSetUnknown()) {
+          struct.unknown.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, submitEvalRequest_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
-          struct.success = new Thunk();
+          struct.success = new RemoteThunk();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.execution = new ExecutionException();
+          struct.execution.read(iprot);
+          struct.setExecutionIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.unknown = new UnknownFuncException();
+          struct.unknown.read(iprot);
+          struct.setUnknownIsSet(true);
         }
       }
     }
