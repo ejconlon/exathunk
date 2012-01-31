@@ -10,11 +10,7 @@ import java.util.ArrayList;
 public class NTree<T, L, V> {
 
     public static interface Visitor<T, L, V> {
-        void visit(NTree<T, L, V> tree) throws VisitException;
-
-        void start();
-
-        void end();
+        void visit(NTree<T, L, V> tree, int depth) throws VisitException;
     }
 
     // Should not be null in any case
@@ -38,24 +34,21 @@ public class NTree<T, L, V> {
         setBranch(type, label, children);
     }
 
-    public void accept(Visitor<T, L, V> visitor) throws VisitException {
-        try {
-            visitor.start();
-            subAccept(visitor);
-        } finally {
-            visitor.end();
-        }
+    // Accepts a visitor 
+    public void acceptPostorder(Visitor<T, L, V> visitor) throws VisitException {
+	subAcceptPostorder(visitor, 0);
     }
 
-    protected void subAccept(Visitor<T, L, V> visitor) throws VisitException {
+    private void subAcceptPostorder(Visitor<T, L, V> visitor, int depth) throws VisitException {
         if (children != null) {
             for (NTree<T, L, V> child : children) {
-                child.subAccept(visitor);
+                child.subAcceptPostorder(visitor, depth + 1);
             }
+	    // TODO if mutation is desired, enable this
             // Clean up any empty nodes.
-            children.remove(new NTree<T, L, V>());
+            // children.remove(new NTree<T, L, V>());
         }
-        visitor.visit(this);
+        visitor.visit(this, depth);
     }
 
     // All nodes will have a non-null type.
