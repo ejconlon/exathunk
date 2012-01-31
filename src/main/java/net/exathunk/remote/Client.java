@@ -1,6 +1,7 @@
-package net.exathunk.base;
+package net.exathunk.remote;
 
-import net.exathunk.genthrift.RemoteExecutionService;
+import net.exathunk.base.*;
+import net.exathunk.genthrift.*;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -34,5 +35,25 @@ public class Client implements AutoCloseable {
         if (transport != null) transport.close();
         stub = null;
         transport = null;
+    }
+
+    public static void main(String[] args) throws Exception {
+	if (args.length != 3) {
+	    System.err.println("USE: java net.exathunk.remote.Client [hostname] [port] [quoted expression]");
+	    System.exit(-1);
+	}
+	String host = args[0];
+	int port = Integer.parseInt(args[1]);
+	String expression = args[2];
+
+	try (Client client = new Client(host, port)) {
+		client.open();
+		EvalRequest evalRequest = new EvalRequest();
+		// TODO
+		RemoteThunk thunk = client.getStub().submitEvalRequest(evalRequest);
+		VarCont value = client.getStub().thunkGet(thunk);
+		System.out.println(value);
+	    }
+
     }
 }
