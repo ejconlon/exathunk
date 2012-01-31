@@ -49,16 +49,13 @@ public class NTreeTest {
     }
 
     private class Halver implements NTree.Visitor<Unit, Unit, Integer> {
-        public void visit(NTree<Unit, Unit, Integer> t) {
+        public void visit(NTree<Unit, Unit, Integer> t, int depth) {
             if (t.isLeaf()) {
                 t.setBranch(Unit.getInstance(), Unit.getInstance(),
                         makePair(new NTree<Unit, Unit, Integer>(Unit.getInstance(), t.getValue()/2),
                                 new NTree<Unit, Unit, Integer>(Unit.getInstance(), t.getValue()/2)));
             }
         }
-
-        public void start() {}
-        public void end() {}
     }
 
     @Test
@@ -70,7 +67,7 @@ public class NTreeTest {
         assert(!x.equals(y));
         System.out.println("Original: ");
         System.out.println(x.toString());
-        x.accept(new Halver());
+        x.acceptPostorder(new Halver());
         System.out.println("COMPARE: ");
         System.out.println(x.toString());
         System.out.println(y.toString());

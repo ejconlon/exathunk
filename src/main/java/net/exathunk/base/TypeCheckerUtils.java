@@ -3,8 +3,9 @@ package net.exathunk.base;
 import net.exathunk.functional.Unit;
 import net.exathunk.genthrift.*;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class TypeCheckerUtils {
     public static NTree<VarContType, FuncId, VarCont> makeTypedTree(
@@ -157,4 +158,47 @@ public class TypeCheckerUtils {
         return makeTypedTreeFromRemote(funcDefLibrary, typeChecker,
                 makeNativeRepFromRemote(funcDefLibrary, funcId, varTrees));
     }
+
+    public static class FuncIdAggregator implements NTree.Visitor<VarContType, FuncId, VarCont> {
+	// Store as strings to get around funked up thrift hashCode
+	private final Set<String> funcIds = new HashSet<String>();
+	public Set<String> getFuncIds() { return funcIds; }
+
+        public void visit(NTree<VarContType, FuncId, VarCont> tree, int depth) {
+	    if (tree.isBranch()) {
+		funcIds.add(tree.getLabel().getName());
+	    }
+	}
+    }
+
+    private static String collectionToString(Collection col) {
+	StringBuffer sb = new StringBuffer();
+	for (Object s : col) {
+	    sb.append(s).append(",");
+	}
+	if (col.size() > 0) {
+	    sb.deleteCharAt(sb.length()-1);
+	}
+	return sb.toString();
+    }
+
+    public static EvalRequest makeEvalRequest(
+	    FuncDefLibrary funcDefLibrary,
+	    TypeChecker typeChecker,
+	    NTree<VarContType, FuncId, VarCont> tree) throws UnknownFuncException, TypeException {
+        Logger logger = Logger.getLogger("TypeCheckerUtils");
+
+	// Step 1: Walk the tree and get all the funcdefs
+	FuncIdAggregator agg = new FuncIdAggregator();
+	try {
+	    tree.acceptPostorder(agg);
+	} catch (Exception e) { throw new TypeException(e); }
+	logger.log(Level.FINE, "IDS: {0}", collectionToString(agg.getFuncIds()));
+
+	// Step 2: Ask for all the func defs
+	// Step 3: Walk the tree again, serialize and collect indices
+	// Step 4: Return eval request with proper root index.
+	return null;
+    }
+
 }
