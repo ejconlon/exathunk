@@ -24,16 +24,16 @@ public class EvalRequestTest {
 
         NTree<VarContType, FuncId, VarCont> typedTree = TypeCheckerUtils.makeTypedTree(library, checker, parseTree);
         logger.log(Level.FINE, "Typed tree {0}", typedTree);
-	
-	EvalRequest evalRequest = TypeCheckerUtils.makeEvalRequest(library, checker, typedTree);
-	logger.log(Level.FINE, "Eval request {0}", evalRequest);
 
-	return evalRequest;
+        EvalRequest evalRequest = TypeCheckerUtils.makeEvalRequest(library, checker, typedTree);
+        logger.log(Level.FINE, "Eval request {0}", evalRequest);
+
+        return evalRequest;
     }
 
     @Test
     public void testFuncIdAggregator() throws Exception {
-	final String expression = "(* 4 5)";
-	EvalRequest evalRequest = makeEvalRequest(expression);
+        final String expression = "(* 4 5)";
+        EvalRequest evalRequest = makeEvalRequest(expression);
     }
 }

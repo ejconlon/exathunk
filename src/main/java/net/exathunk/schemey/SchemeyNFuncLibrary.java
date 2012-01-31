@@ -6,10 +6,7 @@ import net.exathunk.genthrift.FuncId;
 import net.exathunk.genthrift.VarCont;
 import net.exathunk.genthrift.VarContType;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -23,6 +20,12 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
 
     public FuncDef getFuncDef(FuncId funcId) throws UnknownFuncException {
         return getFunc(funcId).getFuncDef();
+    }
+    
+    public List<FuncDef> getFuncDefs(List<FuncId> funcIds) throws UnknownFuncException {
+        List<FuncDef> funcDefs = new ArrayList<>(funcIds.size());
+        for (FuncId funcId : funcIds) funcDefs.add(getFuncDef(funcId));
+        return funcDefs;
     }
 
     public NFunc getFunc(FuncId funcId) throws UnknownFuncException {

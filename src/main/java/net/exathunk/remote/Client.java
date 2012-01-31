@@ -14,23 +14,23 @@ public class Client implements AutoCloseable {
     private final int port;
     private TTransport transport;
     private RemoteExecutionService.Client stub;
-    
+
     public Client(String host, int port) {
         this.host = host;
         this.port = port;
     }
-    
+
     public void open() throws TTransportException {
         transport = new TSocket(host, port);
         transport.open();
         TProtocol protocol = new TBinaryProtocol(transport);
         stub = new RemoteExecutionService.Client(protocol);
-    } 
-    
+    }
+
     public RemoteExecutionService.Client getStub() {
         return stub;
     }
-    
+
     public void close() {
         if (transport != null) transport.close();
         stub = null;
@@ -38,22 +38,21 @@ public class Client implements AutoCloseable {
     }
 
     public static void main(String[] args) throws Exception {
-	if (args.length != 3) {
-	    System.err.println("USE: java net.exathunk.remote.Client [hostname] [port] [quoted expression]");
-	    System.exit(-1);
-	}
-	String host = args[0];
-	int port = Integer.parseInt(args[1]);
-	String expression = args[2];
+        if (args.length != 3) {
+            System.err.println("USE: java net.exathunk.remote.Client [hostname] [port] [quoted expression]");
+            System.exit(-1);
+        }
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
+        String expression = args[2];
 
-	try (Client client = new Client(host, port)) {
-		client.open();
-		EvalRequest evalRequest = new EvalRequest();
-		// TODO
-		RemoteThunk thunk = client.getStub().submitEvalRequest(evalRequest);
-		VarCont value = client.getStub().thunkGet(thunk);
-		System.out.println(value);
-	    }
-
+        try (Client client = new Client(host, port)) {
+            client.open();
+            EvalRequest evalRequest = new EvalRequest();
+            // TODO
+            RemoteThunk thunk = client.getStub().submitEvalRequest(evalRequest);
+            VarCont value = client.getStub().thunkGet(thunk);
+            System.out.println(value);
+        }
     }
 }

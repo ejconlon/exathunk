@@ -36,7 +36,7 @@ public class NTree<T, L, V> {
 
     // Accepts a visitor 
     public void acceptPostorder(Visitor<T, L, V> visitor) throws VisitException {
-	subAcceptPostorder(visitor, 0);
+        subAcceptPostorder(visitor, 0);
     }
 
     private void subAcceptPostorder(Visitor<T, L, V> visitor, int depth) throws VisitException {
@@ -44,7 +44,7 @@ public class NTree<T, L, V> {
             for (NTree<T, L, V> child : children) {
                 child.subAcceptPostorder(visitor, depth + 1);
             }
-	    // TODO if mutation is desired, enable this
+            // TODO if mutation is desired, enable this
             // Clean up any empty nodes.
             // children.remove(new NTree<T, L, V>());
         }

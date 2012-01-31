@@ -1,6 +1,9 @@
 package net.exathunk.base;
 
+import net.exathunk.functional.FMap;
+import net.exathunk.functional.Func1;
 import net.exathunk.functional.Unit;
+import net.exathunk.functional.VisitException;
 import net.exathunk.genthrift.*;
 
 import java.util.*;
@@ -56,7 +59,7 @@ public class TypeCheckerUtils {
         }
         return typedTree;
     }
-    
+
     public static NTree<VarContType, FuncId, VarCont> makeTypedTreeFromRemote(
             FuncDefLibrary funcDefLibrary,
             TypeChecker typeChecker,
@@ -134,7 +137,7 @@ public class TypeCheckerUtils {
         }
         return new NTree<>(Unit.getInstance(), funcId, children);
     }
-    
+
     public static NTree<Unit, FuncId, VarCont> makeNativeRepFromRemote(
             FuncDefLibrary funcDefLibrary,
             FuncId funcId,
@@ -160,45 +163,54 @@ public class TypeCheckerUtils {
     }
 
     public static class FuncIdAggregator implements NTree.Visitor<VarContType, FuncId, VarCont> {
-	// Store as strings to get around funked up thrift hashCode
-	private final Set<String> funcIds = new HashSet<String>();
-	public Set<String> getFuncIds() { return funcIds; }
+        // Store as strings to get around funked up thrift hashCode
+        private final Set<String> funcIds = new HashSet<String>();
+        public Set<String> getFuncIds() { return funcIds; }
 
         public void visit(NTree<VarContType, FuncId, VarCont> tree, int depth) {
-	    if (tree.isBranch()) {
-		funcIds.add(tree.getLabel().getName());
-	    }
-	}
+            if (tree.isBranch()) {
+                funcIds.add(tree.getLabel().getName());
+            }
+        }
     }
 
     private static String collectionToString(Collection col) {
-	StringBuffer sb = new StringBuffer();
-	for (Object s : col) {
-	    sb.append(s).append(",");
-	}
-	if (col.size() > 0) {
-	    sb.deleteCharAt(sb.length()-1);
-	}
-	return sb.toString();
+        StringBuffer sb = new StringBuffer();
+        for (Object s : col) {
+            sb.append(s).append(",");
+        }
+        if (col.size() > 0) {
+            sb.deleteCharAt(sb.length()-1);
+        }
+        return sb.toString();
     }
 
     public static EvalRequest makeEvalRequest(
-	    FuncDefLibrary funcDefLibrary,
-	    TypeChecker typeChecker,
-	    NTree<VarContType, FuncId, VarCont> tree) throws UnknownFuncException, TypeException {
+            FuncDefLibrary funcDefLibrary,
+            TypeChecker typeChecker,
+            NTree<VarContType, FuncId, VarCont> tree) throws UnknownFuncException, TypeException {
         Logger logger = Logger.getLogger("TypeCheckerUtils");
 
-	// Step 1: Walk the tree and get all the funcdefs
-	FuncIdAggregator agg = new FuncIdAggregator();
-	try {
-	    tree.acceptPostorder(agg);
-	} catch (Exception e) { throw new TypeException(e); }
-	logger.log(Level.FINE, "IDS: {0}", collectionToString(agg.getFuncIds()));
+        // Step 1: Walk the tree and get all the funcdefs
+        FuncIdAggregator agg = new FuncIdAggregator();
+        try {
+            tree.acceptPostorder(agg);
+        } catch (VisitException e) { throw new TypeException(e); } 
+        logger.log(Level.FINE, "IDS: {0}", collectionToString(agg.getFuncIds()));
 
-	// Step 2: Ask for all the func defs
-	// Step 3: Walk the tree again, serialize and collect indices
-	// Step 4: Return eval request with proper root index.
-	return null;
+        // Step 2: Ask for all the func defs
+        List<FuncId> funcIds = FMap.fmap(new Func1<String, FuncId>() {
+            @Override
+            public FuncId runFunc(String o) {
+                return new FuncId(o);
+            }
+        }, agg.getFuncIds());
+        List<FuncDef> funcDefs = funcDefLibrary.getFuncDefs(funcIds);
+        logger.log(Level.FINE, "FuncDefs: {0}", collectionToString(funcDefs));
+
+        // Step 3: Walk the tree again, serialize and collect indices
+        // Step 4: Return eval request with proper root index.
+        return null;
     }
 
 }

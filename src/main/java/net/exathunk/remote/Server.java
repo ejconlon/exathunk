@@ -14,12 +14,12 @@ public class Server implements Runnable, AutoCloseable {
     private final RemoteExecutionService.Iface handler;
     private final int port;
     private TServer server;
-    
+
     public Server(RemoteExecutionService.Iface handler, int port) {
         this.handler = handler;
         this.port = port;
     }
-    
+
     public void open() {
         TServerTransport serverTransport;
         try {
@@ -52,13 +52,13 @@ public class Server implements Runnable, AutoCloseable {
     }
 
     public static void main(String[] args) throws Exception {
-	if (args.length != 1 || "help".equals(args[0])) {
-	    System.err.println("USE: java net.exathunk.remote.Server [port]");
-	}
-	int port = Integer.parseInt(args[0]);
-	try (Server server = new Server(makeHandler(), port)) {
-		server.open();
-		server.run();
-	    }
+        if (args.length != 1 || "help".equals(args[0])) {
+            System.err.println("USE: java net.exathunk.remote.Server [port]");
+        }
+        int port = Integer.parseInt(args[0]);
+        try (Server server = new Server(makeHandler(), port)) {
+            server.open();
+            server.run();
+        }
     }
 }
