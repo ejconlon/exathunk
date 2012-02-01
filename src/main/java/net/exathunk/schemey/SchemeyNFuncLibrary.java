@@ -257,20 +257,25 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         }
     }*/
 
+    private static void put(Map<String, NFunc> funcs, String name, NFunc func) {
+        func.getFuncDef().setFuncId(new FuncId(name));
+        funcs.put(name, func);
+    }
+    
     private static Map<String, NFunc> makeFuncs() {
         Map<String, NFunc> funcs = new TreeMap<>();
-        funcs.put("+", new AddFunc());
-        funcs.put("-", new SubFunc());
-        funcs.put("*", new MulFunc());
-        funcs.put("/", new DivFunc());
-        funcs.put("%", new ModFunc());
-        funcs.put("and", new AndFunc());
-        funcs.put("or", new OrFunc());
-        funcs.put("xor", new XorFunc());
-        funcs.put("not", new NotFunc());
-        funcs.put("len", new LenFunc());
-        //funcs.put("bottom", new BottomFunc());
-        //funcs.put("if", new IfFunc());
+        put(funcs, "+", new AddFunc());
+        put(funcs, "-", new SubFunc());
+        put(funcs, "*", new MulFunc());
+        put(funcs, "/", new DivFunc());
+        put(funcs, "%", new ModFunc());
+        put(funcs, "and", new AndFunc());
+        put(funcs, "or", new OrFunc());
+        put(funcs, "xor", new XorFunc());
+        put(funcs, "not", new NotFunc());
+        put(funcs, "len", new LenFunc());
+        //put(funcs, "bottom", new BottomFunc());
+        //put(funcs, "if", new IfFunc());
         return funcs;
     }
 }

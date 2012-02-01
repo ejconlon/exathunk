@@ -22,18 +22,27 @@ public class EvalRequestTest {
         NTree<Unit, String, String> parseTree = parser.parse(expression);
         logger.log(Level.FINE, "Parse tree {0}", parseTree);
 
-        NTree<VarContType, FuncId, VarCont> typedTree = TypeCheckerUtils.makeTypedTree(library, checker, parseTree);
-        logger.log(Level.FINE, "Typed tree {0}", typedTree);
-
-        EvalRequest evalRequest = TypeCheckerUtils.makeEvalRequest(library, checker, typedTree);
+        EvalRequest evalRequest = TypeCheckerUtils.makeEvalRequest(library, checker, parseTree);
         logger.log(Level.FINE, "Eval request {0}", evalRequest);
 
         return evalRequest;
     }
 
     @Test
-    public void testFuncIdAggregator() throws Exception {
+    public void testSimple() throws Exception {
         final String expression = "(* 4 5)";
         EvalRequest evalRequest = makeEvalRequest(expression);
+        NTree<VarContType, FuncId, VarCont> postTree = TypeCheckerUtils.makeTypedTreeFromRemote(
+                library, checker, evalRequest.getFuncId(), evalRequest.getEvalArgs());
+        System.out.println(postTree);    // TODO assertions...
+    }
+
+    @Test
+    public void testComplex() throws Exception {
+        final String expression = "(* (- 5 6) (% 9 (/ 4 2)))";
+        EvalRequest evalRequest = makeEvalRequest(expression);
+        NTree<VarContType, FuncId, VarCont> postTree = TypeCheckerUtils.makeTypedTreeFromRemote(
+                library, checker, evalRequest.getFuncId(), evalRequest.getEvalArgs());
+        System.out.println(postTree);
     }
 }

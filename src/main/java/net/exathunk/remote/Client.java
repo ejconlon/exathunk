@@ -1,7 +1,9 @@
 package net.exathunk.remote;
 
 import net.exathunk.base.*;
+import net.exathunk.functional.Unit;
 import net.exathunk.genthrift.*;
+import net.exathunk.schemey.SchemeyTypeChecker;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -48,8 +50,11 @@ public class Client implements AutoCloseable {
 
         try (Client client = new Client(host, port)) {
             client.open();
-            EvalRequest evalRequest = new EvalRequest();
-            // TODO
+            FuncDefLibrary library = new RemoteFuncDefLibrary(client.getStub());
+            TypeChecker checker = new SchemeyTypeChecker(); // TODO not really sexp/scheme specific
+            NTreeParser parser = new SexpParser();
+            NTree<Unit, String, String> tree = parser.parse(expression);
+            EvalRequest evalRequest = TypeCheckerUtils.makeEvalRequest(library, checker, tree);
             RemoteThunk thunk = client.getStub().submitEvalRequest(evalRequest);
             VarCont value = client.getStub().thunkGet(thunk);
             System.out.println(value);

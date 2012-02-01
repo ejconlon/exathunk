@@ -162,14 +162,53 @@ public class TypeCheckerUtils {
                 makeNativeRepFromRemote(funcDefLibrary, funcId, varTrees));
     }
 
-    public static class FuncIdAggregator implements NTree.Visitor<VarContType, FuncId, VarCont> {
+    public static class FuncIdAggregator implements NTree.Visitor<Unit, String, String> {
         // Store as strings to get around funked up thrift hashCode
-        private final Set<String> funcIds = new HashSet<String>();
+        private final Set<String> funcIds = new HashSet<>();
         public Set<String> getFuncIds() { return funcIds; }
 
-        public void visit(NTree<VarContType, FuncId, VarCont> tree, int depth) {
+        public void visit(NTree<Unit, String, String> tree, int depth) {
             if (tree.isBranch()) {
-                funcIds.add(tree.getLabel().getName());
+                funcIds.add(tree.getLabel());
+            }
+        }
+    }
+
+    public static class VarTreeSerializer implements NTree.Visitor<VarContType, FuncId, VarCont> {
+        // Store as strings to get around funked up thrift hashCode
+        private final List<VarTree> varTrees = new LinkedList<>();
+        private List<FuncDef> funcDefs;
+        private TypeChecker typeChecker;
+
+        public List<VarTree> getVarTrees() { return varTrees; }
+
+        private VarTree thisTree = new VarTree();
+
+        public VarTreeSerializer(TypeChecker typeChecker, List<FuncDef> funcDefs) {
+            this.typeChecker = typeChecker;
+            this.funcDefs = funcDefs;
+        }
+        
+        public void visit(NTree<VarContType, FuncId, VarCont> tree, int depth) {
+            VarTreeNode thisNode = new VarTreeNode();
+
+            if (tree.isLeaf()) {
+                thisNode.setValue(tree.getValue());
+            } else {
+                int numChildren = tree.getChildren().size();
+                int numNodes = thisTree.getNodesSize();
+                for (int i = 0; i < numChildren; ++i) {
+                    thisNode.addToChildren(numNodes - 1 - i);
+                }
+                thisNode.setLabel(tree.getLabel());
+            }
+
+            thisTree.addToNodes(thisNode);
+
+            if (depth == 1) {
+                thisTree.setRootIndex(thisTree.getNodesSize() - 1);
+                varTrees.add(thisTree);
+                thisTree = new VarTree();
             }
         }
     }
@@ -184,33 +223,49 @@ public class TypeCheckerUtils {
         }
         return sb.toString();
     }
+    
+    
 
     public static EvalRequest makeEvalRequest(
             FuncDefLibrary funcDefLibrary,
             TypeChecker typeChecker,
-            NTree<VarContType, FuncId, VarCont> tree) throws UnknownFuncException, TypeException {
+            NTree<Unit, String, String> parseTree) throws UnknownFuncException, TypeException {
         Logger logger = Logger.getLogger("TypeCheckerUtils");
+
+        // Step 0: Ensure root node is a branch
+        if (!parseTree.isBranch()) throw new TypeException("Need branch with FuncId, not "+parseTree.getValue());
 
         // Step 1: Walk the tree and get all the funcdefs
         FuncIdAggregator agg = new FuncIdAggregator();
         try {
-            tree.acceptPostorder(agg);
+            parseTree.acceptPostorder(agg);
         } catch (VisitException e) { throw new TypeException(e); } 
         logger.log(Level.FINE, "IDS: {0}", collectionToString(agg.getFuncIds()));
 
         // Step 2: Ask for all the func defs
         List<FuncId> funcIds = FMap.fmap(new Func1<String, FuncId>() {
-            @Override
-            public FuncId runFunc(String o) {
-                return new FuncId(o);
-            }
+            public FuncId runFunc(String o) { return new FuncId(o); }
         }, agg.getFuncIds());
         List<FuncDef> funcDefs = funcDefLibrary.getFuncDefs(funcIds);
         logger.log(Level.FINE, "FuncDefs: {0}", collectionToString(funcDefs));
 
+        // Step 2.5: Type the tree
+        FuncDefLibrary cachedLibrary = new SimpleFuncDefLibrary(funcDefs);
+        NTree<VarContType, FuncId, VarCont> typedTree = makeTypedTree(cachedLibrary, typeChecker, parseTree);
+
         // Step 3: Walk the tree again, serialize and collect indices
+        VarTreeSerializer ser = new VarTreeSerializer(typeChecker, funcDefs);
+        try {
+            typedTree.acceptPostorder(ser);
+        } catch (VisitException e) { throw new TypeException(e); }
+        List<VarTree> varTrees = ser.getVarTrees();
+        logger.log(Level.FINE, "VarTree: {0}", collectionToString(varTrees));
+        
         // Step 4: Return eval request with proper root index.
-        return null;
+        EvalRequest evalRequest = new EvalRequest();
+        evalRequest.setEvalArgs(varTrees);
+        evalRequest.setFuncId(typedTree.getLabel());
+        return evalRequest;
     }
 
 }
