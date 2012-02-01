@@ -51,6 +51,11 @@ public class Server implements Runnable, AutoCloseable {
         return new RemoteExecutionServiceHandler(library, checker, executor);
     }
 
+    /**
+     * EXAMPLE:
+     *
+     * mvn exec:java -Dexec.mainClass="net.exathunk.remote.Server" -Dexec.args="5678"
+     */
     public static void main(String[] args) throws Exception {
         if (args.length != 1 || "help".equals(args[0])) {
             System.err.println("USE: java net.exathunk.remote.Server [port]");

@@ -39,6 +39,11 @@ public class Client implements AutoCloseable {
         transport = null;
     }
 
+    /**
+     * EXAMPLE:
+     *
+     * mvn exec:java -Dexec.mainClass="net.exathunk.remote.Client" -Dexec.args="localhost 5678 '(* (+ 2 6) 5)'"
+     */
     public static void main(String[] args) throws Exception {
         if (args.length != 3) {
             System.err.println("USE: java net.exathunk.remote.Client [hostname] [port] [quoted expression]");
