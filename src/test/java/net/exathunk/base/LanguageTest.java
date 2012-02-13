@@ -34,7 +34,10 @@ public class LanguageTest {
         specs.put("(if false STRING:foo STRING:bar)", VarUtils.makeStringVarCont("bar"));
         specs.put("(if (not true) I64:1 I64:2)", VarUtils.makeLongVarCont(2));
         specs.put("(len (if true STRING:four STRING:to))", VarUtils.makeLongVarCont(4));
-
+        specs.put("(eq I64:1 I64:1)", VarUtils.makeBoolVarCont(true));
+        specs.put("(eq STRING:abc STRING:abc)", VarUtils.makeBoolVarCont(true));
+        specs.put("(eq STRING:abc STRING:az)", VarUtils.makeBoolVarCont(false));
+        specs.put("(neq STRING:abc STRING:az)", VarUtils.makeBoolVarCont(true));
         return specs;
     }
 

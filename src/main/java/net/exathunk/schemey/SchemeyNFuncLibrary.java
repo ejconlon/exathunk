@@ -284,6 +284,32 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         }
     }
 
+    public static class EqFunc extends StrictNFuncImpl {
+        public EqFunc() { super(makeFuncDef()); }
+
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeBoolVarContType());
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("A"));
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("A"));
+            return def;
+        }
+
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeBoolVarCont(values.get(0).equals(values.get(1)));
+        }
+    }
+
+    public static class NeqFunc extends StrictNFuncImpl {
+        public NeqFunc() { super(EqFunc.makeFuncDef()); }
+
+        @Override
+        protected VarCont subInvoke(List<VarCont> values) throws ExecutionException {
+            return VarUtils.makeBoolVarCont(!values.get(0).equals(values.get(1)));
+        }
+    }
+
     private static void put(Map<String, NFunc> funcs, String name, NFunc func) {
         func.getFuncDef().setFuncId(new FuncId(name));
         funcs.put(name, func);
@@ -304,6 +330,8 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         put(funcs, "bottom", new BottomFunc());
         put(funcs, "error", new ErrorFunc());
         put(funcs, "if", new IfFunc());
+        put(funcs, "eq", new EqFunc());
+        put(funcs, "neq", new NeqFunc());
         return funcs;
     }
 }
