@@ -36,6 +36,7 @@ struct VarContType {
        1: required ContType contType,
        2: optional VarType keyType,
        3: optional VarType valueType,
+       4: optional string templateName
 }
 
 /**

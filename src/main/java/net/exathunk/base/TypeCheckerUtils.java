@@ -35,14 +35,27 @@ public class TypeCheckerUtils {
             }
             List<NTree<VarContType, FuncId, VarCont>> typedChildren =
                     new ArrayList<>(parseChildren.size());
-
+            Map<String, VarContType> templates = new HashMap<>();
             for (int i = 0; i < parseChildren.size(); ++i) {
                 NTree<Unit, String, String> parseChild = parseChildren.get(i);
                 VarContType type = paramTypes.get(i);
                 if (parseChild.isLeaf()) {
                     String fromValue = parseChild.getValue();
-                    VarCont toValue = typeChecker.cast(type, fromValue);
-                    typedChildren.add(new NTree<VarContType, FuncId, VarCont>(type, toValue));
+                    Pair<VarContType, VarCont> castPair = typeChecker.cast(type, fromValue);
+                    VarContType realType = castPair.getFirst();
+                    if (realType.isSetTemplateName()) {
+                        String templateName = realType.getTemplateName();
+                        if (templates.containsKey(templateName)) {
+                            VarContType otherType = templates.get(templateName);
+                            if (!realType.equals(otherType)) {
+                                throw new TypeException("Type mismatch: "+realType+" vs. "+otherType);
+                            }
+                        } else {
+                            templates.put(templateName, realType);
+                        }
+                    }
+                    typedChildren.add(new NTree<VarContType, FuncId, VarCont>(
+                            realType, castPair.getSecond()));
                 } else {
                     NTree<VarContType, FuncId, VarCont> typedChild =
                             makeTypedTree(funcDefLibrary, typeChecker, parseChild);

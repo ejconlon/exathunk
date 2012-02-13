@@ -30,8 +30,8 @@ public class LanguageTest {
         specs.put("(or  true false)", VarUtils.makeBoolVarCont(true));
         specs.put("(- (len foo) 1)", VarUtils.makeLongVarCont(2));
         //specs.put("(or true (bottom))", VarUtils.makeBoolVarCont(true));
-        //specs.put("(if true foo bar)", VarUtils.makeStringVarCont("foo"));
-        //specs.put("(if false foo bar)", VarUtils.makeStringVarCont("bar"));
+        specs.put("(if true STRING:foo STRING:bar)", VarUtils.makeStringVarCont("foo"));
+        specs.put("(if false STRING:foo STRING:bar)", VarUtils.makeStringVarCont("bar"));
 
         return specs;
     }
@@ -42,6 +42,7 @@ public class LanguageTest {
         specs.put("(* 4 true)", TypeException.class);
         specs.put("(blah 4 true)", UnknownFuncException.class);
         //specs.put("(bottom)", ExecutionException.class);
+        specs.put("(if true I64:4 STRING:five)", TypeException.class);
 
         return specs;
     }

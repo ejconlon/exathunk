@@ -226,9 +226,9 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         protected Object subInvoke(List<Object> objects) throws ExecutionException {
             throw new ThunkExecutionException("Hit bottom");
         }
-    }
+    }*/
     
-    public static class IfFunc extends NFuncImpl {
+    /*public static class IfFunc extends NFuncImpl {
         public IfFunc() {
             super(Any.class, new Class[] { Boolean.class, Any.class, Any.class },
                     new Strictness[] {Strictness.STRICT, Strictness.LAZY, Strictness.LAZY});
@@ -257,6 +257,44 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         }
     }*/
 
+    public static class IfFunc extends NFuncImpl {
+        public IfFunc() {
+            super(makeFuncDef());
+        }
+
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeTemplateVarContType("IF_A"));
+            def.addToParameterTypes(VarUtils.makeBoolVarContType());
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("IF_A"));
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("IF_A"));
+            return def;
+        }
+
+        @Override
+        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor executor,
+                                     final NTree<VarContType, FuncId, VarCont> args) {
+            return new CallableThunk<>(new Callable<VarCont>() {
+                @Override
+                public VarCont call() throws ExecutionException, UnknownFuncException {
+                    List<Boolean> mask1 = Arrays.asList(true, false);
+                    Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
+                            TreeExecutor.execute(executor, args, mask1);
+                    int exdex;
+                    if (args.getChildren().get(0).getValue().getSingletonCont().isBoolVar()) {
+                        exdex = 1;
+                    } else {
+                        exdex = 2;
+                    }
+                    List<Boolean> mask2 = Arrays.asList(false, 1 == exdex, 2 == exdex);
+                    Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
+                            TreeExecutor.execute(executor, firstEvaled.get(), mask2);
+                    return secondEvaled.get().getChildren().get(exdex).getValue();
+                }
+            });
+        }
+    }
+
     private static void put(Map<String, NFunc> funcs, String name, NFunc func) {
         func.getFuncDef().setFuncId(new FuncId(name));
         funcs.put(name, func);
@@ -275,7 +313,7 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         put(funcs, "not", new NotFunc());
         put(funcs, "len", new LenFunc());
         //put(funcs, "bottom", new BottomFunc());
-        //put(funcs, "if", new IfFunc());
+        put(funcs, "if", new IfFunc());
         return funcs;
     }
 }

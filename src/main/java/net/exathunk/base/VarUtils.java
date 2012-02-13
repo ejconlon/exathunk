@@ -50,4 +50,12 @@ public class VarUtils {
         type.setContType(ContType.SINGLETON);
         return type;
     }
+
+    public static VarContType makeTemplateVarContType(String templateName) {
+        VarContType type = new VarContType();
+        type.setValueType(VarType.VOID);
+        type.setContType(ContType.SINGLETON);
+        type.setTemplateName(templateName);
+        return type;
+    }
 }

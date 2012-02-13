@@ -37,6 +37,7 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
   private static final org.apache.thrift.protocol.TField CONT_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("contType", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField KEY_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("keyType", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField VALUE_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("valueType", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField TEMPLATE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("templateName", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -47,6 +48,7 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
   private ContType contType; // required
   private VarType keyType; // optional
   private VarType valueType; // optional
+  private String templateName; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -64,7 +66,8 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
      * 
      * @see VarType
      */
-    VALUE_TYPE((short)3, "valueType");
+    VALUE_TYPE((short)3, "valueType"),
+    TEMPLATE_NAME((short)4, "templateName");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -85,6 +88,8 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
           return KEY_TYPE;
         case 3: // VALUE_TYPE
           return VALUE_TYPE;
+        case 4: // TEMPLATE_NAME
+          return TEMPLATE_NAME;
         default:
           return null;
       }
@@ -125,7 +130,7 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.KEY_TYPE,_Fields.VALUE_TYPE};
+  private _Fields optionals[] = {_Fields.KEY_TYPE,_Fields.VALUE_TYPE,_Fields.TEMPLATE_NAME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -135,6 +140,8 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, VarType.class)));
     tmpMap.put(_Fields.VALUE_TYPE, new org.apache.thrift.meta_data.FieldMetaData("valueType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, VarType.class)));
+    tmpMap.put(_Fields.TEMPLATE_NAME, new org.apache.thrift.meta_data.FieldMetaData("templateName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(VarContType.class, metaDataMap);
   }
@@ -162,6 +169,9 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
     if (other.isSetValueType()) {
       this.valueType = other.valueType;
     }
+    if (other.isSetTemplateName()) {
+      this.templateName = other.templateName;
+    }
   }
 
   public VarContType deepCopy() {
@@ -173,6 +183,7 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
     this.contType = null;
     this.keyType = null;
     this.valueType = null;
+    this.templateName = null;
   }
 
   /**
@@ -268,6 +279,29 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
     }
   }
 
+  public String getTemplateName() {
+    return this.templateName;
+  }
+
+  public void setTemplateName(String templateName) {
+    this.templateName = templateName;
+  }
+
+  public void unsetTemplateName() {
+    this.templateName = null;
+  }
+
+  /** Returns true if field templateName is set (has been assigned a value) and false otherwise */
+  public boolean isSetTemplateName() {
+    return this.templateName != null;
+  }
+
+  public void setTemplateNameIsSet(boolean value) {
+    if (!value) {
+      this.templateName = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case CONT_TYPE:
@@ -294,6 +328,14 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
       }
       break;
 
+    case TEMPLATE_NAME:
+      if (value == null) {
+        unsetTemplateName();
+      } else {
+        setTemplateName((String)value);
+      }
+      break;
+
     }
   }
 
@@ -307,6 +349,9 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
 
     case VALUE_TYPE:
       return getValueType();
+
+    case TEMPLATE_NAME:
+      return getTemplateName();
 
     }
     throw new IllegalStateException();
@@ -325,6 +370,8 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
       return isSetKeyType();
     case VALUE_TYPE:
       return isSetValueType();
+    case TEMPLATE_NAME:
+      return isSetTemplateName();
     }
     throw new IllegalStateException();
   }
@@ -366,6 +413,15 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
       if (!(this_present_valueType && that_present_valueType))
         return false;
       if (!this.valueType.equals(that.valueType))
+        return false;
+    }
+
+    boolean this_present_templateName = true && this.isSetTemplateName();
+    boolean that_present_templateName = true && that.isSetTemplateName();
+    if (this_present_templateName || that_present_templateName) {
+      if (!(this_present_templateName && that_present_templateName))
+        return false;
+      if (!this.templateName.equals(that.templateName))
         return false;
     }
 
@@ -415,6 +471,16 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetTemplateName()).compareTo(typedOther.isSetTemplateName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetTemplateName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.templateName, typedOther.templateName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -459,6 +525,16 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
         sb.append("null");
       } else {
         sb.append(this.valueType);
+      }
+      first = false;
+    }
+    if (isSetTemplateName()) {
+      if (!first) sb.append(", ");
+      sb.append("templateName:");
+      if (this.templateName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.templateName);
       }
       first = false;
     }
@@ -532,6 +608,14 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // TEMPLATE_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.templateName = iprot.readString();
+              struct.setTemplateNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -564,6 +648,13 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
           oprot.writeFieldEnd();
         }
       }
+      if (struct.templateName != null) {
+        if (struct.isSetTemplateName()) {
+          oprot.writeFieldBegin(TEMPLATE_NAME_FIELD_DESC);
+          oprot.writeString(struct.templateName);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -589,12 +680,18 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
       if (struct.isSetValueType()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetTemplateName()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetKeyType()) {
         oprot.writeI32(struct.keyType.getValue());
       }
       if (struct.isSetValueType()) {
         oprot.writeI32(struct.valueType.getValue());
+      }
+      if (struct.isSetTemplateName()) {
+        oprot.writeString(struct.templateName);
       }
     }
 
@@ -603,7 +700,7 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.contType = ContType.findByValue(iprot.readI32());
       struct.setContTypeIsSet(true);
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.keyType = VarType.findByValue(iprot.readI32());
         struct.setKeyTypeIsSet(true);
@@ -611,6 +708,10 @@ public class VarContType implements org.apache.thrift.TBase<VarContType, VarCont
       if (incoming.get(1)) {
         struct.valueType = VarType.findByValue(iprot.readI32());
         struct.setValueTypeIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.templateName = iprot.readString();
+        struct.setTemplateNameIsSet(true);
       }
     }
   }
