@@ -15,7 +15,7 @@ public class TreeExecutor {
             NTree<VarContType, FuncId, VarCont> tree,
             List<Boolean> executeMask) throws UnknownFuncException, ExecutionException {
         if (tree.isEmpty()) {
-            throw new ThunkExecutionException("Cannot execute empty tree");
+            throw new SystemExecutionException("Cannot execute empty tree");
         } else if (tree.isLeaf()) {
             return new PresentThunk<>(tree);
         } else {
@@ -24,7 +24,7 @@ public class TreeExecutor {
             for (int i = 0; i < tree.getChildren().size(); ++i) {
                 NTree<VarContType, FuncId, VarCont> child = tree.getChildren().get(i);
                 if (child.isEmpty()) {
-                    throw new ThunkExecutionException("Cannot execute empty tree");
+                    throw new SystemExecutionException("Cannot execute empty tree");
                 } else if (child.isLeaf() || !executeMask.get(i)) {
                     // Already evaluated or evaluation not requested
                     unevaluated.put(i, child);

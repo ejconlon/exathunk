@@ -48,7 +48,7 @@ public class RemoteThunkWrapper implements Thunk<VarCont> {
     @Override
     public VarCont get() throws ExecutionException {
         if (value == null && thrown == null) isDone();
-        if (thrown != null) throw new ThunkExecutionException(thrown);
+        if (thrown != null) throw new SystemExecutionException(thrown);
         return value;
     }
 }

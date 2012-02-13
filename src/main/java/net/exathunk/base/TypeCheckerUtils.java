@@ -23,7 +23,16 @@ public class TypeCheckerUtils {
         } else if (parseTree.isLeaf()) {
             throw new TypeException("Cannot type a root leaf node");
         } else {
-            String funcName = parseTree.getLabel();
+            String label = parseTree.getLabel();
+            String funcName = label;
+            String returnTypeAnno = null;
+            int coldex = label.indexOf(':');
+            if (coldex == 0 || coldex == label.length() - 1) throw new TypeException("Invalid type spec: "+label);
+            else if (coldex > 0) {
+                returnTypeAnno = label.substring(0, coldex);
+                funcName = label.substring(coldex+1);
+            }
+            
             FuncId funcId = new FuncId(funcName);
             FuncDef funcDef = funcDefLibrary.getFuncDef(funcId);
             VarContType returnType = funcDef.getReturnType();
@@ -68,7 +77,19 @@ public class TypeCheckerUtils {
                     typedChildren.add(typedChild);
                 }
             }
-            typedTree.setBranch(returnType, funcId, typedChildren);
+            VarContType newType = returnType;
+            if (returnType.getValueType() == VarType.VOID && returnType.isSetTemplateName())  {
+                String templateName = returnType.getTemplateName();
+                if (templates.containsKey(templateName)) {
+                    newType = new VarContType(templates.get(templateName));
+                } else if (returnTypeAnno != null) {
+                    newType = new VarContType(returnType);
+                    newType.setValueType(VarType.valueOf(returnTypeAnno));
+                } else {
+                    throw new TypeException("Cannot resolve template type: "+templateName);
+                }
+            }
+            typedTree.setBranch(newType, funcId, typedChildren);
         }
         return typedTree;
     }

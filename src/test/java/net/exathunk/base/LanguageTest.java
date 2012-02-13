@@ -29,9 +29,11 @@ public class LanguageTest {
         specs.put("(not true)", VarUtils.makeBoolVarCont(false));
         specs.put("(or  true false)", VarUtils.makeBoolVarCont(true));
         specs.put("(- (len foo) 1)", VarUtils.makeLongVarCont(2));
-        //specs.put("(or true (bottom))", VarUtils.makeBoolVarCont(true));
+        specs.put("(or true (BOOL:bottom))", VarUtils.makeBoolVarCont(true));
         specs.put("(if true STRING:foo STRING:bar)", VarUtils.makeStringVarCont("foo"));
         specs.put("(if false STRING:foo STRING:bar)", VarUtils.makeStringVarCont("bar"));
+        specs.put("(if (not true) I64:1 I64:2)", VarUtils.makeLongVarCont(2));
+        specs.put("(len (if true STRING:four STRING:to))", VarUtils.makeLongVarCont(4));
 
         return specs;
     }
@@ -41,9 +43,10 @@ public class LanguageTest {
 
         specs.put("(* 4 true)", TypeException.class);
         specs.put("(blah 4 true)", UnknownFuncException.class);
-        //specs.put("(bottom)", ExecutionException.class);
+        specs.put("(I64:bottom)", SystemExecutionException.class);
         specs.put("(if true I64:4 STRING:five)", TypeException.class);
-
+        specs.put("(or true (I64:bottom))", TypeException.class);
+        specs.put("(BOOL:error hello)", SystemExecutionException.class);
         return specs;
     }
 

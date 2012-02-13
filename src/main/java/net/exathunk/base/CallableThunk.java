@@ -18,14 +18,14 @@ public class CallableThunk<Value> implements Thunk<Value> {
             try {
                 result = callable.call();
             } catch (Exception e) {
-                thrown = new ThunkExecutionException(e);
+                thrown = new SystemExecutionException(e);
             }
             hasRun = true;
         }
     }
 
     public Value get() throws ExecutionException {
-        if (!hasRun) throw new ThunkExecutionException("Has not run.");
+        if (!hasRun) throw new SystemExecutionException("Has not run.");
         if (thrown != null) throw thrown;
         return result;
     }

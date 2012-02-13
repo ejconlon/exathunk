@@ -22,7 +22,7 @@ public class FutureThunk<Value> implements Thunk<Value> {
         try {
             return future.get();
         } catch (InterruptedException e) {
-            throw new ThunkExecutionException(e);
+            throw new SystemExecutionException(e);
         }
     }
 }
