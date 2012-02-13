@@ -38,6 +38,7 @@ public class LanguageTest {
         specs.put("(eq STRING:abc STRING:abc)", VarUtils.makeBoolVarCont(true));
         specs.put("(eq STRING:abc STRING:az)", VarUtils.makeBoolVarCont(false));
         specs.put("(neq STRING:abc STRING:az)", VarUtils.makeBoolVarCont(true));
+	//specs.put("(let var I64:42 (I64:get var))", VarUtils.makeLongVarCont(64));
         return specs;
     }
 

@@ -10,8 +10,7 @@ public class SchemeyTypeChecker implements TypeChecker {
     @Override
     public boolean canCast(VarContType fromType, VarContType toType) {
         // TODO allow upcasts
-        return fromType.getContType().equals(toType.getContType()) &&
-                fromType.getValueType().equals(toType.getValueType());
+	return TypeCheckerUtils.typeEquals(fromType, toType);
     }
 
     @Override

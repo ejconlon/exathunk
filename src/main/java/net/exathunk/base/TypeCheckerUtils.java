@@ -56,7 +56,7 @@ public class TypeCheckerUtils {
                         String templateName = realType.getTemplateName();
                         if (templates.containsKey(templateName)) {
                             VarContType otherType = templates.get(templateName);
-                            if (!realType.equals(otherType)) {
+                            if (!typeEquals(realType, otherType)) {
                                 throw new TypeException("Type mismatch: "+realType+" vs. "+otherType);
                             }
                         } else {
@@ -66,6 +66,7 @@ public class TypeCheckerUtils {
                     typedChildren.add(new NTree<VarContType, FuncId, VarCont>(
                             realType, castPair.getSecond()));
                 } else {
+		    // TODO allow template casts
                     NTree<VarContType, FuncId, VarCont> typedChild =
                             makeTypedTree(funcDefLibrary, typeChecker, parseChild);
                     if (!typeChecker.canCast(typedChild.getType(), type)) {
@@ -300,6 +301,12 @@ public class TypeCheckerUtils {
         evalRequest.setEvalArgs(varTrees);
         evalRequest.setFuncId(typedTree.getLabel());
         return evalRequest;
+    }
+
+    public static boolean typeEquals(VarContType type1, VarContType type2) {
+	return type1.getContType() == type2.getContType() &&
+	    type1.getKeyType() == type2.getKeyType() &&
+	    type1.getValueType() == type2.getValueType();
     }
 
 }

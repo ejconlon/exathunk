@@ -1,5 +1,7 @@
 package net.exathunk.schemey;
 
+import net.exathunk.functional.Either;
+
 import net.exathunk.base.*;
 import net.exathunk.genthrift.FuncDef;
 import net.exathunk.genthrift.FuncId;
@@ -315,6 +317,95 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         }
     }
 
+
+    public static class LetFunc extends NFuncImpl {
+        public LetFunc() {
+            super(makeFuncDef());
+        }
+
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeTemplateVarContType("B"));
+            def.addToParameterTypes(VarUtils.makeStringVarContType());
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("A"));
+	    def.addToParameterTypes(VarUtils.makeTemplateVarContType("B"));
+            return def;
+        }
+
+        @Override
+        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor executor,
+                                     final Bindings bindings,
+                                     final NTree<VarContType, FuncId, VarCont> args) {
+            return new CallableThunk<>(new Callable<VarCont>() {
+                @Override
+                public VarCont call() throws ExecutionException, UnknownFuncException {
+                    List<Boolean> mask1 = Arrays.asList(true, false, false);
+                    Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
+                            TreeExecutor.execute(executor, bindings, args, mask1);
+		    String name = firstEvaled.get().getChildren().get(0).getValue().getSingletonCont().getStringVar();
+		    NTree<VarContType, FuncId, VarCont> target = args.getChildren().get(1);
+		    if (target.isLeaf()) {
+			bindings.setEvaled(name, new Pair<>(target.getType(), target.getValue()));
+		    } else {
+			bindings.setUnevaled(name, target);
+		    }
+		    List<Boolean> mask2 = Arrays.asList(false, false, true);
+                    Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
+			TreeExecutor.execute(executor, bindings, args, mask2);
+                    return secondEvaled.get().getChildren().get(1).getValue();
+                }
+            });
+        }
+    }
+
+    public static class GetFunc extends NFuncImpl {
+        public GetFunc() { super(makeFuncDef()); }
+
+        public static FuncDef makeFuncDef() {
+            FuncDef def = new FuncDef();
+            def.setReturnType(VarUtils.makeTemplateVarContType("X"));
+            def.addToParameterTypes(VarUtils.makeStringVarContType());
+            return def;
+        }
+
+        @Override
+        public Thunk<VarCont> invoke(final NFuncLibrary library, final ThunkExecutor executor,
+                                     final Bindings bindings,
+                                     final NTree<VarContType, FuncId, VarCont> args) {
+            return new CallableThunk<>(new Callable<VarCont>() {
+                @Override
+                public VarCont call() throws ExecutionException, UnknownFuncException {
+                    List<Boolean> mask1 = Arrays.asList(true);
+                    Thunk<NTree<VarContType, FuncId, VarCont>> firstEvaled =
+                            TreeExecutor.execute(executor, bindings, args, mask1);
+		    String id = firstEvaled.get().getChildren().get(0).getValue().getSingletonCont().getStringVar();
+		    
+		    Either<Pair<Bindings, NTree<VarContType, FuncId, VarCont>>, Pair<VarContType, VarCont>> eitherVal = bindings.getShallowest(id);
+		    if (eitherVal == null) {
+			throw new UserExecutionException("Cannot find value for "+id);
+		    } else if (eitherVal.isLeft()) {
+			Bindings realBindings = eitherVal.left().getFirst();
+			NTree<VarContType, FuncId, VarCont> tree = eitherVal.left().getSecond();
+			if (!TypeCheckerUtils.typeEquals(tree.getType(), args.getType()))
+			    throw new UserExecutionException("Invalid types: "+tree.getType()+" "+args.getType());
+			Thunk<NTree<VarContType, FuncId, VarCont>> secondEvaled =
+                            TreeExecutor.execute(executor, bindings, tree, mask1);
+			VarCont val = secondEvaled.get().getValue();
+			realBindings.setEvaled(id, new Pair<>(tree.getType(), val));
+			return val;
+		    } else {
+			VarContType type = eitherVal.right().getFirst();
+			if (!TypeCheckerUtils.typeEquals(type, args.getType()))
+			    throw new UserExecutionException("Invalid types: "+type+" "+args.getType());
+			return eitherVal.right().getSecond();
+		    }
+                }
+            });
+        }
+    }
+
+    // ************************************************************************
+
     private static void put(Map<String, NFunc> funcs, String name, NFunc func) {
         func.getFuncDef().setFuncId(new FuncId(name));
         funcs.put(name, func);
@@ -337,6 +428,8 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         put(funcs, "if", new IfFunc());
         put(funcs, "eq", new EqFunc());
         put(funcs, "neq", new NeqFunc());
+	put(funcs, "let", new LetFunc());
+	put(funcs, "get", new GetFunc());
         return funcs;
     }
 }

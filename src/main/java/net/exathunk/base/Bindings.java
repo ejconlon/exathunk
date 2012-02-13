@@ -23,14 +23,14 @@ public class Bindings {
         return new Bindings(this);
     }
     
-    public Either<Pair<Bindings, NTree<VarContType, FuncId, VarCont>>, Pair<VarContType, VarCont>> getShallowest(String id) {
+    public synchronized Either<Pair<Bindings, NTree<VarContType, FuncId, VarCont>>, Pair<VarContType, VarCont>> getShallowest(String id) {
         if (evaled.containsKey(id)) return Either.AsRight(evaled.get(id));
         else if (unevaled.containsKey(id)) return Either.AsLeft(new Pair<>(this, unevaled.get(id)));
         else if (parent != null) return parent.getShallowest(id);
         else return null;
     }
 
-    public VarContType getType(String id) {
+    public synchronized VarContType getType(String id) {
         Either<Pair<Bindings, NTree<VarContType, FuncId, VarCont>>, Pair<VarContType, VarCont>> found = getShallowest(id);
         if (found != null) {
             if (found.isLeft()) {
@@ -43,15 +43,18 @@ public class Bindings {
         }
     }
     
-    public void setUnevaled(String id, NTree<VarContType, FuncId, VarCont> f) {
+    public synchronized void setUnevaled(String id, NTree<VarContType, FuncId, VarCont> f) {
         unevaled.put(id, f);
     }
     
-    public void setEvaled(String id, Pair<VarContType, VarCont> e) {
+    public synchronized void setEvaled(String id, Pair<VarContType, VarCont> e) {
+	if (unevaled.containsKey(id)) {
+	    unevaled.remove(id);
+	}
         evaled.put(id, e);
     }
     
-    public boolean hasId(String id) {
+    public synchronized boolean hasId(String id) {
         if (unevaled.containsKey(id) || evaled.containsKey(id)) {
             return true;
         } else if (parent != null) {
