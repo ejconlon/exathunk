@@ -17,9 +17,12 @@ public abstract class NFuncImpl implements NFunc {
         this.funcDef = funcDef;
     }
 
+    @Override
     public FuncDef getFuncDef() { return funcDef; }
 
+    @Override
     public abstract Thunk<VarCont> invoke(NFuncLibrary library,
                                           ThunkExecutor executor,
+                                          Bindings bindings,
                                           NTree<VarContType, FuncId, VarCont> args);
 }

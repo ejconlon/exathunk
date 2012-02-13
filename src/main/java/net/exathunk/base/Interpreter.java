@@ -37,7 +37,7 @@ public class Interpreter {
         NTree<VarContType, FuncId, VarCont> typedTree = TypeCheckerUtils.makeTypedTree(library, valueTyper, parseTree);
         logger.log(Level.FINE, "Typed tree {0}", typedTree);
 
-        return executor.submit(typedTree);
+        return executor.submit(new Bindings(), typedTree);
     }
 
     public ThunkExecutor getExecutor() { return executor; }

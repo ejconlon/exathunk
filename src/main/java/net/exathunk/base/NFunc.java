@@ -9,5 +9,6 @@ public interface NFunc {
     FuncDef getFuncDef();
     Thunk<VarCont> invoke(NFuncLibrary library,
                           ThunkExecutor executor,
+                          Bindings bindings,
                           NTree<VarContType, FuncId, VarCont> args);
 }

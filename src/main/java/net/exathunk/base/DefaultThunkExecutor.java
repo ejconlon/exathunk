@@ -13,7 +13,7 @@ public class DefaultThunkExecutor implements ThunkExecutor {
     }
 
     @Override
-    public Thunk<VarCont> submit(NTree<VarContType, FuncId, VarCont> tree) {
+    public Thunk<VarCont> submit(Bindings bindings, NTree<VarContType, FuncId, VarCont> tree) {
         FuncId funcId = tree.getLabel();
         NFunc func;
         try {
@@ -21,7 +21,7 @@ public class DefaultThunkExecutor implements ThunkExecutor {
         } catch (UnknownFuncException e) {
             return new BottomThunk<>(e);
         }
-        Thunk<VarCont> thunk = func.invoke(library, this, tree);
+        Thunk<VarCont> thunk = func.invoke(library, this, bindings, tree);
         thunk.run();
         return thunk;
     }

@@ -53,7 +53,7 @@ public class RemoteExecutionServiceHandler implements RemoteExecutionService.Ifa
         try {
             NTree<VarContType, FuncId, VarCont> typedTree = TypeCheckerUtils.makeTypedTreeFromRemote(
                     library, typeChecker, evalRequest.getFuncId(), evalRequest.getEvalArgs());
-            Thunk<VarCont> thunk = executor.submit(typedTree);
+            Thunk<VarCont> thunk = executor.submit(new Bindings(), typedTree);
             synchronized (this) {
                 long id = idSrc++;
                 String idStr = ""+id;

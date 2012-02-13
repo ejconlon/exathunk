@@ -5,5 +5,5 @@ import net.exathunk.genthrift.VarCont;
 import net.exathunk.genthrift.VarContType;
 
 public interface ThunkExecutor {
-    Thunk<VarCont> submit(NTree<VarContType, FuncId, VarCont> tree);
+    Thunk<VarCont> submit(Bindings bindings, NTree<VarContType, FuncId, VarCont> tree);
 }
