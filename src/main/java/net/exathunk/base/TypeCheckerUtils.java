@@ -52,8 +52,8 @@ public class TypeCheckerUtils {
                     String fromValue = parseChild.getValue();
                     Pair<VarContType, VarCont> castPair = typeChecker.cast(type, fromValue);
                     VarContType realType = castPair.getFirst();
-                    if (realType.isSetTemplateName()) {
-                        String templateName = realType.getTemplateName();
+                    if (type.isSetTemplateName()) {
+                        String templateName = type.getTemplateName();
                         if (templates.containsKey(templateName)) {
                             VarContType otherType = templates.get(templateName);
                             if (!typeEquals(realType, otherType)) {
@@ -69,13 +69,26 @@ public class TypeCheckerUtils {
 		    // TODO allow template casts
                     NTree<VarContType, FuncId, VarCont> typedChild =
                             makeTypedTree(funcDefLibrary, typeChecker, parseChild);
-                    if (!typeChecker.canCast(typedChild.getType(), type)) {
+		    VarContType realType = typedChild.getType();
+		    if (type.isSetTemplateName()) {
+                        String templateName = type.getTemplateName();
+                        if (templates.containsKey(templateName)) {
+                            VarContType otherType = templates.get(templateName);
+                            if (!typeEquals(realType, otherType)) {
+                                throw new TypeException("Type mismatch: "+realType+" vs. "+otherType);
+                            }
+                        } else {
+                            templates.put(templateName, realType);
+                        }
+			typedChildren.add(typedChild);
+		    } else if (typeEquals(type, realType)) {
+			typedChildren.add(typedChild);
+                    } else {
                         throw new TypeException("Could not type result of "+
                                 typedChild.getLabel() + ". Expected "+
                                 type + " but got "+
                                 typedChild.getType());
-                    }
-                    typedChildren.add(typedChild);
+		    }
                 }
             }
             VarContType newType = returnType;

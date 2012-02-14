@@ -225,7 +225,7 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
 
         public static FuncDef makeFuncDef() {
             FuncDef def = new FuncDef();
-            def.setReturnType(VarUtils.makeTemplateVarContType("X"));
+            def.setReturnType(VarUtils.makeTemplateVarContType("BOTTOM_A"));
             def.setParameterTypes(new LinkedList<VarContType>());
             return def;
         }
@@ -241,7 +241,7 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
 
         public static FuncDef makeFuncDef() {
             FuncDef def = new FuncDef();
-            def.setReturnType(VarUtils.makeTemplateVarContType("X"));
+            def.setReturnType(VarUtils.makeTemplateVarContType("ERROR_A"));
             def.addToParameterTypes(VarUtils.makeStringVarContType());
             return def;
         }
@@ -259,10 +259,10 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
 
         public static FuncDef makeFuncDef() {
             FuncDef def = new FuncDef();
-            def.setReturnType(VarUtils.makeTemplateVarContType("A"));
+            def.setReturnType(VarUtils.makeTemplateVarContType("IF_A"));
             def.addToParameterTypes(VarUtils.makeBoolVarContType());
-            def.addToParameterTypes(VarUtils.makeTemplateVarContType("A"));
-            def.addToParameterTypes(VarUtils.makeTemplateVarContType("A"));
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("IF_A"));
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("IF_A"));
             return def;
         }
 
@@ -297,8 +297,8 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
         public static FuncDef makeFuncDef() {
             FuncDef def = new FuncDef();
             def.setReturnType(VarUtils.makeBoolVarContType());
-            def.addToParameterTypes(VarUtils.makeTemplateVarContType("A"));
-            def.addToParameterTypes(VarUtils.makeTemplateVarContType("A"));
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("EQ_A"));
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("EQ_A"));
             return def;
         }
 
@@ -325,10 +325,10 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
 
         public static FuncDef makeFuncDef() {
             FuncDef def = new FuncDef();
-            def.setReturnType(VarUtils.makeTemplateVarContType("B"));
+            def.setReturnType(VarUtils.makeTemplateVarContType("LET_B"));
             def.addToParameterTypes(VarUtils.makeStringVarContType());
-            def.addToParameterTypes(VarUtils.makeTemplateVarContType("A"));
-	    def.addToParameterTypes(VarUtils.makeTemplateVarContType("B"));
+            def.addToParameterTypes(VarUtils.makeTemplateVarContType("LET_A"));
+	    def.addToParameterTypes(VarUtils.makeTemplateVarContType("LET_B"));
             return def;
         }
 
@@ -363,7 +363,7 @@ public class SchemeyNFuncLibrary implements NFuncLibrary {
 
         public static FuncDef makeFuncDef() {
             FuncDef def = new FuncDef();
-            def.setReturnType(VarUtils.makeTemplateVarContType("X"));
+            def.setReturnType(VarUtils.makeTemplateVarContType("GET_A"));
             def.addToParameterTypes(VarUtils.makeStringVarContType());
             return def;
         }
