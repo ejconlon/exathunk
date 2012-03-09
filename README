@@ -1,3 +1,18 @@
 Exathunk
 
 Exploring distributed functional programming with an emphasis on market-based coordination.
+
+PROJECT STATUS:
+
+Everyone should reinvent CORBA once in their lifetime.  Right now Exathunk is an AST-over-RPC service with strong message typing and service discoverability.  Check LanguageTest and ClientTest for some examples.  You could use it like this:
+
+Shell 1$> mvn exec:java -Dexec.mainClass="net.exathunk.remote.Server"
+-Dexec.args="5678"
+
+Shell 2$>  mvn exec:java -Dexec.mainClass="net.exathunk.remote.Client"
+-Dexec.args="localhost 5678 '(* (+ 2 6) 5)'"
+(PRINTS 40)
+
+The server exports a bunch of function definitions (like *, +, /, mod, and, if) and their types.  The client builds an untyped parse tree, identifies the functions it needs definitions for, and fetches them from the server.  Then it transforms the parse tree into a typed tree, and sends an RPC to the server for evaluation.  In the above case, the client sends calls * with two arguments: (+ 2 6) and 5, sending both arguments as ASTs.  Evaluation at the server is optionally lazy depending on the function.  There aren't that many functions defined yet, so it's mostly just a big caclulator, but they're pretty straightforward to add (SchemeyNFuncLibrary is one place).
+
+I hope to use this as a test bed for command-control or compute-market experiments.
